@@ -88,7 +88,6 @@ if __name__ == '__main__':
 
     # get input from standard in
     images = read_input()
-
     # get images that are used and described in configuration file
     used_images = docker_images.get_used_images(images)
 

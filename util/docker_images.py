@@ -3,7 +3,9 @@ import os
 import pathlib2
 import itertools
 import sys
+import logging
 
+LOGGER = logging.getLogger(__name__)
 TRAVIS_BUILD_DIR = os.environ.get("TRAVIS_BUILD_DIR", "")
 CONFIG_FILE_PATH = pathlib2.Path(TRAVIS_BUILD_DIR, "util", "parsefiles_config.yml")
 
