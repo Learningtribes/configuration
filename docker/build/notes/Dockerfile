@@ -7,14 +7,13 @@
 # This allows the dockerfile to update /edx/app/edx_ansible/edx_ansible
 # with the currently checked-out configuration repo.
 
-ARG BASE_IMAGE_TAG=latest
-FROM edxops/xenial-common:${BASE_IMAGE_TAG}
-MAINTAINER edxops
+FROM ltdps/xenial-common:latest
+MAINTAINER ltdps
 
-ARG OPENEDX_RELEASE=master
+ARG OPENEDX_RELEASE=open-release/hawthorn.lt
 ENV OPENEDX_RELEASE=${OPENEDX_RELEASE}
 ENV NOTES_VERSION=${OPENEDX_RELEASE}
-ENV REPO_OWNER=edx
+ENV REPO_OWNER=Learningtribes
 
 ADD . /edx/app/edx_ansible/edx_ansible
 

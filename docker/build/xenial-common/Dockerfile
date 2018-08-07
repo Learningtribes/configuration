@@ -1,5 +1,5 @@
 FROM ubuntu:xenial
-MAINTAINER edxops
+MAINTAINER ltdps
 
 # Set locale to UTF-8 which is not the default for docker.
 # See the links for details:
@@ -14,8 +14,8 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 ENV ANSIBLE_REPO="https://github.com/edx/ansible"
-ENV CONFIGURATION_REPO="https://github.com/edx/configuration.git"
-ARG OPENEDX_RELEASE=master
+ENV CONFIGURATION_REPO="https://github.com/Learningtribes/configuration.git"
+ARG OPENEDX_RELEASE=open-release/hawthorn.lt
 ENV CONFIGURATION_VERSION="${OPENEDX_RELEASE}"
 
 ADD util/install/ansible-bootstrap.sh /tmp/ansible-bootstrap.sh

@@ -23,6 +23,7 @@
 #
 #
 #
+
 - name: Create application user
   user:
     name: "{{ edx_ansible_user }}"
