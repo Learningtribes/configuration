@@ -17,7 +17,7 @@ help: docker.help
 
 docker.help:
 	@echo '    Docker:'
-	@echo '        $$image: any dockerhub image'
+	@echo '        $$image: "images in $(images)"'
 	@echo '        $$container: any container defined in docker/build/$$container/Dockerfile'
 	@echo ''
 	@echo '        $(docker_pull)$$image        pull $$image from dockerhub'
@@ -54,15 +54,14 @@ $(docker_pull)%:
 $(docker_build)%: docker/build/%/Dockerfile
 	docker build -t ltdps/$*:hawthorn.lt -f $< .
 
-
 $(docker_push)%: $(docker_build)%
 	docker push ltdps/$*:hawthorn.lt
 
 
 .build/%/Dockerfile.d: docker/build/%/Dockerfile Makefile
-	mkdir -p .build/$*
+	@mkdir -p .build/$*
 	$(eval FROM=$(shell grep "^\s*FROM" $< | sed -E "s/FROM //" | sed -E "s/:/@/g"))
 	$(eval EDXOPS_FROM=$(shell echo "$(FROM)" | sed -E "s#edxops/([^@]+)(@.*)?#\1#"))
-	echo "$(docker_build)$*: $(docker_pull)$(FROM)" > $@
+	@echo "$(docker_build)$*: $(docker_pull)$(FROM)" > $@
 
 -include $(foreach image,$(images),.build/$(image)/Dockerfile.d)
