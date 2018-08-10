@@ -11,4 +11,3 @@ FORUM_RACK_ENV: "staging"
 FORUM_SINATRA_ENV: "staging"
 
 devstack: "true"
-forum_source_repo: "https://github.com/Learningtribes/cs_comments_service.git"

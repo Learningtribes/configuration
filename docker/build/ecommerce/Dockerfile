@@ -18,7 +18,7 @@ WORKDIR /edx/app/edx_ansible/edx_ansible/docker/plays
 COPY docker/build/ecommerce/ansible_overrides.yml /
 COPY docker/build/devstack/ansible_overrides.yml /devstack/ansible_overrides.yml
 
-ARG OPENEDX_RELEASE=open-release/hawthorn.lt
+ARG OPENEDX_RELEASE=open-release/hawthorn.1
 ENV OPENEDX_RELEASE=${OPENEDX_RELEASE}
 RUN sudo /edx/app/edx_ansible/venvs/edx_ansible/bin/ansible-playbook ecommerce.yml \
     -c local -i '127.0.0.1,' \

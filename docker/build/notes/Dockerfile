@@ -10,10 +10,10 @@
 FROM ltdps/xenial-common:latest
 MAINTAINER ltdps
 
-ARG OPENEDX_RELEASE=open-release/hawthorn.lt
+ARG OPENEDX_RELEASE=open-release/hawthorn.1
 ENV OPENEDX_RELEASE=${OPENEDX_RELEASE}
 ENV NOTES_VERSION=${OPENEDX_RELEASE}
-ENV REPO_OWNER=Learningtribes
+ENV REPO_OWNER=edx
 
 ADD . /edx/app/edx_ansible/edx_ansible
 

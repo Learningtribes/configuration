@@ -79,6 +79,10 @@ VERSION_VARS=(
     THEMES_VERSION
 )
 
+NOTIFIER_VERSION=open-release/hawthorn.1
+demo_version=open-release/hawthorn.1
+THEMES_VERSION=open-release/hawthorn.1
+
 for var in ${VERSION_VARS[@]}; do
     # Each variable can be overridden by a similarly-named environment variable,
     # or OPENEDX_RELEASE, if provided.
@@ -100,7 +104,7 @@ CONFIGURATION_VERSION=${CONFIGURATION_VERSION-$OPENEDX_RELEASE}
 ## Clone the configuration repository and run Ansible
 ##
 cd /var/tmp
-git clone https://github.com/edx/configuration
+git clone https://github.com/Learningtribes/configuration
 cd configuration
 git checkout $CONFIGURATION_VERSION
 git pull
