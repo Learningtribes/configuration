@@ -27,10 +27,10 @@
     credentials_create_demo_data: true
     SANDBOX_ENABLE_DISCOVERY: true
     SANDBOX_ENABLE_ECOMMERCE: true
-    SANDBOX_ENABLE_ANALYTICS_API: false
-    SANDBOX_ENABLE_INSIGHTS: false
+    SANDBOX_ENABLE_ANALYTICS_API: true
+    SANDBOX_ENABLE_INSIGHTS: true
     SANDBOX_ENABLE_RABBITMQ: true
-    JOURNALS_ENABLED: false
+    JOURNALS_ENABLED: true
   roles:
     - role: swapfile
       SWAPFILE_SIZE: 4GB

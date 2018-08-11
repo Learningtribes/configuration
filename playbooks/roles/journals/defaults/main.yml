@@ -40,7 +40,7 @@ journals_debian_pkgs:
 JOURNALS_NGINX_PORT: "1{{ journals_gunicorn_port }}"
 JOURNALS_SSL_NGINX_PORT: "4{{ journals_gunicorn_port }}"
 
-JOURNALS_DEFAULT_DB_NAME: "{{ 'journals' if JOURNALS_ENABLED else '' }}"
+JOURNALS_DEFAULT_DB_NAME: 'journals'
 JOURNALS_MYSQL: 'localhost'
 # MySQL usernames are limited to 16 characters
 JOURNALS_MYSQL_USER: 'journ001'

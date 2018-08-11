@@ -26,7 +26,7 @@ if [[ -z "${CONFIGURATION_REPO}" ]]; then
 fi
 
 if [[ -z "${CONFIGURATION_VERSION}" ]]; then
-  CONFIGURATION_VERSION="${OPENEDX_RELEASE}"
+  CONFIGURATION_VERSION="${LT_VERSION}"
 fi
 
 if [[ -z "${UPGRADE_OS}" ]]; then

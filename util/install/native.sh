@@ -17,6 +17,12 @@ if [[ ! $OPENEDX_RELEASE ]]; then
     exit
 fi
 
+if [[ ! $LT_VERSION ]]; then
+    echo "You must define LT_VERSION"
+    exit
+fi
+
+
 if [[ `lsb_release -rs` != "16.04" ]]; then
     echo "This script is only known to work on Ubuntu 16.04, exiting..."
     exit
@@ -63,12 +69,10 @@ sudo -H pip install --upgrade virtualenv==15.2.0
 ## Overridable version variables in the playbooks. Each can be overridden
 ## individually, or with $OPENEDX_RELEASE.
 ##
-VERSION_VARS=(
-    edx_platform_version
+EDX_VERSION_VARS=(
     certs_version
     forum_version
     xqueue_version
-    configuration_version
     demo_version
     NOTIFIER_VERSION
     INSIGHTS_VERSION
@@ -79,10 +83,12 @@ VERSION_VARS=(
     THEMES_VERSION
 )
 
-edx_platform_version=open-release/hawthorn.lt
+LT_VERSION_VARS=(
+    edx_platform_version
+    configuration_version
+)
 
-
-for var in ${VERSION_VARS[@]}; do
+for var in ${EDX_VERSION_VARS[@]}; do
     # Each variable can be overridden by a similarly-named environment variable,
     # or OPENEDX_RELEASE, if provided.
     ENV_VAR=$(echo $var | tr '[:lower:]' '[:upper:]')
@@ -92,12 +98,21 @@ for var in ${VERSION_VARS[@]}; do
     fi
 done
 
+for var in ${LT_VERSION_VARS[@]}; do
+    # Each variable can be overridden by a similarly-named environment variable,
+    # or OPENEDX_RELEASE, if provided.
+    ENV_VAR=$(echo $var | tr '[:lower:]' '[:upper:]')
+    eval override=\${$ENV_VAR-\$LT_VERSION}
+    if [ -n "$override" ]; then
+        EXTRA_VARS="-e $var=$override $EXTRA_VARS"
+    fi
+done
+
+
 # my-passwords.yml is the file made by generate-passwords.sh.
 if [[ -f my-passwords.yml ]]; then
     EXTRA_VARS="-e@$(pwd)/my-passwords.yml $EXTRA_VARS"
 fi
-
-CONFIGURATION_VERSION=${CONFIGURATION_VERSION-$OPENEDX_RELEASE}
 
 ##
 ## Clone the configuration repository and run Ansible
@@ -105,7 +120,7 @@ CONFIGURATION_VERSION=${CONFIGURATION_VERSION-$OPENEDX_RELEASE}
 cd /var/tmp
 git clone https://github.com/Learningtribes/configuration
 cd configuration
-git checkout $CONFIGURATION_VERSION
+git checkout $LT_VERSION
 git pull
 
 ##
