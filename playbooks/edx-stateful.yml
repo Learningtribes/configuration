@@ -5,8 +5,8 @@
 # installs
 
 - name: Configure instance(s)
-  hosts: datastores
-  sudo: True
+  hosts: all
+  become: True
   gather_facts: True
   vars:
     MYSQL_BIND_ADDRESS: "0.0.0.0"
@@ -14,11 +14,13 @@
     EDXLOCAL_MYSQL_ALLOWED_HOST: "ip-192-168-0-160.ec2.internal"
 #    rabbitmq_ip: "{{ groups['datastores'][0] }}"
   vars_files:
-    - "../roles/edxapp/defaults/main.yml"
-    - "../roles/forum/defaults/main.yml"
-    - "../roles/xqueue/defaults/main.yml"
-    - "../roles/ecommerce/defaults/main.yml"
-    - "../roles/ecomworker/defaults/main.yml"
+    - roles/edxapp/defaults/main.yml
+    - roles/forum/defaults/main.yml
+    - roles/xqueue/defaults/main.yml
+    - roles/ecommerce/defaults/main.yml
+    - roles/ecomworker/defaults/main.yml
+    - roles/analytics_api/defaults/main.yml
+    - roles/edx_notes_api/defaults/main.yml
   roles:
     # This install mysql and creates users.
     - role: memcache
@@ -28,9 +30,10 @@
     - role: elasticsearch
     - role: edxlocal
     - role: edx_ansible
+    # Optional extras
     - role: datadog
       when: COMMON_ENABLE_DATADOG
     - role: splunkforwarder
       when: COMMON_ENABLE_SPLUNKFORWARDER
-    - role: newrelic
-      when: COMMON_ENABLE_NEWRELIC
+    - role: datadog-uninstall
+      when: not COMMON_ENABLE_DATADOG
