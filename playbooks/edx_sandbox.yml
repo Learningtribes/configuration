@@ -19,7 +19,7 @@
     migrate_db: "yes"
     EDXAPP_LMS_NGINX_PORT: '80'
     edx_platform_version: 'master'
-    COMMON_GIT_PATH: 'Learningtribes'
+    edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
     # Set to false if deployed behind another proxy/load balancer.
     NGINX_SET_X_FORWARDED_HEADERS: True
     DISCOVERY_URL_ROOT: 'http://localhost:{{ DISCOVERY_NGINX_PORT }}'
@@ -53,10 +53,8 @@
       rabbitmq_ip: 127.0.0.1
       when: SANDBOX_ENABLE_RABBITMQ
     - role: edxapp
-      edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
       celery_worker: True
-    - role: edxapp
-      edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
+    - edxapp
     - role: ecommerce
       when: SANDBOX_ENABLE_ECOMMERCE
     - role: ecomworker
@@ -72,8 +70,7 @@
     - oraclejdk
     - role: elasticsearch
       when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
-    - role: forum
-      forum_source_repo: "https://github.com/Learningtribes/cs_comments_service.git"
+    - forum
     - role: discovery
       when: SANDBOX_ENABLE_DISCOVERY
     - role: journals

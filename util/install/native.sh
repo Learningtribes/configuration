@@ -79,9 +79,8 @@ VERSION_VARS=(
     THEMES_VERSION
 )
 
-NOTIFIER_VERSION=open-release/hawthorn.1
-demo_version=open-release/hawthorn.1
-THEMES_VERSION=open-release/hawthorn.1
+edx_platform_version=open-release/hawthorn.lt
+
 
 for var in ${VERSION_VARS[@]}; do
     # Each variable can be overridden by a similarly-named environment variable,
