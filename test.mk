@@ -25,7 +25,7 @@ test.syntax.yml/%:
 test.syntax.json: $(patsubst %,test.syntax.json/%,$(json_files))
 
 test.syntax.json/%:
-	jsonlint -v $*
+	python -mjson.tool $*
 
 test.syntax.dockerfiles:
 	python util/check_dockerfile_coverage.py "$(images)"
