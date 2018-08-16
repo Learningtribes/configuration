@@ -4,11 +4,13 @@ SHARD=0
 SHARDS=1
 
 dockerfiles:=$(shell ls docker/build/*/Dockerfile)
-all_images:=$(patsubst docker/build/%/Dockerfile,%,$(dockerfiles))
+#all_images:=$(patsubst docker/build/%/Dockerfile,%,$(dockerfiles))
+all_images:=edxapp notes ecommerce credentials discovery forum devpi
 
 # Used in the test.mk file as well.
-#images:=$(if $(TRAVIS_COMMIT_RANGE),$(shell git diff --name-only $(TRAVIS_COMMIT_RANGE) | python util/parsefiles.py),$(all_images))
-images:=chrome firefox edxapp notes ecommerce credentials discovery forum devpi
+# set COMMIT_RANGE in CI environment for build on need
+images:=$(if $(COMMIT_RANGE),$(shell git diff --name-only $(COMMIT_RANGE) | python util/parsefiles.py),$(all_images))
+#images:=edxapp notes ecommerce credentials discovery forum devpi
 
 docker_build=docker.build.
 docker_push=docker.push.

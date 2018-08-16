@@ -7,10 +7,10 @@ import networkx as nx
 from collections import namedtuple
 import argparse
 
-TRAVIS_BUILD_DIR = os.environ.get("TRAVIS_BUILD_DIR")
-DOCKER_PATH_ROOT = pathlib2.Path(TRAVIS_BUILD_DIR, "docker", "build")
-DOCKER_PLAYS_PATH = pathlib2.Path(TRAVIS_BUILD_DIR, "docker", "plays")
-CONFIG_FILE_PATH = pathlib2.Path(TRAVIS_BUILD_DIR, "util", "parsefiles_config.yml")
+BUILD_DIR = os.environ.get("BUILD_DIR")
+DOCKER_PATH_ROOT = pathlib2.Path(BUILD_DIR, "docker", "build")
+DOCKER_PLAYS_PATH = pathlib2.Path(BUILD_DIR, "docker", "plays")
+CONFIG_FILE_PATH = pathlib2.Path(BUILD_DIR, "util", "parsefiles_config.yml")
 LOGGER = logging.getLogger(__name__)
 
 
@@ -437,13 +437,13 @@ if __name__ == '__main__':
     config = _open_yaml_file(CONFIG_FILE_PATH)
 
     # build graph
-    graph = build_graph(TRAVIS_BUILD_DIR, config["roles_paths"], config["aws_plays_paths"], config["docker_plays_paths"])
+    graph = build_graph(BUILD_DIR, config["roles_paths"], config["aws_plays_paths"], config["docker_plays_paths"])
 
     # gets any playbooks in the commit range
-    plays = get_plays(change_set, TRAVIS_BUILD_DIR, config["aws_plays_paths"])
+    plays = get_plays(change_set, BUILD_DIR, config["aws_plays_paths"])
 
     # transforms list of roles and plays into list of original roles and the roles contained in the plays
-    roles = change_set_to_roles(change_set, TRAVIS_BUILD_DIR, config["roles_paths"], config["aws_plays_paths"], graph)
+    roles = change_set_to_roles(change_set, BUILD_DIR, config["roles_paths"], config["aws_plays_paths"], graph)
 
     # expands roles set to include roles that are dependent on existing roles
     dependent_roles = get_dependencies(roles, graph)
@@ -454,13 +454,13 @@ if __name__ == '__main__':
     docker_plays = docker_plays | plays
 
     # filter out docker plays without a Dockerfile
-    docker_plays = filter_docker_plays(docker_plays, TRAVIS_BUILD_DIR)
+    docker_plays = filter_docker_plays(docker_plays, BUILD_DIR)
 
     # Add playbooks to the list whose docker file has been modified
-    modified_docker_files = _get_modified_dockerfiles(change_set, TRAVIS_BUILD_DIR)
+    modified_docker_files = _get_modified_dockerfiles(change_set, BUILD_DIR)
 
     # Add plays to the list which got changed in docker/plays directory
-    docker_plays_dir = get_modified_dockerfiles_plays(change_set, TRAVIS_BUILD_DIR)
+    docker_plays_dir = get_modified_dockerfiles_plays(change_set, BUILD_DIR)
 
     all_plays = set(set(docker_plays) | set( modified_docker_files) | set(docker_plays_dir))
 

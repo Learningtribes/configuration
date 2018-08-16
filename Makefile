@@ -40,7 +40,7 @@ upgrade: ## update the pip requirements files to use the latest releases satisfy
 	    playbooks/roles/aws/templates/requirements.txt.j2 \
 	    requirements3.txt \
 	    util/elasticsearch/requirements.txt \
-	    util/jenkins/requirements-celery.txt \
+}	    util/jenkins/requirements-celery.txt \
 	    util/jenkins/requirements-cloudflare.txt \
 	    util/pingdom/requirements.txt \
 	    util/vpc-tools/requirements.txt
