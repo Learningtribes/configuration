@@ -1,5 +1,4 @@
 # To build this Dockerfile:
-#
 # From the root of configuration:
 #
 # docker build -f docker/build/devpi/Dockerfile .
