@@ -5,7 +5,8 @@ SHARDS=1
 
 dockerfiles:=$(shell ls docker/build/*/Dockerfile)
 #all_images:=$(patsubst docker/build/%/Dockerfile,%,$(dockerfiles))
-all_images:=edxapp notes ecommerce credentials discovery forum devpi
+#all_images:=edxapp notes ecommerce credentials discovery forum devpi
+all_images:=forum devpi
 
 # Used in the test.mk file as well.
 # set COMMIT_RANGE in CI environment for build on need
@@ -54,10 +55,10 @@ $(docker_pull)%:
 	docker pull $(subst @,:,$*)
 
 $(docker_build)%: docker/build/%/Dockerfile
-	docker build -t ltdps/$*:hawthorn.lt -f $< .
+	docker build -t ltdps/$*:test -f $< .
 
 $(docker_push)%: $(docker_build)%
-	docker push ltdps/$*:hawthorn.lt
+	docker push ltdps/$*:test
 
 
 .build/%/Dockerfile.d: docker/build/%/Dockerfile Makefile
