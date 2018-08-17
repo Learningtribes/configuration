@@ -14,5 +14,11 @@ pipeline {
         sh 'make test.clean'
       }
     }
+    stage('Build Image') {
+        sh 'make docker.build'
+    }
+    stage('Push Image') {
+        sh 'make docker.push'
+    }
   }
 }
