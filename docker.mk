@@ -1,8 +1,9 @@
-.PHONY: docker.build
+.PHONY: docker.build docker.clean docker.push
 
 SHARD=0
 SHARDS=1
-
+IMAGE_TAG?=latest
+BUILD_TAG?=test
 dockerfiles:=$(shell ls docker/build/*/Dockerfile)
 #all_images:=$(patsubst docker/build/%/Dockerfile,%,$(dockerfiles))
 all_images:=edxapp notes ecommerce credentials discovery forum devpi
@@ -14,6 +15,7 @@ images:=$(if $(COMMIT_RANGE),$(shell git diff --name-only $(COMMIT_RANGE) | pyth
 
 docker_build=docker.build.
 docker_push=docker.push.
+docker_clean=docker.clean.
 
 help: docker.help
 
@@ -35,35 +37,22 @@ docker.help:
 # in something like 'edxops/trusty-common:latest'
 # Also, make can't handle ':' in filenames, so we instead '@'
 # which means the same thing to docker
-docker_pull=docker.pull/
-
-build: docker.build
-
 clean: docker.clean
-
-docker.clean:
-	rm -rf .build
+build: docker.build
 
 docker.test.shard: $(foreach image,$(shell echo $(images) | python util/balancecontainers.py $(SHARDS) | awk 'NR%$(SHARDS)==$(SHARD)'),$(docker_test)$(image))
 
 docker.build: $(foreach image,$(images),$(docker_build)$(image))
 docker.push: $(foreach image,$(images),$(docker_push)$(image))
-
-
-$(docker_pull)%:
-	docker pull $(subst @,:,$*)
+docker.clean: $(foreach image,$(images),$(docker_clean)$(image))
 
 $(docker_build)%: docker/build/%/Dockerfile
-	docker build -t ltdps/$*:hawthorn.lt -f $< .
+	docker build -t ltdps/$*:$(BUILD_TAG) -f $< .
 
 $(docker_push)%: $(docker_build)%
-	docker push ltdps/$*:hawthorn.lt
+	docker tag ltdps/$*:$(BUILD_TAG) ltdps/$*:$(IMAGE_TAG)
+	docker push ltdps/$*:$(IMAGE_TAG)
 
-
-.build/%/Dockerfile.d: docker/build/%/Dockerfile Makefile
-	@mkdir -p .build/$*
-	$(eval FROM=$(shell grep "^\s*FROM" $< | sed -E "s/FROM //" | sed -E "s/:/@/g"))
-	$(eval EDXOPS_FROM=$(shell echo "$(FROM)" | sed -E "s#edxops/([^@]+)(@.*)?#\1#"))
-	@echo "$(docker_build)$*: $(docker_pull)$(FROM)" > $@
-
--include $(foreach image,$(images),.build/$(image)/Dockerfile.d)
+$(docker_clean)%:
+	docker rmi ltdps/$*:$(BUILD_TAG) || true
+	docker rmi `docker images -f "dangling=true" -q` || true
