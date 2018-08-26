@@ -45,4 +45,4 @@ upgrade: ## update the pip requirements files to use the latest releases satisfy
 	    util/pingdom/requirements.txt \
 	    util/vpc-tools/requirements.txt
 
-include *.mk
+-include *.mk ci/ci.mk

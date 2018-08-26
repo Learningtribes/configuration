@@ -1,9 +1,9 @@
 pipeline {
     agent {
-        dockerfile {
-          filename 'ci/Dockerfile'
-          args '''
-            -u 'root:root'
+        docker {
+            image 'ltdps/configuration:latest'
+            args '''
+            -u root:root
             -v /var/run/docker.sock:/var/run/docker.sock
             -v /usr/bin/docker:/usr/bin/docker
             '''
@@ -15,7 +15,7 @@ pipeline {
         BUILD_TAG = "${env.GIT_COMMIT}"
     }
     stages {
-        stage('Test') {
+        stage('Syntax Check') {
             steps {
                 sh 'make test'
             }

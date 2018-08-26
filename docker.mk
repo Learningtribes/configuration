@@ -24,8 +24,6 @@ docker.help:
 	@echo '        $$image: "images in $(images)"'
 	@echo '        $$container: any container defined in docker/build/$$container/Dockerfile'
 	@echo ''
-	@echo '        $(docker_pull)$$image        pull $$image from dockerhub'
-	@echo ''
 	@echo '        $(docker_build)$$container   build $$container'
 	@echo '        $(docker_push)$$container    push $$container to dockerhub '
 	@echo ''
@@ -33,10 +31,6 @@ docker.help:
 	@echo '        docker.push           push all defined docker containers'
 	@echo ''
 
-# N.B. / is used as a separator so that % will match the /
-# in something like 'edxops/trusty-common:latest'
-# Also, make can't handle ':' in filenames, so we instead '@'
-# which means the same thing to docker
 clean: docker.clean
 build: docker.build
 
