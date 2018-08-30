@@ -9,7 +9,7 @@
     state: present
     encoding: utf8
   when: item != None and item != ''
-  with_items: "{{ edxlocal_databases }}"
+  with_items: "{{ mysql_setup_databases }}"
 
 - name: create database users
   mysql_user:
@@ -19,7 +19,7 @@
     priv: "{{ item.db }}.*:ALL"
     append_privs: yes
   when: item.db != None and item.db != ''
-  with_items: "{{ edxlocal_database_users }}"
+  with_items: "{{ mysql_setup_database_users }}"
 
 - name: setup the migration db user
   mysql_user:
@@ -29,7 +29,7 @@
     priv: "{{ item }}.*:ALL"
     append_privs: yes
   when: item != None and item != ''
-  with_items: "{{ edxlocal_databases }}"
+  with_items: "{{ mysql_setup_databases }}"
 
 - name: create api user for the analytics api
   mysql_user:
