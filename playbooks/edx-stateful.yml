@@ -33,8 +33,11 @@
     - role: rabbitmq
     - role: oraclejdk
     - role: elasticsearch
-    - role: mysql
+
+    - role: edxlocal
+      when: MYSQL_SETUP_HOST == "localhost"
     - role: mysql_setup
+      when: MYSQL_SETUP_HOST != "localhost"
     # Optional extras
     - role: datadog
       when: COMMON_ENABLE_DATADOG
