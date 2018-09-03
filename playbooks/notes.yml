@@ -3,6 +3,7 @@
   become: True
   strategy: free
   serial: "{{ serial_count }}"
+  max_fail_percentage: "{{ fail_percentage }}"
   gather_facts: True
   vars:
     serial_count: 1
