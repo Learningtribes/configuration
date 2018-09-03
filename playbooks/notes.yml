@@ -1,8 +1,11 @@
 - name: Deploy edX Notes API
   hosts: all
   become: True
+  strategy: free
+  serial: "{{ serial_count }}"
   gather_facts: True
   vars:
+    serial_count: 1
     ENABLE_DATADOG: False
     ENABLE_NEWRELIC: False
   roles:
@@ -23,4 +26,3 @@
       when: COMMON_ENABLE_NEWRELIC_INFRASTRUCTURE
     - role: datadog-uninstall
       when: not COMMON_ENABLE_DATADOG
-
