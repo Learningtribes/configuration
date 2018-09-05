@@ -1,16 +1,9 @@
 pipeline {
     agent {
-<<<<<<< HEAD
         docker {
             image 'ltdps/configuration:latest'
             args '''
             -u root:root
-=======
-        dockerfile {
-          filename 'ci/Dockerfile'
-          args '''
-            -u 'root:root'
->>>>>>> master
             -v /var/run/docker.sock:/var/run/docker.sock
             -v /usr/bin/docker:/usr/bin/docker
             '''
@@ -22,11 +15,7 @@ pipeline {
         BUILD_TAG = "${env.GIT_COMMIT}"
     }
     stages {
-<<<<<<< HEAD
         stage('Syntax Check') {
-=======
-        stage('Test') {
->>>>>>> master
             steps {
                 sh 'make test'
             }

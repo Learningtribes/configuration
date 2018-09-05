@@ -31,15 +31,6 @@ docker.help:
 	@echo '        docker.push           push all defined docker containers'
 	@echo ''
 
-<<<<<<< HEAD
-build: docker.build
-
-=======
-# N.B. / is used as a separator so that % will match the /
-# in something like 'edxops/trusty-common:latest'
-# Also, make can't handle ':' in filenames, so we instead '@'
-# which means the same thing to docker
->>>>>>> master
 clean: docker.clean
 build: docker.build
 
@@ -47,14 +38,6 @@ docker.test.shard: $(foreach image,$(shell echo $(images) | python util/balancec
 
 docker.build: $(foreach image,$(images),$(docker_build)$(image))
 docker.push: $(foreach image,$(images),$(docker_push)$(image))
-<<<<<<< HEAD
-
-$(docker_build)%: docker/build/%/Dockerfile
-	docker build -t ltdps/$*:latest -f $< .
-
-$(docker_push)%: $(docker_build)%
-	docker push ltdps/$*:latest
-=======
 docker.clean: $(foreach image,$(images),$(docker_clean)$(image))
 
 $(docker_build)%: docker/build/%/Dockerfile
@@ -67,4 +50,3 @@ $(docker_push)%: $(docker_build)%
 $(docker_clean)%:
 	docker rmi ltdps/$*:$(BUILD_TAG) || true
 	docker rmi `docker images -f "dangling=true" -q` || true
->>>>>>> master
