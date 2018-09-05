@@ -15,3 +15,4 @@ while IFS= read -r line; do
     # Change "!!null"-to-end-of-line to the password.
     echo "$line" | sed "s/\!\!null.*/\'$REPLACE\'/"
 done < passwords-template.yml > my-passwords.yml
+rm passwords-template.yml
