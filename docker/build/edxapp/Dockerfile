@@ -19,7 +19,7 @@ COPY docker/build/edxapp/ansible_overrides.yml /
 COPY docker/build/edxapp/devstack.yml /
 COPY docker/build/devstack/ansible_overrides.yml /devstack/ansible_overrides.yml
 
-ARG OPENEDX_RELEASE=open-release/hawthorn.lt
+ARG OPENEDX_RELEASE=master
 ENV OPENEDX_RELEASE=${OPENEDX_RELEASE}
 RUN sudo /edx/app/edx_ansible/venvs/edx_ansible/bin/ansible-playbook edxapp.yml \
     -c local -i '127.0.0.1,' \
