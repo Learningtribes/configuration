@@ -7,6 +7,8 @@ import networkx as nx
 from collections import namedtuple
 import argparse
 
+import docker_images
+
 BUILD_DIR = os.environ.get("BUILD_DIR")
 DOCKER_PATH_ROOT = pathlib2.Path(BUILD_DIR, "docker", "build")
 DOCKER_PLAYS_PATH = pathlib2.Path(BUILD_DIR, "docker", "plays")
@@ -462,6 +464,7 @@ if __name__ == '__main__':
     # Add plays to the list which got changed in docker/plays directory
     docker_plays_dir = get_modified_dockerfiles_plays(change_set, BUILD_DIR)
 
-    all_plays = set(set(docker_plays) | set( modified_docker_files) | set(docker_plays_dir))
-
-    print " ".join(all_plays)
+    all_plays = set(set(docker_plays) | set(modified_docker_files) | set(docker_plays_dir))
+    used_images = docker_images.get_used_images(all_plays)
+    if used_images:
+        print " ".join(zip(*used_images)[0])
