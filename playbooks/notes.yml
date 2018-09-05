@@ -9,6 +9,7 @@
     serial_count: 1
     ENABLE_DATADOG: False
     ENABLE_NEWRELIC: False
+
   roles:
     - aws
     - role: nginx
