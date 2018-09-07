@@ -1,7 +1,7 @@
 pipeline {
     agent {
-        docker {
-            image 'ltdps/configuration:latest'
+        dockerfile {
+            filename 'ci/Dockerfile'
             args '''
             -u root:root
             -v /var/run/docker.sock:/var/run/docker.sock
