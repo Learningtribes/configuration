@@ -90,7 +90,6 @@
     repo: "https://{{ item.DOMAIN }}/{{ item.PATH }}/{{ item.REPO }}"
     dest: "{{ item.DESTINATION }}"
     version: "{{ item.VERSION }}"
-    depth: 1
   become_user: "{{ repo_owner }}"
   register: code_checkout
   when: item.PROTOCOL == "https" and GIT_REPOS is defined

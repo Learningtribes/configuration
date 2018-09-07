@@ -1,16 +1,25 @@
 - name: Deploy edX Notes API
   hosts: all
   become: True
+  strategy: free
+  serial: "{{ serial_count }}"
+  max_fail_percentage: "{{ fail_percentage }}"
   gather_facts: True
   vars:
+    serial_count: 1
     ENABLE_DATADOG: False
-    ENABLE_NEWRELIC: True
+    ENABLE_NEWRELIC: False
+
   roles:
     - aws
     - role: nginx
       nginx_sites:
         - edx_notes_api
-    - edx_notes_api
+    - role: edx_notes_api
+      EDX_NOTES_API_MYSQL_HOST: localhost
+      EDX_NOTES_API_VERSION: master
+      EDX_NOTES_API_ELASTICSEARCH_URL: "localhost:9200"
+      COMMON_GIT_PATH: Learningtribes
     - role: datadog
       when: COMMON_ENABLE_DATADOG
     - role: splunkforwarder
@@ -19,4 +28,3 @@
       when: COMMON_ENABLE_NEWRELIC_INFRASTRUCTURE
     - role: datadog-uninstall
       when: not COMMON_ENABLE_DATADOG
-

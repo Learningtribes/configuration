@@ -1,6 +1,4 @@
-# docker file for CI
-
 FROM python:2
-WORKDIR /app/
-COPY requirements.txt pre-requirements.txt Makefile *.mk /app/
+WORKDIR /tmp/
+COPY requirements.txt pre-requirements.txt Makefile /tmp/
 RUN make requirements
