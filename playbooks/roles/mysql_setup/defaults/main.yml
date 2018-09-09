@@ -1,4 +1,7 @@
 ---
+MYSQL_SETUP_LOGIN_HOST: localhost
+MYSQL_SETUP_LOGIN_PASSWORD: null
+MYSQL_SETUP_LOGIN_USER: root
 MYSQL_SETUP_HOST: localhost
 mysql_setup_databases:
   - "{{ ECOMMERCE_DATABASE_NAME | default(None) }}"
