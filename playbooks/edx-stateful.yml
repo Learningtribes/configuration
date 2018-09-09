@@ -4,6 +4,14 @@
 # for single server community
 # installs
 
+- name: bootstrap python
+  hosts: all
+  become: True
+  gather_facts: False
+  roles:
+    - python
+
+
 - name: Configure instance(s)
   hosts: all
   become: True
@@ -11,14 +19,14 @@
   vars:
     MYSQL_BIND_ADDRESS: "0.0.0.0"
 #    EDXLOCAL_MYSQL_ALLOWED_HOST: "{{ hostvars['stateless'][0]['ansible_hostname'] }}"
-    EDXLOCAL_MYSQL_ALLOWED_HOST: "ip-192-168-0-160.ec2.internal"
+#    EDXLOCAL_MYSQL_ALLOWED_HOST: "*"
 #    rabbitmq_ip: "{{ groups['datastores'][0] }}"
   vars_files:
     - roles/edxapp/defaults/main.yml
     - roles/credentials/defaults/main.yml
     - roles/journals/defaults/main.yml
     - roles/veda_web_frontend/defaults/main.yml
-    - roles/veda_pipeline_base/defaults/main.yml
+    - roles/video_pipeline_base/defaults/main.yml
     - roles/discovery/defaults/main.yml
     - roles/forum/defaults/main.yml
     - roles/xqueue/defaults/main.yml
@@ -33,8 +41,11 @@
     - role: rabbitmq
     - role: oraclejdk
     - role: elasticsearch
+
     - role: edxlocal
-    - role: edx_ansible
+      when: MYSQL_SETUP_LOGIN_HOST == "localhost"
+    - role: mysql_setup
+      when: MYSQL_SETUP_LOGIN_HOST != "localhost"
     # Optional extras
     - role: datadog
       when: COMMON_ENABLE_DATADOG
