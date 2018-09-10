@@ -21,6 +21,7 @@
 - name: create database users
   mysql_user:
     name: "{{ item.user }}"
+    host: ""
     password: "{{ item.pass }}"
     priv: "{{ item.db }}.*:ALL"
     append_privs: yes

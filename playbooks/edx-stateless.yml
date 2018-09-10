@@ -16,6 +16,11 @@
   gather_facts: True
 
   vars:
+    EDXAPP_MEMCACHE: ['localhost:11211']
+    EDXAPP_MYSQL_HOST: "localhost"
+    EDXAPP_MONGO_HOSTS:
+    - "localhost"
+    EDXAPP_SEARCH_HOST: 'localhost'
     migrate_db: 'yes'
     openid_workaround: True
     EDXAPP_LMS_NGINX_PORT: '80'
