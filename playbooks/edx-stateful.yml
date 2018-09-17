@@ -22,6 +22,7 @@
 #    EDXLOCAL_MYSQL_ALLOWED_HOST: "{{ hostvars['stateless'][0]['ansible_hostname'] }}"
 #    EDXLOCAL_MYSQL_ALLOWED_HOST: "*"
 #    rabbitmq_ip: "{{ groups['datastores'][0] }}"
+  # memcache need to bind to 0.0.0.0
   vars_files:
     - roles/edxapp/defaults/main.yml
     - roles/credentials/defaults/main.yml
