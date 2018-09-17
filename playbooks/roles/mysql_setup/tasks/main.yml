@@ -1,6 +1,13 @@
 # Installs packages to run edx locally on a single instance
 #
 ---
+- name: Install packages needed for single server
+  apt:
+    name: "{{ item }}"
+    install_recommends: yes
+    state: present
+  with_items: "{{ mysql_setup_debian_pkgs }}"
+  when: MYSQL_SETUP_LOGIN_HOST == "localhost"
 
 - name: create databases
   mysql_db:
@@ -16,7 +23,7 @@
 - name: create database users
   mysql_user:
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
     name: "{{ item.user }}"
@@ -28,7 +35,7 @@
 
 - name: setup the migration db user
   mysql_user:
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
@@ -41,7 +48,7 @@
 
 - name: create api user for the analytics api
   mysql_user:
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
@@ -52,7 +59,7 @@
 
 - name: create read-only reports user for the analytics-api
   mysql_user:
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
@@ -73,7 +80,7 @@
 
 - name: setup the edx-notes-api db user
   mysql_user:
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
@@ -84,7 +91,7 @@
 
 - name: setup the read-only db user
   mysql_user:
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
@@ -94,7 +101,7 @@
 
 - name: setup the admin db user
   mysql_user:
-    host: "{{ MYSQL_SETUP_HOST }}"
+    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
     login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
     login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
     login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"

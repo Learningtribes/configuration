@@ -18,6 +18,7 @@
   gather_facts: True
   vars:
     MYSQL_BIND_ADDRESS: "0.0.0.0"
+    MYSQL_SETUP_ALLOWED_HOST: '%'
 #    EDXLOCAL_MYSQL_ALLOWED_HOST: "{{ hostvars['stateless'][0]['ansible_hostname'] }}"
 #    EDXLOCAL_MYSQL_ALLOWED_HOST: "*"
 #    rabbitmq_ip: "{{ groups['datastores'][0] }}"
@@ -41,11 +42,7 @@
     - role: rabbitmq
     - role: oraclejdk
     - role: elasticsearch
-
-    - role: edxlocal
-      when: MYSQL_SETUP_LOGIN_HOST == "localhost"
     - role: mysql_setup
-      when: MYSQL_SETUP_LOGIN_HOST != "localhost"
     # Optional extras
     - role: datadog
       when: COMMON_ENABLE_DATADOG

@@ -1,8 +1,12 @@
 ---
+mysql_setup_debian_pkgs:
+  - postfix
+  - libjpeg-dev
+
 MYSQL_SETUP_LOGIN_HOST: localhost
 MYSQL_SETUP_LOGIN_PASSWORD: null
 MYSQL_SETUP_LOGIN_USER: root
-MYSQL_SETUP_HOST: localhost
+MYSQL_SETUP_ALLOWED_HOST: localhost
 mysql_setup_databases:
   - "{{ ECOMMERCE_DATABASE_NAME | default(None) }}"
   - "{{ INSIGHTS_DATABASE_NAME | default(None) }}"
