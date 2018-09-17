@@ -1,3 +1,11 @@
+- name: Bootstrap instance(s)
+  hosts: all
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+# TODO: optimize edxapp to allow theme, and worker deploy in one run
 - name: Deploy edxapp
   hosts: all
   become: True
@@ -5,6 +13,19 @@
   vars:
     serial_count: 1
     CLUSTER_NAME: 'edxapp'
+    devstack: false
+    migrate_db: "yes"
+    EDXAPP_LMS_NGINX_PORT: '80'
+    NGINX_SET_X_FORWARDED_HEADERS: True
+    EDXAPP_MEMCACHE: ['54.255.154.240:11211']
+    EDXAPP_MYSQL_HOST: "54.255.154.240"
+    EDXAPP_MONGO_HOSTS:
+    - "54.255.154.240"
+    EDXAPP_SEARCH_HOST: '54.255.154.240'
+    EDXAPP_XQUEUE_URL: 'http://localhost:18040'
+    edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
+    edx_platform_version: master
+
   serial: "{{ serial_count }}"
   roles:
    - role: aws
@@ -20,6 +41,8 @@
      nginx_extra_configs: "{{ NGINX_EDXAPP_EXTRA_CONFIGS }}"
      nginx_redirects: "{{ NGINX_EDXAPP_CUSTOM_REDIRECTS }}"
      nginx_skip_enable_sites: "{{ EDXAPP_NGINX_SKIP_ENABLE_SITES }}"
+   - role: edxapp
+     celery_worker: True
    - edxapp
    - role: devstack_sqlite_fix
      when: devstack is defined and devstack
