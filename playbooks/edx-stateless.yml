@@ -10,6 +10,7 @@
   roles:
     - python
 
+# TODO: rabbitmq bind 0.0.0.0
 - name: Configure instance(s)
   hosts: all
   become: True
