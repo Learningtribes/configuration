@@ -1,3 +1,12 @@
+- name: Bootstrap instance(s)
+  hosts: all
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+# TODO: optimize edxapp to allow theme, and worker deploy in one run
+# TODO: postfix_queue allow this host
 - name: Deploy edxapp
   hosts: all
   become: True
@@ -5,8 +14,48 @@
   vars:
     serial_count: 1
     CLUSTER_NAME: 'edxapp'
+    ENABLE_DEMO: true
+    STATEFUL_HOST: '54.255.253.199'
+    EDXAPP_HOST: '54.169.92.174'
+    migrate_db: "yes"
+    EDXAPP_LMS_NGINX_PORT: '80'
+    NGINX_SET_X_FORWARDED_HEADERS: true
+    EDXAPP_MEMCACHE: ['{{STATEFUL_HOST}}:11211']
+    EDXAPP_MYSQL_HOST: "{{STATEFUL_HOST}}"
+    EDXAPP_MONGO_HOSTS:
+    - "{{STATEFUL_HOST}}"
+    EDXAPP_RABBIT_HOSTNAME: "{{STATEFUL_HOST}}"
+    EDXAPP_SEARCH_HOST: "{{STATEFUL_HOST}}"
+    EDXAPP_EMAIL_HOST: "{{STATEFUL_HOST}}"
+    EDXAPP_XQUEUE_URL: 'http://localhost:18040'
+    EDXAPP_COMMENTS_SERVICE_URL:  'http://localhost:18080'
+    EDXAPP_LMS_ANALYTICS_API_URL: 'http://localhost:18100'
+
+    EDXAPP_SITE_NAME: "{{STATEFUL_HOST}}"
+    EDXAPP_CMS_SITE_NAME: "{{STATEFUL_HOST}}"
+
+    EDXAPP_ECOMMERCE_PUBLIC_URL_ROOT: "http://localhost:8002"
+    EDXAPP_ECOMMERCE_API_URL: "http://localhost:8002/api/v2"
+    EDXAPP_COURSE_CATALOG_API_URL: "http://localhost:8008/api/v1"
+    EDXAPP_CREDENTIALS_INTERNAL_SERVICE_URL: "http://localhost:8005"
+    EDXAPP_CREDENTIALS_PUBLIC_SERVICE_URL: "http://localhost:8005"
+    # Journals Related Settings
+    EDXAPP_JOURNALS_URL_ROOT: "https://journals-{{ EDXAPP_LMS_BASE }}"
+    EDXAPP_JOURNALS_API_URL: "https://journals-{{ EDXAPP_LMS_BASE }}/api/v1/"
+
+    # In a production environment when using separate clusters, you'll
+    # want to route requests differently from the LMS (internal api) and
+    # from JS (public API)
+    EDXAPP_EDXNOTES_PUBLIC_API: http://localhost:18120/api/v1
+    EDXAPP_EDXNOTES_INTERNAL_API: http://localhost:18120/api/v1
+
+    edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
+    edx_platform_version: master
+
   serial: "{{ serial_count }}"
   roles:
+   - role: swapfile
+     SWAPFILE_SIZE: 4GB
    - role: aws
      when: COMMON_ENABLE_AWS_ROLE
    - role: automated
@@ -20,17 +69,11 @@
      nginx_extra_configs: "{{ NGINX_EDXAPP_EXTRA_CONFIGS }}"
      nginx_redirects: "{{ NGINX_EDXAPP_CUSTOM_REDIRECTS }}"
      nginx_skip_enable_sites: "{{ EDXAPP_NGINX_SKIP_ENABLE_SITES }}"
-   - edxapp
+   - role: edxapp
+     celery_worker: True
+   - role: edxapp
+   - role: demo
+     when: ENABLE_DEMO is defined and ENABLE_DEMO
+
    - role: devstack_sqlite_fix
      when: devstack is defined and devstack
-   - role: datadog
-     when: COMMON_ENABLE_DATADOG
-   - role: splunkforwarder
-     when: COMMON_ENABLE_SPLUNKFORWARDER
-   - role: newrelic_infrastructure
-     when: COMMON_ENABLE_NEWRELIC_INFRASTRUCTURE
-   - role: minos
-     when: COMMON_ENABLE_MINOS
-   - role: datadog-uninstall
-     when: not COMMON_ENABLE_DATADOG
-
