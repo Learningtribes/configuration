@@ -15,8 +15,8 @@
     serial_count: 1
     CLUSTER_NAME: 'edxapp'
     ENABLE_DEMO: true
-    STATEFUL_HOST: '54.255.154.240'
-    EDXAPP_HOST: '52.77.216.89'
+    STATEFUL_HOST: '54.255.253.199'
+    EDXAPP_HOST: '54.169.92.174'
     migrate_db: "yes"
     EDXAPP_LMS_NGINX_PORT: '80'
     NGINX_SET_X_FORWARDED_HEADERS: true

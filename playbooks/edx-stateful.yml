@@ -11,7 +11,7 @@
   roles:
     - python
 
-
+# TODO manually config mysql_bind and memcache bind, postfix mynetwork,
 - name: Configure instance(s)
   hosts: all
   become: True
@@ -19,8 +19,6 @@
   vars:
     MYSQL_BIND_ADDRESS: "0.0.0.0"
     MYSQL_SETUP_ALLOWED_HOST: '%'
-#    EDXLOCAL_MYSQL_ALLOWED_HOST: "{{ hostvars['stateless'][0]['ansible_hostname'] }}"
-#    EDXLOCAL_MYSQL_ALLOWED_HOST: "*"
 #    rabbitmq_ip: "{{ groups['datastores'][0] }}"
   # memcache need to bind to 0.0.0.0
   vars_files:
@@ -45,10 +43,3 @@
     - role: oraclejdk
     - role: elasticsearch
     - role: mysql_setup
-    # Optional extras
-    - role: datadog
-      when: COMMON_ENABLE_DATADOG
-    - role: splunkforwarder
-      when: COMMON_ENABLE_SPLUNKFORWARDER
-    - role: datadog-uninstall
-      when: not COMMON_ENABLE_DATADOG
