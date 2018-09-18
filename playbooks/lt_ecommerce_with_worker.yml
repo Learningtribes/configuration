@@ -1,0 +1,39 @@
+- name: Bootstrap instance(s)
+  hosts: all
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+- name: Deploy edX Ecommerce
+  hosts: all
+  become: True
+  gather_facts: True
+  vars:
+    migrate_db: "yes"
+    CLUSTER_NAME: 'edxapp'
+    STATEFUL_HOST: '54.255.253.199'
+    EDXAPP_HOST: '54.169.92.174'
+    APP_HOST: '54.169.92.174'
+    GIT_CLONE_NO_LOGGING: false
+    CODE_VERSION: 'open-release/hawthorn.1'
+    COMMON_OAUTH_BASE_URL: 'http://{{EDXAPP_HOST}}'
+  roles:
+    - role: swapfile
+      SWAPFILE_SIZE: 4GB
+    - aws
+    - role: nginx
+    - role: ecommerce
+      ECOMMERCE_VERSION: "{{CODE_VERSION}}"
+      ecommerce_create_demo_data: true
+      ECOMMERCE_DATABASE_HOST: "{{STATEFUL_HOST}}"
+      ECOMMERCE_ECOMMERCE_URL_ROOT: 'http://{{APP_HOST}}:18130'
+      ECOMMERCE_LMS_URL_ROOT: 'http://{{EDXAPP_HOST}}'
+      ECOMMERCE_DISCOVERY_SERVICE_URL: 'http://localhost:8008'
+      ECOMMERCE_BROKER_HOST: "{{STATEFUL_HOST}}"
+      ECOMMERCE_MEMCACHE: ['{{STATEFUL_HOST}}:11211']
+    - role: ecomworker
+      ECOMMERCE_WORKER_VERSION: "{{CODE_VERSION}}"
+      ECOMMERCE_WORKER_BROKER_HOST: "{{STATEFUL_HOST}}"
+      ECOMMERCE_WORKER_ECOMMERCE_API_ROOT: 'http://{{APP_HOST}}:18130/api/v2/'
+
