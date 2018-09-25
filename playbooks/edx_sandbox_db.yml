@@ -1,0 +1,53 @@
+---
+
+# Example sandbox configuration
+# for single server community
+# installs
+
+- name: Bootstrap instance(s)
+  hosts: all
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+- name: Configure instance(s)
+  hosts: all
+  become: True
+  gather_facts: True
+  vars:
+    SANDBOX_ENABLE_MYSQL: false
+    SANDBOX_ENABLE_MEMCACHED: false
+    SANDBOX_ENABLE_MONGODB: false
+    SANDBOX_ENABLE_RABBITMQ: false
+    SANDBOX_ENABLE_ELASTICSEARCH: false
+    JOURNALS_ENABLED: false
+    COMMON_APP_IP: '%'  
+  vars_files:
+    - roles/edxapp/defaults/main.yml  #import edxapp database name variable
+    - roles/common_vars/defaults/main.yml #import common mysql database name, user name variable
+    - roles/analytics_api/defaults/main.yml #import analytics database name variable
+    - roles/insights/defaults/main.yml  #import insights database name variable
+    - roles/ecommerce/defaults/main.yml   #import ecommerce database name variable
+    - roles/xqueue/defaults/main.yml  #import xqueue database name variable
+    - roles/edx_notes_api/defaults/main.yml  #import notes database name variable
+    - roles/credentials/defaults/main.yml #import credentials database name variable
+    - roles/discovery/defaults/main.yml #import discovery database name variable
+    - roles/journals/defaults/main.yml  #import journals database name variable
+    - roles/veda_web_frontend/defaults/main.yml #import veda database name variable
+    - roles/video_pipeline_base/defaults/main.yml #import veda database name variable
+  roles:
+    - role: edxlocal
+      MYSQL_BIND_IP_ADDRESS: '0.0.0.0'
+      when: SANDBOX_ENABLE_MYSQL 
+    - role: memcache
+      MEMCACHED_BIND_IP_ADDRESS: '0.0.0.0'
+      when: SANDBOX_ENABLE_MEMCACHED
+    - role: mongo_3_2
+      MONGO_BIND_IP: '0.0.0.0'
+      when: SANDBOX_ENABLE_MONGODB
+    - role: rabbitmq
+      rabbitmq_ip: '0.0.0.0'
+      when: SANDBOX_ENABLE_RABBITMQ
+    - role: elasticsearch
+      when: SANDBOX_ENABLE_ELASTICSEARCH
