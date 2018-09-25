@@ -1,9 +1,5 @@
 ---
 
-# Example sandbox configuration
-# for single server community
-# installs
-
 - name: bootstrap python
   hosts: all
   become: True
