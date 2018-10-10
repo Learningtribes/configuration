@@ -1,0 +1,101 @@
+---
+
+# Do A Checkout
+- name: checkout edx-platform repo into {{ edxapp_code_dir }}
+  git:
+    dest: "{{ edxapp_code_dir }}"
+    repo: "{{ edx_platform_repo }}"
+    version: "{{ edx_platform_version }}"
+    accept_hostkey: yes
+  become_user: "{{ edxapp_user }}"
+  environment:
+    GIT_SSH: "{{ edxapp_git_ssh }}"
+  register: edxapp_platform_checkout
+  tags:
+    - install
+    - install:code
+    - lt-deploy
+
+- name: git clean after checking out edx-platform
+  shell: cd {{ edxapp_code_dir }} && git clean -xdf
+  become_user: "{{ edxapp_user }}"
+  tags:
+    - install
+    - install:code
+    - lt-deploy
+
+
+- name: Stat each Python requirements file to ensure it exists
+  stat:
+    path: "{{ item }}"
+  with_items: "{{ edxapp_requirements_files }} + {{ [openstack_requirements_file] if EDXAPP_SETTINGS == 'openstack' else [] }}"
+  register: python_requirement_files
+  tags:
+    - install
+    - install:app-requirements
+    - lt-deploy
+
+# Install the python requirements into {{ edxapp_venv_dir }}
+- name: install python requirements
+  # Need to use command rather than pip so that we can maintain the context of our current working directory; some
+  # requirements are pathed relative to the edx-platform repo. Using the pip from inside the virtual environment implicitly
+  # installs everything into that virtual environment.
+  command: "{{ edxapp_venv_dir }}/bin/pip install {{ COMMON_PIP_VERBOSITY }} -i {{ COMMON_PYPI_MIRROR_URL }} --exists-action w -r {{ item.item }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_user }}"
+  environment: "{{ edxapp_environment }}"
+  when: item.stat.exists
+  with_items: "{{ python_requirement_files.results }}"
+  tags:
+    - install
+    - install:app-requirements
+    - lt-deploy
+
+#install with the shell command instead of the ansible npm module so we don't accidentally re-write package.json
+- name: install node dependencies
+  shell: "{{ edxapp_nodeenv_bin }}/npm install"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  environment: "{{ edxapp_environment }}"
+  become_user: "{{ edxapp_user }}"
+  tags:
+    - install
+    - install:app-requirements
+    - lt-deploy
+
+# migrate when the migrate user is overridden in extra vars
+- name: migrate
+  command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
+  when: migrate_db is defined and migrate_db|lower == "yes"
+  run_once: yes
+  with_items: "{{ service_variants_enabled }}"
+  tags:
+    - migrate
+    - lt-deploy
+
+- name: restart edxapp
+  supervisorctl:
+    name: "{{ item }}"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  become_user: "{{ supervisor_service_user }}"
+  with_items:
+    - 'lms'
+    - 'cms'
+  tags:
+    - manage
+    - lt-deploy
+
+- name: restart edxapp_workers
+  supervisorctl:
+    name: "edxapp_worker:"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  become_user: "{{ common_web_user }}"
+  tags:
+    - manage
+    - lt-deploy
+
