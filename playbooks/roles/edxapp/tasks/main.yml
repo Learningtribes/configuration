@@ -139,4 +139,4 @@
   tags:
     - deploy
 
-- inclued: lt-deploy.yml
+- include: lt-deploy.yml
