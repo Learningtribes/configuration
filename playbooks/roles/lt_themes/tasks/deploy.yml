@@ -1,0 +1,33 @@
+---
+
+- assert:
+    that:
+      - "EDXAPP_COMPREHENSIVE_THEME_DIRS | length > 0"
+      - "EDXAPP_ENABLE_COMPREHENSIVE_THEMING"
+    msg: "Theme deployment requires comprehensive theming to be enabled"
+
+- name: make sure theme dirs exists
+  file:
+    path: item
+    owner: "{{ edxapp_user }}"
+    group: "{{ common_web_group }}"
+    state: directory
+  with_items: "{{EDXAPP_COMPREHENSIVE_THEME_DIRS}}"
+
+- block:
+  - name: Download themes
+    git:
+      repo: "{{ item.repo }}"
+      dest: "{{ EDXAPP_COMPREHENSIVE_THEME_DIRS.0 }}/{{ item.name }}"
+      version: "{{ item.version | default('master') }}"
+      force: yes
+    with_items: "{{ LT_THEMES }}"
+
+  - name: Adjust owner/group of downloaded themes
+    file:
+      dest: "{{ EDXAPP_COMPREHENSIVE_THEME_DIRS.0 }}/{{ item.name }}"
+      owner: "{{ edxapp_user }}"
+      group: "{{ common_web_group }}"
+      recurse: yes
+    with_items: "{{ LT_THEMES }}"
+

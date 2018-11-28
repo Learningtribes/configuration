@@ -13,6 +13,13 @@
   become: True
   gather_facts: True
   vars:
+    ENABLE_COMPREHENSIVE_THEMING: yes
+    DEFAULT_SITE_THEME: sample
+    EDXAPP_COMPREHENSIVE_THEME_DIRS:
+      - "{{edxapp_app_dir}}/themes"
+    ENABLE_LT_THEME: yes
+    LT_THEMES:
+      - {name: "sample", repo: "https://github.com/open-craft/edx-theme.git", version: "harvard-dcex"}
     serial_count: 1
     CLUSTER_NAME: 'edxapp'
     ENABLE_DEMO: true
