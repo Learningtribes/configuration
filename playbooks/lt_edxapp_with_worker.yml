@@ -13,13 +13,15 @@
   become: True
   gather_facts: True
   vars:
-    ENABLE_COMPREHENSIVE_THEMING: yes
+    EDXAPP_ENABLE_COMPREHENSIVE_THEMING: yes
     DEFAULT_SITE_THEME: sample
     EDXAPP_COMPREHENSIVE_THEME_DIRS:
       - "{{edxapp_app_dir}}/themes"
-    ENABLE_LT_THEME: yes
-    LT_THEMES:
-      - {name: "sample", repo: "https://github.com/open-craft/edx-theme.git", version: "harvard-dcex"}
+    ALL_THEMES:
+      - {name: "sample1", repo: "https://github.com/open-craft/edx-theme.git", version: "harvard-dcex"}
+      - {name: "sample2", repo: "https://github.com/open-craft/edx-theme.git", version: "harvard-dcex"}
+    DEPLOY_THEMES: "{{ALL_THEMES|map(attribute='name')|list}}"
+    LT_THEMES: "{{ALL_THEMES | selectattr('name', 'in', DEPLOY_THEMES) | list}}"
     serial_count: 1
     CLUSTER_NAME: 'edxapp'
     ENABLE_DEMO: true
@@ -83,11 +85,12 @@
      nginx_extra_configs: "{{ NGINX_EDXAPP_EXTRA_CONFIGS }}"
      nginx_redirects: "{{ NGINX_EDXAPP_CUSTOM_REDIRECTS }}"
      nginx_skip_enable_sites: "{{ EDXAPP_NGINX_SKIP_ENABLE_SITES }}"
+   - role: lt_themes
+     tags: ['never', 'assets']
    - role: edxapp
      celery_worker: True
    - role: edxapp
    - role: demo
      when: ENABLE_DEMO is defined and ENABLE_DEMO
-
    - role: devstack_sqlite_fix
      when: devstack is defined and devstack
