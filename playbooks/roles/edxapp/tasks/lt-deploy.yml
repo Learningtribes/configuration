@@ -1,5 +1,18 @@
 ---
 
+- name: return instance ID
+  command: curl http://169.254.169.254/latest/meta-data/instance-id
+  register: myinstanceid
+
+- name: tag DStatus start
+  ec2_tag:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    region: "{{ lt_ec2_region }}"
+    resource: "{{ myinstanceid.stdout }}"
+    tags:
+      DStatus: START
+
 # Do A Checkout
 - name: checkout edx-platform repo into {{ edxapp_code_dir }}
   git:
@@ -24,6 +37,15 @@
     - install:code
     - lt-deploy
 
+- name: tag DStatus pending and code CommitID 
+  ec2_tag:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    region: "{{ lt_ec2_region }}"
+    resource: "{{ myinstanceid.stdout }}"
+    tags:
+      DStatus: PENDING
+      CommitID: "{{ edx_platform_version }}"
 
 - name: Stat each Python requirements file to ensure it exists
   stat:
@@ -98,4 +120,13 @@
   tags:
     - manage
     - lt-deploy
+
+- name: tag DStatus done
+  ec2_tag:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    region: "{{ lt_ec2_region }}"
+    resource: "{{ myinstanceid.stdout }}"
+    tags:
+      DStatus: DONE
 
