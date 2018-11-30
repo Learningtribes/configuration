@@ -12,6 +12,8 @@
     resource: "{{ myinstanceid.stdout }}"
     tags:
       DStatus: START
+  tags:
+    - lt-deploy
 
 # Do A Checkout
 - name: checkout edx-platform repo into {{ edxapp_code_dir }}
@@ -46,6 +48,8 @@
     tags:
       DStatus: PENDING
       CommitID: "{{ edx_platform_version }}"
+  tags:
+    - lt-deploy
 
 - name: Stat each Python requirements file to ensure it exists
   stat:
@@ -129,4 +133,6 @@
     resource: "{{ myinstanceid.stdout }}"
     tags:
       DStatus: DONE
+  tags:
+    - lt-deploy
 
