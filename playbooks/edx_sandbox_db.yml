@@ -27,6 +27,8 @@
     - roles/edxapp/defaults/main.yml  #import edxapp database name variable
     - roles/common_vars/defaults/main.yml #import common mysql database name, user name variable
     - roles/analytics_api/defaults/main.yml #import analytics database name variable
+    - roles/analytics_pipeline/defaults/main.yml
+    - roles/hive/defaults/main.yml
     - roles/insights/defaults/main.yml  #import insights database name variable
     - roles/ecommerce/defaults/main.yml   #import ecommerce database name variable
     - roles/xqueue/defaults/main.yml  #import xqueue database name variable
@@ -51,3 +53,5 @@
       when: SANDBOX_ENABLE_RABBITMQ
     - role: elasticsearch
       when: SANDBOX_ENABLE_ELASTICSEARCH
+    - role: journals
+      when: JOURNALS_ENABLED

@@ -89,6 +89,7 @@
       EDXAPP_SITE_NAME: 'localhost'
       EDXAPP_LMS_BASE: 'localhost'
       COMMON_OAUTH_BASE_URL: 'http://54.169.255.226'
+      JOURNALS_ELASTICSEARCH_URL: 'http://172.31.62.57:9500'
       when: JOURNALS_ENABLED
     - role: notifier
       NOTIFIER_LMS_URL_BASE: 'http://172.31.62.113'

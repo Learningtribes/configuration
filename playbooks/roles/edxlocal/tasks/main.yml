@@ -12,6 +12,9 @@
 
 - name: create databases
   mysql_db:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     db: "{{ item }}"
     state: present
     encoding: utf8
@@ -20,6 +23,9 @@
 
 - name: create database users
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ item.user }}"
     password: "{{ item.pass }}"
     priv: "{{ item.db }}.*:ALL"
@@ -29,6 +35,9 @@
 
 - name: setup the migration db user
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
     password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
     priv: "{{ item }}.*:ALL"
@@ -38,6 +47,9 @@
 
 - name: create api user for the analytics api
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ ANALYTICS_API_DATABASES.default.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.default.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.default.NAME }}.*:ALL/reports.*:SELECT'
@@ -45,6 +57,9 @@
 
 - name: create read-only reports user for the analytics-api
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ ANALYTICS_API_DATABASES.reports.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.reports.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.reports.NAME }}.*:SELECT'
@@ -52,6 +67,9 @@
 
 - name: create a database for the hive metastore
   mysql_db:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     db: "{{ HIVE_METASTORE_DATABASE.name }}"
     state: "present"
     encoding: "latin1"
@@ -59,6 +77,9 @@
 
 - name: setup the edx-notes-api db user
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ EDX_NOTES_API_MYSQL_DB_USER }}"
     password: "{{ EDX_NOTES_API_MYSQL_DB_PASS }}"
     priv: "{{ EDX_NOTES_API_MYSQL_DB_NAME }}.*:SELECT,INSERT,UPDATE,DELETE"
@@ -66,12 +87,18 @@
 
 - name: setup the read-only db user
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ COMMON_MYSQL_READ_ONLY_USER }}"
     password: "{{ COMMON_MYSQL_READ_ONLY_PASS }}"
     priv: "*.*:ALL"
 
 - name: setup the admin db user
   mysql_user:
+    login_user: "{{ AWS_RDS_MYSQL_USER_ADMIN }}"
+    login_password: "{{ AWS_RDS_MYSQL_USER_ADMIN_PASSWORD }}"
+    login_host: "{{ AWS_RDS_MYSQL_HOST }}"
     name: "{{ COMMON_MYSQL_ADMIN_USER }}"
     password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
     priv: "*.*:CREATE USER"

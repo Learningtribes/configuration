@@ -63,8 +63,12 @@
       EDXAPP_OAUTH_ENFORCE_SECURE: false # oauth2 use http protocol
       EDXAPP_COMMENTS_SERVICE_URL:  'http://forum-domain-name:18080'
       EDXAPP_LMS_SITE_NAME: 'lms-domain-name'
+      EDXAPP_CMS_SITE_NAME: 'cms-domain-name'
       EDXAPP_LMS_BASE_SCHEME: 'http' # lms use http protocol
       EDXAPP_LMS_NGINX_PORT: '80'
-    - oauth_client_setup
+    - role: oauth_client_setup
+      CREDENTIALS_DOMAIN: 'localhost'
+      DISCOVERY_URL_ROOT: 'http://localhost:{{ DISCOVERY_NGINX_PORT }}'
     - edx_ansible
     - postfix_queue
+    - demo
