@@ -25,7 +25,7 @@
     serial_count: 1
     CLUSTER_NAME: 'edxapp'
     ENABLE_DEMO: true
-    STATEFUL_HOST: '54.255.253.199'
+    STATEFUL_HOST: '54.251.160.241'
     EDXAPP_HOST: '54.169.92.174'
     APP_HOST: '54.169.92.174'
     migrate_db: "yes"
@@ -85,11 +85,11 @@
      nginx_extra_configs: "{{ NGINX_EDXAPP_EXTRA_CONFIGS }}"
      nginx_redirects: "{{ NGINX_EDXAPP_CUSTOM_REDIRECTS }}"
      nginx_skip_enable_sites: "{{ EDXAPP_NGINX_SKIP_ENABLE_SITES }}"
-   - role: lt_themes
-     tags: ['never', 'assets']
    - role: edxapp
      celery_worker: True
    - role: edxapp
+   - role: lt_themes
+     tags: ['never', 'assets']
    - role: demo
      when: ENABLE_DEMO is defined and ENABLE_DEMO
    - role: devstack_sqlite_fix

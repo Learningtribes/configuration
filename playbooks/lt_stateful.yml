@@ -13,8 +13,12 @@
   become: True
   gather_facts: True
   vars:
-    MYSQL_BIND_ADDRESS: "0.0.0.0"
+#    MYSQL_BIND_ADDRESS: "0.0.0.0"
     MYSQL_SETUP_ALLOWED_HOST: '%'
+    MYSQL_SETUP_LOGIN_HOST: ""
+    MYSQL_SETUP_LOGIN_USER: ""
+    MYSQL_SETUP_LOGIN_PASSWORD: ""
+
 #    rabbitmq_ip: "{{ groups['datastores'][0] }}"
   # memcache need to bind to 0.0.0.0
   vars_files:
@@ -39,3 +43,4 @@
     - role: oraclejdk
     - role: elasticsearch
     - role: mysql_setup
+    - role: postfix_queue
