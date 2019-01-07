@@ -25,6 +25,7 @@
     - { path: "{{ edxapp_app_dir }}/.ssh" }
     - { path: "{{ edxapp_venvs_dir }}" }
     - { path: "{{ edxapp_theme_dir }}" }
+    - { path: "{{ edxapp_app_dir }}/themes" }
     - { path: "{{ edxapp_staticfile_dir }}" }
     - { path: "{{ edxapp_course_static_dir }}" }
     - { path: "{{ edxapp_course_data_dir }}" }
