@@ -43,4 +43,4 @@
     - role: oraclejdk
     - role: elasticsearch
     - role: mysql_setup
-    - role: postfix_queue
+#    - role: postfix_queue

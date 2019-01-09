@@ -1,7 +1,8 @@
 ---
 mysql_setup_debian_pkgs:
   - postfix
-  - libjpeg-dev
+#  - libjpeg-dev
+  - libmysqlclient-dev
 
 MYSQL_SETUP_LOGIN_HOST: localhost
 MYSQL_SETUP_LOGIN_PASSWORD: null

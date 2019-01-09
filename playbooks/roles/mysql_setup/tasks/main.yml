@@ -7,7 +7,11 @@
     install_recommends: yes
     state: present
   with_items: "{{ mysql_setup_debian_pkgs }}"
-  when: MYSQL_SETUP_LOGIN_HOST == "localhost"
+#  when: MYSQL_SETUP_LOGIN_HOST == "localhost"
+
+- name: Install mysql-python
+  pip:
+    name: mysql-python
 
 - name: create databases
   mysql_db:
