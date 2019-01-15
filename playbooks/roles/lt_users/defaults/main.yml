@@ -1,0 +1,4 @@
+---
+LT_OPS_USERS:
+  - name: 'somename'
+    public_key: 'somekey'

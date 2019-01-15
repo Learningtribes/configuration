@@ -1,0 +1,18 @@
+---
+
+- name: bootstrap python
+  hosts: all
+  become: True
+  gather_facts: False
+  roles:
+    - python
+
+- name: Configure users
+  hosts: all
+  become: True
+  vars:
+    LT_OPS_USERS:
+      - name: example
+        public_key: "ssh-rsa somekey some@some"
+  roles:
+    - lt_users
