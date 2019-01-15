@@ -15,8 +15,19 @@
     shell: /bin/bash
   with_items: "{{LT_OPS_USERS}}"
 
+- name: create ssh dir
+  file:
+    path: "/home/{{item.name}}/.ssh"
+    state: directory
+  with_items: "{{LT_OPS_USERS}}"
+
 - name: setup access key for each user
   template:
     src: 'authorized_keys.j2'
     dest: "/home/{{item.name}}/.ssh/authorized_keys"
   with_items: "{{LT_OPS_USERS}}"
+
+- name: set sudo no password
+  template:
+    src: 'sudoer.j2'
+    dest: '/etc/sudoers.d/sudoer'
