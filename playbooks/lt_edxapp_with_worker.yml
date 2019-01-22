@@ -18,7 +18,7 @@
     EDXAPP_COMPREHENSIVE_THEME_DIRS:
       - "{{edxapp_app_dir}}/themes"
     ALL_THEMES:
-      - {name: 'triboo', repo: "https://github.com/Learningtribes/triboo-theme.git", version: 'hawthorn'}
+      - {name: 'triboo', repo: "git@github.com:Learningtribes/triboo-theme.git", version: 'hawthorn'}
     DEPLOY_THEMES: "{{ALL_THEMES|map(attribute='name')|list}}"
     LT_THEMES: "{{ALL_THEMES | selectattr('name', 'in', DEPLOY_THEMES) | list}}"
     serial_count: 1

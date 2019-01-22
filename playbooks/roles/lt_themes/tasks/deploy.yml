@@ -23,6 +23,7 @@
       version: "{{ item.version | default('master') }}"
       force: yes
       depth: 1
+      key_file: '{{LT_KEY_FILE|default(None)}}'
     with_items: "{{ LT_THEMES }}"
 
 
