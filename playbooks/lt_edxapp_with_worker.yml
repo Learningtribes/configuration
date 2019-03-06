@@ -58,7 +58,9 @@
     EDXAPP_JOURNALS_API_URL: "https://journals-{{ EDXAPP_LMS_BASE }}/api/v1/"
     EDXAPP_EDXNOTES_PUBLIC_API: "http://localhost:18120/api/v1"
     EDXAPP_EDXNOTES_INTERNAL_API: "http://localhost:18120/api/v1"
-
+    EDXAPP_VIDEO_UPLOAD_PIPELINE:
+      BUCKET: 'lt-stage-default'
+      ROOT_PATH: 'ingest/'
     # git
     edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
     edx_platform_version: master

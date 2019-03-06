@@ -15,6 +15,9 @@ dependencies:
     video_pipeline_base_service_name: '{{ veda_web_frontend_service_name }}'
     video_pipeline_base_config_extra: '{{ veda_web_frontend_config_extra }}'
   - role: edx_django_service
+    video_pipeline_base_service_name: '{{ veda_web_frontend_service_name }}'
+    video_pipeline_base_config_extra: '{{ veda_web_frontend_config_extra }}'
+    edx_django_service_git_path: "{{ COMMON_GIT_PATH }}"
     edx_django_service_repo: '{{ VEDA_WEB_FRONTEND_REPO }}'
     edx_django_service_version: '{{ VEDA_WEB_FRONTEND_VERSION }}'
     edx_django_service_name: '{{ veda_web_frontend_service_name }}'

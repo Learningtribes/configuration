@@ -1,2 +1,7 @@
 [Boto]
 http_socket_timeout = 3
+
+[Credentials]
+{% for item in AWS_CREDENTIALS %}
+{{ item.key }} = {{ item.value }}
+{% endfor %}

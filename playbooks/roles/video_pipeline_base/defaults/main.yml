@@ -53,6 +53,7 @@ VIDEO_PIPELINE_BASE_AWS_VIDEO_TRANSCRIPTS:
   BUCKET: "SET-ME-PLEASE"
   ROOT_PATH: "video-transcripts/"
 
+VIDEO_PIPELINE_BASE_CELERY_BROKER: "amqp://veda:veda@localhost:5672/"
 VIDEO_PIPELINE_BASE_EDX_CLOUDFRONT_PREFIX: "SET-ME-PLEASE"
 VIDEO_PIPELINE_BASE_EDX_S3_ENDPOINT_BUCKET: "SET-ME-PLEASE"
 VIDEO_PIPELINE_BASE_VEDA_S3_UPLOAD_BUCKET: "SET-ME-PLEASE"
@@ -102,6 +103,8 @@ video_pipeline_base_config_default:
 
   SECRET_KEY: "{{ VIDEO_PIPELINE_BASE_SECRET_KEY }}"
 
+  celery_broker: "{{ VIDEO_PIPELINE_BASE_CELERY_BROKER | default('') }}"
+  environment: production
   # django staticfile settings
   STATIC_ROOT: "{{ COMMON_DATA_DIR }}/{{ video_pipeline_base_service_name }}/staticfiles"
 
@@ -191,7 +194,7 @@ video_pipeline_base_config_default:
   sg_script_key: "{{ VIDEO_PIPELINE_BASE_SG_SCRIPT_KEY }}"
 
   lms_base_url: "{{ video_pipeline_base_val_base_url }}"
-  instance_prefix: "{{ ansible_ec2_public_ipv4 }}"
+  instance_prefix: ""
 
 video_pipeline_base_config_extra: {}
 VIDEO_PIPELINE_BASE_CONFIG: '{{ video_pipeline_base_config_default | combine(video_pipeline_base_config_extra) }}'

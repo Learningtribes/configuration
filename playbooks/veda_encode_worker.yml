@@ -1,9 +1,35 @@
 - name: Deploy edX VEDA Encode Worker
   hosts: all
   become: True
+  become_user: root
   gather_facts: True
+  vars:
+    VIDEO_PIPELINE_BASE_CELERY_BROKER: "amqp://veda:{{ VIDEO_PIPELINE_BASE_RABBITMQ_PASS }}@{{ VIDEO_PIPELINE_BASE_RABBITMQ_BROKER }}:5672/"
+    VIDEO_PIPELINE_BASE_MYSQL_PASSWORD: 'password'
+    VIDEO_PIPELINE_BASE_DEFAULT_DB_NAME: 'veda'
+    VIDEO_PIPELINE_BASE_MYSQL_HOST: SET_ME_PLEASE
+    VIDEO_PIPELINE_BASE_RABBITMQ_USER: veda
+    COMMON_GIT_PATH: Learningtribes
+    VEDA_ENCODE_WORKER_VERSION: hawthorn
+    VIDEO_PIPELINE_BASE_EDX_S3_INGEST:
+      BUCKET: "lt-stage-default"
+      ROOT_PATH: "ingest/"
+    VIDEO_PIPELINE_BASE_AWS_VIDEO_IMAGES:
+      BUCKET: "lt-stage-default"
+      ROOT_PATH: "video-images/"
+    VIDEO_PIPELINE_BASE_AWS_VIDEO_TRANSCRIPTS:
+      BUCKET: "lt-stage-default"
+      ROOT_PATH: "video-transcripts/"
+    VIDEO_PIPELINE_BASE_EDX_S3_ENDPOINT_BUCKET: 'lt-stage-default'
+    VIDEO_PIPELINE_BASE_EDX_CLOUDFRONT_PREFIX: None
+    VIDEO_PIPELINE_BASE_VEDA_S3_UPLOAD_BUCKET: 'lt-veda-default'
+    VIDEO_PIPELINE_BASE_VEDA_S3_HOTSTORE_BUCKET: 'lt-veda-default'
+    VIDEO_PIPELINE_BASE_VEDA_DELIVERABLE_BUCKET: 'lt-veda-default'
+    VIDEO_PIPELINE_BASE_LMS_BASE_URL: "http://54.251.160.241"
+    VIDEO_PIPELINE_BASE_SOCIAL_AUTH_EDX_OIDC_KEY: "89d85fb47ae6f00fb527"
+    VIDEO_PIPELINE_BASE_SOCIAL_AUTH_EDX_OIDC_SECRET: "0af9306906b6150c6c7ddeadfeddb3e979e4c095"
+    VIDEO_PIPELINE_BASE_VAL_PASSWORD: veda_service_user
+    VIDEO_PIPELINE_BASE_VAL_USERNAME: veda_service_user
   roles:
     - aws
     - veda_encode_worker
-    - role: splunkforwarder
-      when: COMMON_ENABLE_SPLUNKFORWARDER

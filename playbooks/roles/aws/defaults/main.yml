@@ -44,3 +44,4 @@ aws_debian_pkgs:
   - python-setuptools
 
 aws_redhat_pkgs: []
+AWS_CREDENTIALS: []

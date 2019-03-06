@@ -13,13 +13,13 @@
 dependencies:
   - common
   - supervisor
-  - veda_ffmpeg
-  - role: video_pipeline_base
-    video_pipeline_base_service_name: '{{ veda_pipeline_worker_service_name }}'
-    video_pipeline_base_config_extra: '{{ veda_pipeline_worker_config_extra }}'
+#  - veda_ffmpeg
   - role: edx_service
     edx_service_name: "{{ veda_pipeline_worker_service_name }}"
     edx_service_config: "{{ veda_pipeline_worker_service_config }}"
     edx_service_repos: "{{ VEDA_PIPELINE_WORKER_REPOS }}"
     edx_service_user: "{{ veda_pipeline_worker_user }}"
     edx_service_home: "{{ veda_pipeline_worker_home }}"
+  - role: video_pipeline_base
+    video_pipeline_base_service_name: '{{ veda_pipeline_worker_service_name }}'
+    video_pipeline_base_config_extra: '{{ veda_pipeline_worker_config_extra }}'
