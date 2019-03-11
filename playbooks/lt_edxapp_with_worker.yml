@@ -129,7 +129,7 @@
      nginx_redirects: "{{ NGINX_EDXAPP_CUSTOM_REDIRECTS }}"
      nginx_skip_enable_sites: "{{ EDXAPP_NGINX_SKIP_ENABLE_SITES }}"
    - role: lt_themes
-     tags: ['never', 'assets']
+     tags: ['never', 'assets', 'deploy']
    - role: edxapp
      celery_worker: True
    - role: edxapp
