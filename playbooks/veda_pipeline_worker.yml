@@ -8,7 +8,6 @@
     VIDEO_PIPELINE_BASE_DEFAULT_DB_NAME: 'veda'
     VIDEO_PIPELINE_BASE_MYSQL_HOST: SET_ME_PLEASE
     VIDEO_PIPELINE_BASE_RABBITMQ_USER: veda
-    COMMON_GIT_PATH: Learningtribes
     VEDA_PIPELINE_WORKER_VERSION: hawthorn
     VIDEO_PIPELINE_BASE_EDX_S3_INGEST:
       BUCKET: "lt-stage-default"
@@ -31,4 +30,5 @@
     VIDEO_PIPELINE_BASE_VAL_USERNAME: veda_service_user
   roles:
     - aws
-    - veda_pipeline_worker
+    - role: veda_pipeline_worker
+      COMMON_GIT_PATH: Learningtribes

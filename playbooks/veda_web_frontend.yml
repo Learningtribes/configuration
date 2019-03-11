@@ -8,7 +8,6 @@
     VIDEO_PIPELINE_BASE_DEFAULT_DB_NAME: 'veda'
     VIDEO_PIPELINE_BASE_MYSQL_HOST: SET_ME_PLEASE
     VIDEO_PIPELINE_BASE_RABBITMQ_USER: veda
-    COMMON_GIT_PATH: Learningtribes
     VEDA_WEB_FRONTEND_VERSION: hawthorn
 
   roles:
@@ -17,4 +16,6 @@
       nginx_default_sites:
         - veda_web_frontend
     - role: veda_web_frontend
+      COMMON_GIT_PATH: Learningtribes
+
     # TODO! Add new relic instrumentation once all the other pieces of video pipeline are in place.
