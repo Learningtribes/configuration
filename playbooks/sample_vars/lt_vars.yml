@@ -1,15 +1,15 @@
 ---
+LT_KEY_FILE: /edx/app/edxapp/.ssh/id_rsa
 
 ### hosts
+CLIENT_NAME: "stage"
 MAINAPP_HOST: ""
 OTHERSAPP_HOST: ""
 STATEFUL_HOST: ""
 MYSQL_HOST: ""
 
 migrate_db: "yes"
-AWS_ACCESS_KEY_ID: ""
-AWS_SECRET_ACCESS_KEY: ""
-DEPLOY_ENVIRONMENT: "stage"
+DEPLOY_ENVIRONMENT: "{{ CLIENT_NAME }}"
 
 MYSQL_SETUP_LOGIN_HOST: ""
 MYSQL_SETUP_LOGIN_USER: 'ltdbadmin'
@@ -20,8 +20,9 @@ COMMON_OAUTH_BASE_URL: 'http://{{EDXAPP_HOST}}'
 ### --------------------- EDXAPP & WORKER --------------------------------------
 
 ## MAIN VARS
-CMS_HOSTNAME: 'studio-stage-hawthorn.learning-tribes.com.cn'
-CLUSTER_NAME: 'edxapp'
+CMS_HOSTNAME: ''
+CLUSTER_NAME: '{{ CLIENT_NAME }}'
+EDXAPP_HOST: "{{ MAINAPP_HOST }}"
 ENABLE_DEMO: true
 edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
 edx_platform_version: master
@@ -139,6 +140,7 @@ VIDEO_PIPELINE_BASE_MYSQL_HOST: "{{ MYSQL_HOST }}"
 EDXAPP_VEDA_SERVICE_API_URL: "http://{{ OTHERSAPP_HOST }}:18555/api/"
 
 ## NEEDED SECRET AND PASSWORD
+VEDA_CELERY_PASSWORD: ''
 VIDEO_PIPELINE_BASE_RABBITMQ_PASS: ''
 VIDEO_PIPELINE_BASE_MYSQL_PASSWORD: ''
 

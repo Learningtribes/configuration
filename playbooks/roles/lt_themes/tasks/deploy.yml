@@ -17,6 +17,7 @@
 
 - block:
   - name: Download themes
+    become_user: "{{ edxapp_user }}"
     git:
       repo: "{{ item.repo }}"
       dest: "{{ EDXAPP_COMPREHENSIVE_THEME_DIRS.0 }}/{{ item.name }}"

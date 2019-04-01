@@ -1,11 +1,12 @@
 ---
+#
+#- name: bootstrap python
+#  hosts: all
+#  become: True
+#  gather_facts: False
+#  roles:
+#    - python
 
-- name: bootstrap python
-  hosts: all
-  become: True
-  gather_facts: False
-  roles:
-    - python
 
 # TODO manually config mysql_bind and memcache bind, postfix mynetwork,
 - name: Configure instance(s)
@@ -42,5 +43,5 @@
     - role: rabbitmq
     - role: oraclejdk
     - role: elasticsearch
-    - role: mysql_setup
+    - role: edxlocal
 #    - role: postfix_queue

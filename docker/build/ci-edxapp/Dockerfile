@@ -7,7 +7,7 @@
 # This allows the dockerfile to update /edx/app/edx_ansible/edx_ansible
 # with the currently checked-out configuration repo.
 
-FROM ltdps/ci-xenial-common:latest
+FROM ltdps/xenial-common:latest
 MAINTAINER ltdps
 USER root
 CMD ["/edx/app/supervisor/venvs/supervisor/bin/supervisord", "-n", "--configuration", "/edx/app/supervisor/supervisord.conf"]
