@@ -111,8 +111,8 @@
       STORAGE_CLASS: 'storages.backends.s3boto.S3BotoStorage'
 
     # nginx proxy s3 xblock
-    EDXAPP_NGINX_LMS_XBLOCK_S3_HOST: 's3-ap-southeast-1.amazonaws.com' 
     EDXAPP_NGINX_LMS_XBLOCK_S3_BUCKET: 'lt-stage-public'
+    EDXAPP_NGINX_LMS_XBLOCK_S3_HOST: 's3.amazonaws.com'
 
 
   serial: "{{ serial_count }}"
