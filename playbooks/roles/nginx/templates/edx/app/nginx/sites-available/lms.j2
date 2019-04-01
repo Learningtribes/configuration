@@ -277,6 +277,12 @@ location ~ ^{{ EDXAPP_MEDIA_URL }}/(?P<file>.*) {
     expires {{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}s;
 }
 
+location ^~ /xblock/ {
+    proxy_set_header Host      {{ EDXAPP_NGINX_LMS_XBLOCK_S3_HOST }};
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass       https://{{ EDXAPP_NGINX_LMS_XBLOCK_S3_HOST}}/{{ EDXAPP_NGINX_LMS_XBLOCK_S3_BUCKET }}/xblock/;
+}
+
 {% if NGINX_DJANGO_ADMIN_ACCESS_CIDRS and EDXAPP_ENABLE_DJANGO_ADMIN_RESTRICTION %}
   location /admin {
     {% for cidr in NGINX_DJANGO_ADMIN_ACCESS_CIDRS %}
