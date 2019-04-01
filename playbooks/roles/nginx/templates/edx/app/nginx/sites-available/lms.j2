@@ -65,13 +65,13 @@ server {
 
   {% if NGINX_EDXAPP_ENABLE_S3_MAINTENANCE %}
 
-  # Do not include a 502 error in NGINX_ERROR_PAGES when 
+  # Do not include a 502 error in NGINX_ERROR_PAGES when
   # NGINX_EDXAPP_ENABLE_MAINTENANCE is enabled.
 
   error_page 502 @maintenance;
 
     {% include "s3_maintenance.j2" %}
-  
+
   {% endif %}
 
   # error pages
@@ -98,7 +98,7 @@ error_page {{ k }} {{ v }};
 
 
   {% include "handle-tls-redirect-and-ip-disclosure.j2" %}
-  
+
   access_log {{ nginx_log_dir }}/access.log {{ NGINX_LOG_FORMAT_NAME }};
   error_log {{ nginx_log_dir }}/error.log error;
 
@@ -275,6 +275,12 @@ location ~ ^{{ EDXAPP_MEDIA_URL }}/(?P<file>.*) {
     root {{ edxapp_media_dir }};
     try_files /$file =404;
     expires {{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}s;
+}
+
+location ^~ /xblock/ {
+    proxy_set_header Host      {{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass       https://{{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com/{{ EDXAPP_DJFS['prefix'] }}/;
 }
 
 {% if NGINX_DJANGO_ADMIN_ACCESS_CIDRS and EDXAPP_ENABLE_DJANGO_ADMIN_RESTRICTION %}
