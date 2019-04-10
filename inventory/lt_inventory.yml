@@ -1,0 +1,25 @@
+all:
+  children:
+    stage:
+      children:
+        st_stateful:
+          hosts:
+            10.0.1.98
+        st_client:
+          hosts:
+            10.0.1.56
+    production:
+      children:
+        us:
+          children:
+            us_stateful:
+            client_us:
+        fr:
+          children:
+            fr_stateful:
+            client_fr:
+        cn:
+          children:
+            cn_stateful:
+            client_fr:
+

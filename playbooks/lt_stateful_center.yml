@@ -1,0 +1,22 @@
+---
+# make sure python2 exist.
+# by default, on ubuntu 16.04 server, python2 is not installed
+- name: bootstrap python
+  hosts: all
+  become: True
+  gather_facts: False
+  roles:
+    - python
+
+# TODO manually config mysql_bind
+- name: Configure instance(s)
+  hosts: all
+  become: True
+  gather_facts: True
+  roles:
+    - role: mysql
+    - role: mongo
+      MONGO_BIND_IP: 0.0.0.0
+    - role: rabbitmq
+    - role: elasticsearch
+    # memcache will go on application server
