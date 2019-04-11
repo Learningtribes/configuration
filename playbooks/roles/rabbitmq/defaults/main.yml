@@ -9,7 +9,7 @@
 #
 #
 # Defaults for role rabbitmq
-# 
+#
 
 rabbitmq_app_dir: "{{ COMMON_APP_DIR }}/rabbitmq"
 rabbitmq_data_dir: "{{ COMMON_DATA_DIR }}/rabbitmq"
@@ -18,21 +18,12 @@ rabbitmq_cfg_dir: "{{ COMMON_CFG_DIR }}/rabbitmq"
 
 rabbitmq_user: "rabbitmq"
 rabbitmq_group: "rabbitmq"
-
+RABBIT_ADMIN_USER: admin
 RABBIT_ADMIN_PASSWORD: 'the example admin password'
 
 # Environment specific vars
 RABBIT_ERLANG_COOKIE: 'DEFAULT_COOKIE'
-RABBIT_USERS:
-  - name: 'admin'
-    password: "{{ RABBIT_ADMIN_PASSWORD }}"
-  - name: 'edx'
-    password: 'edx'
-  - name: 'celery'
-    password: 'celery'
 
-RABBITMQ_VHOSTS:
-  - '/'
 
 RABBITMQ_CLUSTERED_HOSTS: []
 # This is the default for rabbit, but allows overriding if
@@ -69,7 +60,6 @@ rabbitmq_ip: "{{ ansible_default_ipv4.address }}"
 # Structure for auth config file.
 rabbitmq_auth_config:
   erlang_cookie: "{{ RABBIT_ERLANG_COOKIE }}"
-  admins: "{{ RABBIT_USERS }}"
 
 rabbitmq_plugins:
   - rabbitmq_management

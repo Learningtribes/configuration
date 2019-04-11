@@ -14,4 +14,4 @@
   become: True
   gather_facts: True
   roles:
-    - role: stateful_setup
+    - role: tenant_setup

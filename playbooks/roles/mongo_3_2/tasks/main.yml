@@ -308,26 +308,6 @@
     - "manage:db"
     - "manage:db-replication"
 
-- name: create mongodb users in a replica set
-  mongodb_user:
-    database: "{{ item.database }}"
-    login_database: 'admin'
-    login_user: "{{ MONGO_ADMIN_USER }}"
-    login_password: "{{ MONGO_ADMIN_PASSWORD }}"
-    name: "{{ item.user }}"
-    password: "{{ item.password }}"
-    roles: "{{ item.roles }}"
-    state: present
-    replica_set: "{{ MONGO_REPL_SET }}"
-  with_items: "{{ MONGO_USERS }}"
-  run_once: true
-  when: mongo_configure_replica_set
-  tags:
-    - "manage"
-    - "manage:db"
-    - "manage:db-users"
-    - "manage:db-replication"
-
 - name: ensure mongo starts at boot time
   service:
     name: mongod

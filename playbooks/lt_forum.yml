@@ -21,7 +21,7 @@
     APP_HOST: '54.169.92.174'
   serial: "{{ serial_count }}"
   roles:
-    - aws
+#    - aws
     - role: nginx
       nginx_sites:
       - forum
