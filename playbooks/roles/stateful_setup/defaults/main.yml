@@ -1,10 +1,13 @@
 ---
 
-
 STATEFUL_MYSQL_LOGIN_HOST: localhost
 STATEFUL_MYSQL_LOGIN_PASSWORD: "{{ COMMON_MYSQL_ADMIN_PASS }}"
 STATEFUL_MYSQL_LOGIN_USER: "{{ COMMON_MYSQL_ADMIN_USER }}"
 STATEFUL_MYSQL_ALLOWED_HOST: localhost
+
+STATEFUL_MYSQL_USER: "{{ TENANT_NAME }}_admin"
+STATEFUL_MYSQL_PASS: "{{ TENANT_NAME }}_password"
+
 
 mysql_setup_databases:
   - "{{ ECOMMERCE_DATABASE_NAME | default(None) }}"
@@ -24,11 +27,6 @@ mysql_setup_database_users:
       pass: "{{ ECOMMERCE_DATABASE_PASSWORD | default(None) }}"
     }
   - {
-      db: "{{ INSIGHTS_DATABASE_NAME | default(None) }}",
-      user: "{{ INSIGHTS_DATABASE_USER | default(None) }}",
-      pass: "{{ INSIGHTS_DATABASE_PASSWORD | default(None) }}"
-    }
-  - {
       db: "{{ XQUEUE_MYSQL_DB_NAME | default(None) }}",
       user: "{{ XQUEUE_MYSQL_USER | default(None) }}",
       pass: "{{ XQUEUE_MYSQL_PASSWORD | default(None) }}"
@@ -42,16 +40,6 @@ mysql_setup_database_users:
       db: "{{ EDXAPP_MYSQL_CSMH_DB_NAME | default(None) }}",
       user: "{{ EDXAPP_MYSQL_CSMH_USER | default(None) }}",
       pass: "{{ EDXAPP_MYSQL_CSMH_PASSWORD | default(None) }}"
-    }
-  - {
-      db: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_NAME | default(None) }}",
-      user: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_USER | default(None) }}",
-      pass: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_PASSWORD | default(None) }}"
-    }
-  - {
-      db: "{{ HIVE_METASTORE_DATABASE_NAME | default(None) }}",
-      user: "{{ HIVE_METASTORE_DATABASE_USER | default(None) }}",
-      pass: "{{ HIVE_METASTORE_DATABASE_PASSWORD | default(None) }}"
     }
   - {
       db: "{{ CREDENTIALS_DEFAULT_DB_NAME | default(None) }}",

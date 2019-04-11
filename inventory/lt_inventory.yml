@@ -4,10 +4,10 @@ all:
       children:
         st_stateful:
           hosts:
-            192.168.50.192:
+            10.0.1.98:
         st_tenant:
           hosts:
-            192.168.50.219:
+            10.0.1.56:
     production:
       children:
         us:

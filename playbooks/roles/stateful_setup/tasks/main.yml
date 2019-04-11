@@ -1,6 +1,12 @@
 # Installs packages to run edx locally on a single instance
 #
 ---
+- name: 'Check required variables'
+  assert:
+    that: "{{ item }} is defined"
+    msg: "define '{{ item }}' before executing this role"
+  with_items:
+    - TENANT_NAME
 
 - name: Install python-mysqldb
   apt:
@@ -18,36 +24,24 @@
   when: item != None and item != ''
   with_items: "{{ mysql_setup_databases }}"
 
-#- name: create database users
-#  mysql_user:
-#    login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
-#    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
-#    login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
-#    login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
-#    name: "{{ item.user }}"
-#    password: "{{ item.pass }}"
-#    priv: "{{ item.db }}.*:ALL"
-#    append_privs: yes
-#  when: item.db != None and item.db != ''
-#  with_items: "{{ mysql_setup_database_users }}"
-#
-#- name: create mongo database
-#
-#- name: create mongo user
+- name: create database users
+  mysql_user:
+    login_host: "{{ STATEFUL_MYSQL_LOGIN_HOST }}"
+    login_password: "{{ STATEFUL_MYSQL_LOGIN_PASSWORD }}"
+    login_user: "{{ STATEFUL_MYSQL_LOGIN_USER }}"
+    host: "%"
+    name: "{{ STATEFUL_MYSQL_USER }}"
+    password: "{{ STATEFUL_MYSQL_PASS }}"
+    priv: "{{ item }}.*:ALL"
+    append_privs: yes
+  when: item.db != None and item.db != ''
+  with_items: "{{ mysql_setup_databases }}"
+
+- name: create mongo user and database
+
+
 #
 #- name: create rmq vhost
 #
 #- name: create rmq user
-#
-#
-#- name: setup the edx-notes-api db user
-#  mysql_user:
-#    host: "{{ MYSQL_SETUP_ALLOWED_HOST }}"
-#    login_host: "{{ MYSQL_SETUP_LOGIN_HOST }}"
-#    login_password: "{{ MYSQL_SETUP_LOGIN_PASSWORD }}"
-#    login_user: "{{ MYSQL_SETUP_LOGIN_USER }}"
-#    name: "{{ EDX_NOTES_API_MYSQL_DB_USER }}"
-#    password: "{{ EDX_NOTES_API_MYSQL_DB_PASS }}"
-#    priv: "{{ EDX_NOTES_API_MYSQL_DB_NAME }}.*:SELECT,INSERT,UPDATE,DELETE"
-#  when: EDX_NOTES_API_MYSQL_DB_USER is defined
 #
