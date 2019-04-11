@@ -1,4 +1,0 @@
----
-dependencies:
-  - { role: 'common', when: MYSQL_SETUP_LOGIN_HOST == "localhost" }
-  - { role: 'mysql', when: MYSQL_SETUP_LOGIN_HOST == "localhost" }

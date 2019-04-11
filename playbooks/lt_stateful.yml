@@ -14,7 +14,7 @@
   become: True
   gather_facts: True
   vars:
-#    MYSQL_BIND_ADDRESS: "0.0.0.0"
+#    MYSQL_BzIND_ADDRESS: "0.0.0.0"
     MYSQL_SETUP_ALLOWED_HOST: '%'
     MYSQL_SETUP_LOGIN_HOST: ""
     MYSQL_SETUP_LOGIN_USER: ""
