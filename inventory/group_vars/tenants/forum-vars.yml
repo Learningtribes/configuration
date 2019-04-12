@@ -1,8 +1,8 @@
 FORUM_USE_TCP: false
 FORUM_MONGO_HOSTS:
   - "{{ STATEFUL_HOST }}"
-FORUM_ELASTICSEARCH_HOST: "{{ STATEFUL_HOST }}"
-rbenv_dir: "{{ forum_app_dir }}"
+FORUM_ELASTICSEARCH_HOST: "{{ APP_HOST }}"
+# rbenv_dir: "{{ forum_app_dir }}"
 
 ## PASSWORD
 FORUM_MONGO_USER: "{{ TENANT_MONGO_USER }}"

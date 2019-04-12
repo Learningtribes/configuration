@@ -18,5 +18,5 @@
     - role: mongo
       MONGO_BIND_IP: 0.0.0.0
     - role: rabbitmq
-    - role: elasticsearch
+#    - role: elasticsearch
     # memcache will go on application server

@@ -5,6 +5,7 @@ edx_platform_version: master
 EDXAPP_LMS_BASE_SCHEME: http
 EDXAPP_SITE_NAME: "{{ APP_HOST }}"
 EDXAPP_CMS_SITE_NAME: "{{ APP_HOST }}"
+EDXAPP_LMS_SSL_NGINX_PORT: 443
 
 
 EDXAPP_COMMENTS_SERVICE_KEY: '{{ FORUM_API_KEY }}'
@@ -39,14 +40,14 @@ NGINX_SET_X_FORWARDED_HEADERS: true
 
 
 ## THEMES
-EDXAPP_ENABLE_COMPREHENSIVE_THEMING: yes
-DEFAULT_SITE_THEME: sample
-EDXAPP_COMPREHENSIVE_THEME_DIRS:
-  - "{{edxapp_app_dir}}/themes"
-ALL_THEMES:
-  - {name: 'triboo', repo: "git@github.com:Learningtribes/triboo-theme.git", version: 'hawthorn'}
-DEPLOY_THEMES: "{{ALL_THEMES|map(attribute='name')|list}}"
-LT_THEMES: "{{ALL_THEMES | selectattr('name', 'in', DEPLOY_THEMES) | list}}"
+#EDXAPP_ENABLE_COMPREHENSIVE_THEMING: yes
+#DEFAULT_SITE_THEME: sample
+#EDXAPP_COMPREHENSIVE_THEME_DIRS:
+#  - "{{edxapp_app_dir}}/themes"
+#ALL_THEMES:
+#  - {name: 'triboo', repo: "git@github.com:Learningtribes/triboo-theme.git", version: 'hawthorn'}
+#DEPLOY_THEMES: "{{ALL_THEMES|map(attribute='name')|list}}"
+#LT_THEMES: "{{ALL_THEMES | selectattr('name', 'in', DEPLOY_THEMES) | list}}"
 
 
 ## stateful link
@@ -55,7 +56,7 @@ EDXAPP_MYSQL_HOST: "{{MYSQL_HOST}}"
 EDXAPP_MONGO_HOSTS:
 - "{{STATEFUL_HOST}}"
 EDXAPP_RABBIT_HOSTNAME: "{{STATEFUL_HOST}}"
-EDXAPP_SEARCH_HOST: "{{STATEFUL_HOST}}"
+EDXAPP_SEARCH_HOST: "{{ APP_HOST }}"
 EDXAPP_EMAIL_HOST: "{{STATEFUL_HOST}}"
 EDXAPP_XQUEUE_URL: 'http://localhost:18040'
 
@@ -68,8 +69,8 @@ EDXAPP_ECOMMERCE_API_URL: "http://{{APP_HOST}}:18130/api/v2"
 EDXAPP_COURSE_CATALOG_API_URL: "http://localhost:8008/api/v1"
 EDXAPP_CREDENTIALS_INTERNAL_SERVICE_URL: "http://localhost:8005"
 EDXAPP_CREDENTIALS_PUBLIC_SERVICE_URL: "http://localhost:8005"
-EDXAPP_JOURNALS_URL_ROOT: "https://journals-{{ EDXAPP_LMS_BASE }}"
-EDXAPP_JOURNALS_API_URL: "https://journals-{{ EDXAPP_LMS_BASE }}/api/v1/"
+#EDXAPP_JOURNALS_URL_ROOT: "https://journals-{{ EDXAPP_LMS_BASE }}"
+#EDXAPP_JOURNALS_API_URL: "https://journals-{{ EDXAPP_LMS_BASE }}/api/v1/"
 EDXAPP_EDXNOTES_PUBLIC_API: "http://localhost:18120/api/v1"
 EDXAPP_EDXNOTES_INTERNAL_API: "http://localhost:18120/api/v1"
 
