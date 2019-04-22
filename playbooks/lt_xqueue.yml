@@ -1,0 +1,13 @@
+- name: Deploy xqueue
+  hosts: all
+  become: True
+  roles:
+    - role: aws
+      COMMON_GIT_PATH: Learningtribes
+      when: COMMON_ENABLE_AWS_ROLE
+    - role: automated
+      AUTOMATED_USERS: "{{ XQUEUE_AUTOMATED_USERS | default({}) }}"
+    - role: nginx
+      nginx_sites:
+      - xqueue
+    - xqueue
