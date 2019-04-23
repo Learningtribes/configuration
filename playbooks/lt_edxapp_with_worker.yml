@@ -33,8 +33,8 @@
    - role: memcache
    - role: edxapp
      celery_worker: True
-#   - role: lt_themes
-#     tags: ['never', 'assets']
+   - role: lt_themes
+     tags: ['never', 'assets']
    - role: edxapp
    - role: demo
      when: ENABLE_DEMO is defined and ENABLE_DEMO
