@@ -9,25 +9,14 @@
   hosts: all
   become: True
   gather_facts: True
-  vars_files:
-    - roles/edxapp/defaults/main.yml
   vars:
     rbenv_dir: "{{ forum_app_dir }}"
     serial_count: 1
-    CLUSTER_NAME: 'forum'
-    migrate_db: "yes"
-    STATEFUL_HOST: '54.255.253.199'
-    EDXAPP_HOST: '54.169.92.174'
-    APP_HOST: '54.169.92.174'
   serial: "{{ serial_count }}"
   roles:
-    - aws
+    - role: aws
+      when: COMMON_ENABLE_AWS_ROLE
     - role: nginx
       nginx_sites:
       - forum
     - role: forum
-      FORUM_USE_TCP: false
-      FORUM_MONGO_HOSTS:
-      - "{{STATEFUL_HOST}}"
-      FORUM_ELASTICSEARCH_HOST: "{{STATEFUL_HOST}}"
-

@@ -17,13 +17,14 @@
 
 - block:
   - name: Download themes
+    become_user: "{{ edxapp_user }}"
     git:
       repo: "{{ item.repo }}"
       dest: "{{ EDXAPP_COMPREHENSIVE_THEME_DIRS.0 }}/{{ item.name }}"
       version: "{{ item.version | default('master') }}"
+      accept_hostkey: yes
       force: yes
       depth: 1
-      key_file: '{{LT_KEY_FILE|default(None)}}'
     with_items: "{{ LT_THEMES }}"
 
 

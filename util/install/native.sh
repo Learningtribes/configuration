@@ -109,7 +109,7 @@ for var in ${LT_VERSION_VARS[@]}; do
 done
 
 
-# my-passwords.yml is the file made by generate-passwords.sh.
+# my-admin-passwords.yml is the file made by generate-passwords.sh.
 if [[ -f my-passwords.yml ]]; then
     EXTRA_VARS="-e@$(pwd)/my-passwords.yml $EXTRA_VARS"
 fi

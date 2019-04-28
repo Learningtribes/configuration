@@ -1,0 +1,84 @@
+# Installs packages to run edx locally on a single instance
+#
+---
+- name: 'Check required variables'
+  assert:
+    that: "{{ item }} is defined"
+    msg: "define '{{ item }}' before executing this role"
+  with_items:
+    - TENANT_NAME
+
+- name: Install requirements
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - python-mysqldb
+    - python-pymongo
+
+- name: create mysql databases
+  mysql_db:
+    login_host: "{{ TENANT_MYSQL_LOGIN_HOST }}"
+    login_password: "{{ TENANT_MYSQL_LOGIN_PASSWORD }}"
+    login_user: "{{ TENANT_MYSQL_LOGIN_USER }}"
+    db: "{{ item }}"
+    state: present
+    encoding: utf8
+  when: item != None and item != ''
+  with_items: "{{ TENANT_MYSQL_DATABASES }}"
+
+- name: create mysql user
+  mysql_user:
+    login_host: "{{ TENANT_MYSQL_LOGIN_HOST }}"
+    login_password: "{{ TENANT_MYSQL_LOGIN_PASSWORD }}"
+    login_user: "{{ TENANT_MYSQL_LOGIN_USER }}"
+    host: "%"
+    name: "{{ TENANT_MYSQL_USER }}"
+    password: "{{ TENANT_MYSQL_PASS }}"
+    priv: "{{ item }}.*:ALL"
+    append_privs: yes
+  with_items: "{{ TENANT_MYSQL_DATABASES }}"
+
+- name: create mongodb user and databases
+  mongodb_user:
+    login_database: 'admin'
+    login_user: "{{ TENANT_MONGO_LOGIN_USER }}"
+    login_password: "{{ TENANT_MONGO_LOGIN_PASSWORD }}"
+    login_host: "{{ TENANT_MONGO_LOGIN_HOST }}"
+    database: "{{ item }}"
+    name: "{{ TENANT_MONGO_USER }}"
+    password: "{{ TENANT_MONGO_PASS }}"
+    roles: readWrite
+    state: present
+  with_items: "{{ TENANT_MONGO_DATABASES }}"
+  run_once: true
+
+- name: Add vhosts
+  rabbitmq_vhost:
+    name: "{{ TENANT_RMQ_VHOST }}"
+    state: present
+
+- name: Extend permission for admin user
+  rabbitmq_user:
+    user: "{{ RABBIT_ADMIN_USER }}"
+    password: "{{ RABBIT_ADMIN_PASSWORD }}"
+    vhost: "{{ TENANT_RMQ_VHOST }}"
+    configure_priv: .*
+    tags: "administrator"
+    read_priv: .*
+    write_priv: .*
+    state: present
+
+
+- name: Add rmq user
+  rabbitmq_user:
+    user: "{{ TENANT_RMQ_USER }}"
+    password: "{{ TENANT_RMQ_PASS }}"
+    tags: "management"
+    permissions:
+      - vhost: "{{ TENANT_RMQ_VHOST }}"
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+    state: present
+

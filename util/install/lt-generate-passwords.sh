@@ -3,8 +3,8 @@
 # Read a list of Ansible variables that should have generated values, and make
 # a new file just like it, with the generated values.
 
-wget -q "https://raw.githubusercontent.com/Learningtribes/configuration/${LT_VERSION}/playbooks/sample_vars/admin-passwords.yml" -O passwords-template.yml
 
+cp playbooks/sample_vars/lt_passwords.yml passwords-template.yml
 while IFS= read -r line; do
     # Make a random string. SECRET_KEY's should be longer.
     length=35
