@@ -1,0 +1,5 @@
+STATEFUL_HOST: "{{create_ec2_db_result['instances'][0]['private_ip_address']}}"
+MYSQL_HOST: "{{rds_endpoint_fact}}"
+
+TENANT_MYSQL_LOGIN_HOST: "{{rds_endpoint_fact}}"
+TENANT_MONGO_LOGIN_HOST: "{{create_ec2_db_result['instances'][0]['private_ip_address']}}"

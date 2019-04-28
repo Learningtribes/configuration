@@ -1,0 +1,449 @@
+---
+- name: check AWS VPC
+  ec2_vpc_net_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{platform_vpc_name}}"
+  register: check_vpc_result
+# - debug:
+#     msg: "{{check_vpc_result}}"
+- set_fact:
+    vpc_id_fact: "{{check_vpc_result['vpcs'][0]['vpc_id']}}"
+  when: check_vpc_result['vpcs'][0] is defined
+- name: create AWS VPC
+  ec2_vpc_net:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    cidr_block: "{{platform_vpc_ip_block}}"
+    name: "{{platform_vpc_name}}"
+  register: create_vpc_result
+  when: check_vpc_result['vpcs'][0] is not defined
+# - debug:
+#     msg: "{{create_vpc_result}}"
+- set_fact:
+    vpc_id_fact: "{{create_vpc_result['vpc']['id']}}"
+  when: check_vpc_result['vpcs'][0] is not defined
+- name: create AWS internet gateway
+  ec2_vpc_igw:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    vpc_id: "{{create_vpc_result['vpc']['id']}}"
+    tags:
+      Name: platform gateway
+  register: create_vpc_gw_result
+  when: create_vpc_result is succeeded and create_vpc_result is not skipped
+# - debug:
+#     msg: "{{create_vpc_gw_result}}"
+- name: get AWS VPC route table ID
+  ec2_vpc_route_table_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      vpc-id: "{{create_vpc_result['vpc']['id']}}"
+  register: get_vpc_rt_id_result
+  when: create_vpc_result is succeeded and create_vpc_result is not skipped
+# - debug:
+#     msg: "{{get_vpc_rt_id_result}}"
+- name: set AWS VPC route table
+  ec2_vpc_route_table:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    vpc_id: "{{create_vpc_result['vpc']['id']}}"
+    lookup: id
+    route_table_id: "{{get_vpc_rt_id_result['route_tables'][0]['id']}}"
+    purge_routes: no
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{create_vpc_gw_result['gateway_id']}}"
+    tags:
+      Name: platform route table
+  register: set_vpc_rt_result
+  when: create_vpc_result is succeeded and create_vpc_result is not skipped
+# - debug:
+#     msg: "{{set_vpc_rt_result}}"
+- name: get AWS availability zone
+  aws_az_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+  register: get_az_result
+# - debug:
+#     msg: "{{get_az_result}}"
+- name: create AWS VPC subnet A
+  ec2_vpc_subnet:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    vpc_id: "{{create_vpc_result['vpc']['id']}}"
+    az: "{{get_az_result['availability_zones'][0]['zone_name']}}"
+    cidr: "{{platform_vpc_subnet_A_ip_block}}"
+    map_public: yes
+    tags:
+      Name: "{{platform_vpc_subnet_A_name}}"
+  register: create_vpc_subnet_result
+  when: create_vpc_result is succeeded and create_vpc_result is not skipped and get_az_result['availability_zones'][0] is defined
+- name: create AWS VPC subnet B
+  ec2_vpc_subnet:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    vpc_id: "{{create_vpc_result['vpc']['id']}}"
+    az: "{{get_az_result['availability_zones'][1]['zone_name']}}"
+    cidr: "{{platform_vpc_subnet_B_ip_block}}"
+    map_public: yes
+    tags:
+      Name: "{{platform_vpc_subnet_B_name}}"
+  when: create_vpc_result is succeeded and create_vpc_result is not skipped and get_az_result['availability_zones'][1] is defined
+- name: check AWS EC2 security group
+  ec2_group_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{platform_security_group_app_name}}"
+  register: check_sg_result
+# - debug:
+#     msg: "{{check_sg_result}}"
+- set_fact:
+    group_id_fact: "{{check_sg_result['security_groups'][0]['group_id']}}"
+  when: check_sg_result['security_groups'][0] is defined
+- name: create AWS EC2 security group
+  ec2_group:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    description: Security Group for Platform APP
+    name: Platform APP Security Group
+    tags:
+      Name: "{{platform_security_group_app_name}}"
+    vpc_id: "{{vpc_id_fact}}"
+    rules:
+      - proto: tcp
+        ports: 443
+        cidr_ip: 0.0.0.0/0
+        rule_desc: HTTPS
+      - proto: tcp
+        ports: 80
+        cidr_ip: 0.0.0.0/0
+        rule_desc: HTTP
+      - proto: tcp
+        ports: 22
+        cidr_ip: 0.0.0.0/0
+        rule_desc: SSH
+  register: create_sg_result
+  when: (check_vpc_result['vpcs'][0] is defined and check_sg_result['security_groups'][0] is not defined) or (create_vpc_result is succeeded and check_sg_result['security_groups'][0] is not defined)
+# - debug:
+#     msg: "{{create_sg_result}}"
+- set_fact:
+    group_id_fact: "{{create_sg_result['group_id']}}"
+  when: create_sg_result['group_id'] is defined
+- name: check AWS EC2 security group TWO
+  ec2_group_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{platform_security_group_db_name}}"
+  register: check_sg_result_two
+# - debug:
+#     msg: "{{check_sg_result_two}}"
+- set_fact:
+    group_two_id_fact: "{{check_sg_result_two['security_groups'][0]['group_id']}}"
+  when: check_sg_result_two['security_groups'][0] is defined
+- name: create AWS EC2 security group TWO
+  ec2_group:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    description: Security Group for Platform DB
+    name: Platform DB Security Group
+    tags:
+      Name: "{{platform_security_group_db_name}}"
+    vpc_id: "{{vpc_id_fact}}"
+    rules:
+      - proto: tcp
+        ports: 27017
+        group_id: "{{group_id_fact}}"
+        rule_desc: MongoDB
+      - proto: tcp
+        ports: 5672
+        group_id: "{{group_id_fact}}"
+        rule_desc: rabbitmq
+      - proto: tcp
+        ports: 22
+        cidr_ip: 0.0.0.0/0
+        rule_desc: SSH
+  register: create_sg_result_two
+  when: (check_vpc_result['vpcs'][0] is defined and check_sg_result_two['security_groups'][0] is not defined) or (create_vpc_result is succeeded and check_sg_result_two['security_groups'][0] is not defined)
+# - debug:
+#     msg: "{{create_sg_result_two}}"
+- set_fact:
+    group_two_id_fact: "{{create_sg_result_two['group_id']}}"
+  when: create_sg_result_two['group_id'] is defined
+- name: check AWS EC2 security group THREE
+  ec2_group_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{platform_security_group_rds_name}}"
+  register: check_sg_result_three
+# - debug:
+#     msg: "{{check_sg_result_three}}"
+- set_fact:
+    sg_id_fact: "{{check_sg_result_three['security_groups'][0]['group_id']}}"
+  when: check_sg_result_three['security_groups'][0] is defined
+- name: create AWS EC2 security group THREE
+  ec2_group:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    description: Security Group for Platform MySQL
+    name: Platform MySQL Security Group
+    tags:
+      Name: "{{platform_security_group_rds_name}}"
+    vpc_id: "{{vpc_id_fact}}"
+    rules:
+      - proto: tcp
+        ports: 3306
+        group_id: "{{group_id_fact}}"
+        rule_desc: MySQL
+      - proto: tcp
+        ports: 3306
+        group_id: "{{group_two_id_fact}}"
+        rule_desc: MySQL
+  register: create_sg_result_three
+  when: (check_vpc_result['vpcs'][0] is defined and check_sg_result_three['security_groups'][0] is not defined) or (create_vpc_result is succeeded and check_sg_result_three['security_groups'][0] is not defined)
+# - debug:
+#     msg: "{{create_sg_result_three}}"
+- set_fact:
+    sg_id_fact: "{{create_sg_result_three['group_id']}}"
+  when: create_sg_result_three['group_id'] is defined
+# - debug:
+#     msg: "{{sg_id_fact}}"
+- name: create AWS EC2 key
+  ec2_key:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    force: no
+    name: "{{default_instance_key_name}}"
+    wait: yes
+  register: create_key_result
+# - debug:
+#     msg: "{{create_key_result}}"
+- name: create region folder
+  file:
+    path: "{{local_folder_store_instance_keys}}"
+    state: directory
+    mode: 0755
+  when: create_key_result['changed']
+- name: save AWS EC2 key
+  copy:
+    content: "{{create_key_result['key']['private_key']}}"
+    dest: "{{local_folder_store_instance_keys}}/{{region_instance_key_name}}"
+    mode: 0400
+  when: create_key_result['changed']
+- name: AWS EC2 key transfer to S3
+  aws_s3:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    bucket: "{{s3_bucket_store_instance_keys}}"
+    mode: put
+    object: "/keys/{{region_instance_key_name}}"
+    src: "{{local_folder_store_instance_keys}}/{{region_instance_key_name}}"
+    permission: private
+    encrypt: yes
+  register: transfer_key_result
+  when: create_key_result['changed']
+# - debug:
+#     msg: "{{transfer_key_result}}"
+- name: check AWS VPC subnet 
+  ec2_vpc_subnet_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{item}}"
+  with_items:
+    - "{{platform_vpc_subnet_A_name}}"
+    - "{{platform_vpc_subnet_B_name}}"
+  register: check_subnet_result
+# - debug:
+#     msg: "{{check_subnet_result}}"
+- name: check AWS AMI image
+  ec2_ami_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{instance_ami_name}}"
+  register: check_image_result
+- set_fact:
+    image_id_fact: "{{check_image_result['images'][0]['image_id']}}"
+  when: check_image_result['images'][0] is defined
+# - debug:
+#     msg: "{{check_image_result}}"
+- name: get AWS AMI image ID
+  ec2_ami_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: ap-northeast-1
+    filters:
+      "tag:Name": "{{instance_ami_name}}"
+  register: get_image_result
+  when: check_image_result['images'][0] is not defined
+# - debug:
+#     msg: "{{get_image_result}}"
+#   when: check_image_result['images'][0] is not defined
+- name: copy AWS AMI image 
+  ec2_ami_copy:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    name: UBUNTU16.04-APP
+    source_region: ap-northeast-1
+    source_image_id: "{{get_image_result['images'][0]['image_id']}}"
+    tags:
+      Name: "{{instance_ami_name}}"
+    encrypted: yes
+    wait: yes
+  register: copy_ami_result
+  when: check_image_result['images'][0] is not defined
+- set_fact:
+    image_id_fact: "{{copy_ami_result['image_id']}}"
+  when: check_image_result['images'][0] is not defined
+# - debug:
+#     msg: "{{copy_ami_result}}"
+#   when: check_image_result['images'][0] is not defined
+- name: check AWS ACM
+  aws_acm_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    domain_name: "*.learning-tribes.com"
+  register: check_acm_result
+# - debug:
+#     msg: "{{check_acm_result}}"
+- name: import AWS ACM
+  shell: "aws --region {{region}} --output json acm import-certificate --certificate '{{aws_ami_certificate}}'  --private-key '{{aws_ami_private_key}}' --certificate-chain '{{aws_ami_certificate_chain}}'"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: import_acm_result
+  when: check_acm_result['certificates'][0] is not defined
+# - debug:
+#     msg: "{{import_acm_result['stdout'] | from_json}}"
+#   when: check_acm_result['certificates'][0] is not defined
+- set_fact:
+    acm_fact: "{{import_acm_result['stdout'] | from_json}}"
+  when: check_acm_result['certificates'][0] is not defined
+- set_fact:
+    acm_id_fact: "{{acm_fact['CertificateArn']}}"
+  when: check_acm_result['certificates'][0] is not defined
+# - debug:
+#     msg: "{{acm_id_fact}}"
+#   when: check_acm_result['certificates'][0] is not defined
+- name: check AWS RDS cluster
+  shell: "aws --region {{region}} --output json rds describe-db-clusters --db-cluster-identifier '{{rds_cluster_name}}'"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: check_rds_cluster
+  ignore_errors: yes
+- set_fact:
+    rds_fact: "{{check_rds_cluster['stdout'] | from_json}}"
+  when: check_rds_cluster['failed'] == false
+- set_fact:
+    rds_endpoint_fact: "{{rds_fact['DBClusters'][0]['Endpoint']}}"
+  when: check_rds_cluster['failed'] == false
+# - debug:
+#     msg: "{{rds_fact}}"
+#   when: check_rds_cluster['failed'] == false
+- name: create AWS RDS subnet group
+  rds_subnet_group:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    name: "{{rds_subnet_group_name}}"
+    description: Subnet Group for PLATFORM
+    subnets:
+      - "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
+      - "{{check_subnet_result['results'][1]['subnets'][0]['subnet_id']}}"
+  register: create_rds_sg_result
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - debug:
+#     msg: "{{create_rds_sg_result}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']" 
+- name: create AWS RDS parameter-group
+  shell: "aws --region {{region}} --output json rds create-db-cluster-parameter-group --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --db-parameter-group-family '{{rds_parameter_group_family}}' --description 'PLATFROM PARAMETER GROUP'"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: create_parameter_group_result
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - debug:
+#     msg: "{{create_parameter_group_result}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+- name: set parameters for RDS parameter-group
+  shell: "aws --region {{region}} --output json rds modify-db-cluster-parameter-group --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --parameters 'ParameterName={{item['parametername']}},ParameterValue={{item['parametervalue']}},ApplyMethod=immediate'"
+  with_items: "{{rds_parameters_group_items}}"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: set_parameter_group_result
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - debug:
+#     msg: "{{set_parameter_group_result}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+- name: create AWS RDS cluster
+  shell: "aws --region {{region}} --output json rds create-db-cluster --db-cluster-identifier '{{rds_cluster_name}}' --engine '{{rds_engine}}' --engine-version '{{rds_engine_version}}' --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --db-subnet-group-name '{{rds_subnet_group_name}}' --vpc-security-group-ids '{{sg_id_fact}}' --master-username '{{rds_master_username}}' --master-user-password '{{rds_master_password}}' --storage-encrypted --backup-retention-period '{{rds_backup_retention_period}}' --deletion-protection"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: create_rds_cluster
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - debug:
+#     msg: "{{create_rds_cluster['stdout'] | from_json}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+- set_fact:
+    rds_cluster_fact: "{{create_rds_cluster['stdout'] | from_json}}"
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+- set_fact:
+    rds_endpoint_fact: "{{rds_cluster_fact['DBCluster']['Endpoint']}}"
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"  
+- name: create AWS RDS instance
+  shell: "aws --region {{region}} --output json rds create-db-instance --db-cluster-identifier '{{rds_cluster_name}}' --db-instance-identifier '{{rds_db_instance_name}}' --db-instance-class '{{rds_db_instance_type}}' --engine '{{rds_engine}}' --availability-zone '{{check_subnet_result['results'][0]['subnets'][0]['availability_zone']}}' --no-publicly-accessible"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: create_rds_instance
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - debug:
+#     msg: "{{create_rds_instance['stdout'] | from_json}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+- name: create AWS RDS read-only instance
+  shell: "aws --region {{region}} --output json rds create-db-instance --db-cluster-identifier '{{rds_cluster_name}}' --db-instance-identifier '{{rds_db_read_only_instance_name}}' --db-instance-class '{{rds_db_instance_type}}' --engine '{{rds_engine}}' --availability-zone '{{check_subnet_result['results'][1]['subnets'][0]['availability_zone']}}' --no-publicly-accessible"
+  # environment:
+  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+  register: create_rds_ro_instance
+  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - debug:
+#     msg: "{{create_rds_ro_instance['stdout'] | from_json}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"  

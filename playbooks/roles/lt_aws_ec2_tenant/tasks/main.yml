@@ -1,0 +1,190 @@
+---
+- name: check AWS EC2 instance
+  ec2_instance_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{ec2_instance_tenant_name}}"
+  register: check_ec2_result
+# - debug:
+#     msg: "{{check_ec2_result}}"
+- set_fact:
+    ec2_id_fact: "{{check_ec2_result['instances'][0]['instance_id']}}"
+  when: check_ec2_result['instances'][0] is defined
+- name: create AWS EC2 instance
+  ec2_instance:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    image_id: "{{check_image_result['images'][0]['image_id']}}"
+    instance_initiated_shutdown_behavior: stop
+    instance_type: "{{tenant_instance_type}}"
+    key_name: "{{default_instance_key_name}}"
+    security_group: Platform APP Security Group
+    filters:
+      'tag:Name': "{{ec2_instance_tenant_name}}"
+    tags:
+      Name: "{{ec2_instance_tenant_name}}"
+      COST: "{{client_name}}"
+      BACKUP: support
+    termination_protection: yes
+    ebs_optimized: yes
+    vpc_subnet_id: "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
+  register: create_ec2_result
+  when: check_ec2_result['instances'][0] is not defined
+# - debug:
+#     msg: "{{create_ec2_result}}"
+- set_fact:
+    ec2_id_fact: "{{create_ec2_result['instances'][0]['instance_id']}}"
+  when: check_ec2_result['instances'][0] is not defined
+- name: check AWS ELB
+  ec2_elb_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    names: "{{elb_instance_tenant_name}}"
+  register: check_elb_result
+# - debug:
+#     msg: "{{check_elb_result}}"
+- name: check AWS ACM
+  aws_acm_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    domain_name: "*.learning-tribes.com"
+  register: check_acm_result
+  when: check_elb_result['elbs'][0] is not defined
+# - debug:
+#     msg: "{{check_acm_result}}"
+- name: create AWS ELB instance
+  ec2_elb_lb:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    name: "{{elb_instance_tenant_name}}"
+    scheme: internet-facing
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_protocol: http
+        instance_port: 80
+      - protocol: https
+        load_balancer_port: 443
+        instance_protocol: https
+        instance_port: 443
+        ssl_certificate_id: "{{check_acm_result['certificates'][0]['certificate_arn']}}"
+    subnets:
+      - "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
+      - "{{check_subnet_result['results'][1]['subnets'][0]['subnet_id']}}"
+    tags:
+      Name: Platform ELB {{client_name}}
+      COST: "{{client_name}}"
+    security_group_names: Platform APP Security Group
+    health_check:
+      ping_protocol: http
+      ping_port: 80
+      ping_path: "/login"
+      response_timeout: 10
+      interval: 60
+      unhealthy_threshold: 3
+      healthy_threshold: 3
+    instance_ids: "{{ec2_id_fact}}"
+  register: create_elb_result
+  when: check_elb_result['elbs'][0] is not defined
+# - debug:
+#     msg: "{{create_elb_result}}"
+- name: check AWS S3
+  aws_s3_bucket_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+  register: check_s3_result
+- set_fact:
+    s3_id_fact: "{{s3_tenant_name}}"
+- set_fact:
+    s3_get_id_fact: false
+- set_fact:
+    s3_get_id_fact: true
+  when: s3_id_fact == item.name
+  with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+# - debug:
+#     msg: "{{s3_get_id_fact}}"
+- name: create AWS S3
+  aws_s3:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    bucket: "{{s3_tenant_name}}"
+    mode: create
+    permission: public-read
+  register: create_s3_result
+  when: s3_get_id_fact == false
+# - debug:
+#     msg: "{{create_s3_result}}"
+#   when: s3_get_id_fact == false
+- name: download inventory repo
+  git: 
+    repo: "{{inventory_git_url}}"
+    dest: "{{inventory_repo_folder}}"
+    version: "{{inventory_repo_branch}}"
+    #clone: no
+- name: EC2 APP instance for hosts INI file
+  ini_file:
+    path: "{{hosts_ini_file}}"
+    allow_no_value: yes
+    section: "{{client_name}}_tenant"
+    option: "{{create_ec2_result['instances'][0]['public_ip_address']}}"
+  when: check_ec2_result['instances'][0] is not defined
+- name: EC2 APP region for hosts INI file
+  ini_file:
+    path: "{{hosts_ini_file}}"
+    allow_no_value: yes
+    section: "{{region}}:children"
+    option: "{{client_name}}_tenant"
+  when: check_ec2_result['instances'][0] is not defined
+- name: EC2 DB tenant for hosts INI file
+  ini_file:
+    path: "{{hosts_ini_file}}"
+    allow_no_value: yes
+    section: "tenants:children"
+    option: "{{client_name}}_tenant"
+  when: check_ec2_result['instances'][0] is not defined
+- name: create tenant folder
+  file:
+    path: "{{inventory_repo_folder}}/group_vars/{{client_name}}_tenant"
+    state: directory
+    mode: 0755
+  when: check_ec2_result['instances'][0] is not defined
+- name: create password file for tenant
+  template:
+    src: passwords.j2
+    dest: "{{inventory_repo_folder}}/group_vars/{{client_name}}_tenant/passwords.yml"
+    mode: 0644
+  when: check_ec2_result['instances'][0] is not defined
+- name: encrypt password file
+  shell: "ansible-vault encrypt --vault-password-file /opt/password.txt {{inventory_repo_folder}}/group_vars/{{client_name}}_tenant/passwords.yml"
+  when: check_ec2_result['instances'][0] is not defined
+- name: create variable file for tenant
+  template:
+    src: tenant_vars.j2
+    dest: "{{inventory_repo_folder}}/group_vars/{{client_name}}_tenant/vars.yml"
+    mode: 0644
+  when: check_ec2_result['instances'][0] is not defined
+- name: git push code
+  shell: "git add .; git commit -m 'add {{client_name}} tenant instance at {{region}}'; git push"
+  args:
+    chdir: "{{inventory_repo_folder}}"
+  when: check_ec2_result['instances'][0] is not defined
+- name: download configuration repo
+  git: 
+    repo: "{{configuration_git_url}}"
+    dest: "{{configuration_repo_folder}}"
+    version: "{{configuration_repo_branch}}"
+    force: yes
+- name: remove mysql service from stateful instance
+  lineinfile:
+    path: "{{configuration_repo_folder}}/playbooks/lt_stateful_center.yml"
+    state: absent
+    regexp: mysql
