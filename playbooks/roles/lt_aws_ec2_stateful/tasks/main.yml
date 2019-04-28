@@ -1,0 +1,94 @@
+---
+- name: check AWS EC2 DB instance
+  ec2_instance_facts:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    filters:
+      "tag:Name": "{{ec2_instance_stateful_name}}"
+  register: check_ec2_db_result
+# - debug:
+#     msg: "{{check_ec2_db_result}}"
+- name: create AWS EC2 DB instance
+  ec2_instance:
+    state: present
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    image_id: "{{image_id_fact}}"
+    instance_initiated_shutdown_behavior: stop
+    instance_type: "{{stateful_instance_type}}"
+    key_name: "{{default_instance_key_name}}"
+    security_group: Platform DB Security Group
+    filters:
+      'tag:Name': "{{ec2_instance_stateful_name}}"
+    tags:
+      Name: "{{ec2_instance_stateful_name}}"
+      BACKUP: support
+    termination_protection: yes
+    ebs_optimized: yes
+    vpc_subnet_id: "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
+  register: create_ec2_db_result
+  when: check_ec2_db_result['instances'][0] is not defined
+# - debug:
+#     msg: "{{create_ec2_db_result}}"
+- name: create repo folder
+  file:
+    path: "{{local_repo_folder}}"
+    state: directory
+    mode: 0755
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: download inventory repo
+  git: 
+    repo: "{{inventory_git_url}}"
+    dest: "{{inventory_repo_folder}}"
+    version: "{{inventory_repo_branch}}"
+    #clone: no
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: EC2 DB instance for hosts INI file
+  ini_file:
+    path: "{{hosts_ini_file}}"
+    allow_no_value: yes
+    section: "{{region}}_stateful"
+    option: "{{create_ec2_db_result['instances'][0]['public_ip_address']}}"
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: EC2 DB region for hosts INI file
+  ini_file:
+    path: "{{hosts_ini_file}}"
+    allow_no_value: yes
+    section: "{{region}}:children"
+    option: "{{region}}_stateful"
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: EC2 DB tenant for hosts INI file
+  ini_file:
+    path: "{{hosts_ini_file}}"
+    allow_no_value: yes
+    section: "tenants:children"
+    option: "{{region}}_stateful"
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: create region folder
+  file:
+    path: "{{inventory_repo_folder}}/group_vars/{{region}}"
+    state: directory
+    mode: 0755
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: create password file for region
+  copy:
+    src: ../files/admin-passwords.yml
+    dest: "{{inventory_repo_folder}}/group_vars/{{region}}/admin-passwords.yml"
+    mode: 0644
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: encrypt password file
+  shell: "ansible-vault encrypt --vault-password-file /opt/password.txt {{inventory_repo_folder}}/group_vars/{{region}}/admin-passwords.yml"
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: create variable file for region
+  template:
+    src: region_vars.j2
+    dest: "{{inventory_repo_folder}}/group_vars/{{region}}/vars.yml"
+    mode: 0644
+  when: check_ec2_db_result['instances'][0] is not defined
+- name: git push code
+  shell: "git add .; git commit -m 'add stateful instance at {{region}}'; git push"
+  args:
+    chdir: "{{inventory_repo_folder}}"
+  when: check_ec2_db_result['instances'][0] is not defined
