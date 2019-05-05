@@ -13,12 +13,12 @@ region_instance_key_name: "{{region}}_{{default_instance_key_name}}.pem"
 local_folder_store_instance_keys: /opt/instanceskey
 s3_bucket_store_instance_keys: lt-instances-file
 instance_ami_name: ubuntu16.04
-inventory_git_url: git@github.com:Learningtribes/hawthorn_inventory.git
+inventory_git_url: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/hawthorn_inventory.git"
 local_repo_folder: /opt/repo
 inventory_repo_folder: "{{local_repo_folder}}/hawthorn_inventory"
 inventory_repo_branch: master
 hosts_ini_file: "{{inventory_repo_folder}}/hosts.ini"
-configuration_git_url: git@github.com:Learningtribes/configuration.git
+configuration_git_url: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/configuration.git"
 configuration_repo_folder: "{{local_repo_folder}}/configuration"
 configuration_repo_branch: master
 rds_cluster_name: platform-rds-cluster
