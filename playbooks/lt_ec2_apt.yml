@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: True
+  gather_facts: False
+  tasks:
+    - name: copy script files
+      copy:
+        src: "./roles/lt_aws_ec2_stateful/files/check_apt_process.sh"
+        dest: "/tmp/check_apt_process.sh"
+        mode: 0644
+    - name: check apt process done
+      shell: "/bin/bash /tmp/check_apt_process.sh"
