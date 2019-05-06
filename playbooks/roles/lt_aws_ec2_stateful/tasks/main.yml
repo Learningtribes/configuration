@@ -92,3 +92,8 @@
   args:
     chdir: "{{inventory_repo_folder}}"
   when: check_ec2_db_result['instances'][0] is not defined
+- name: remove mysql service from stateful instance
+  lineinfile:
+    path: "./lt_stateful_center.yml"
+    state: absent
+    regexp: mysql
