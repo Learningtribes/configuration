@@ -49,7 +49,7 @@
     EDXAPP_EDXNOTES_PUBLIC_API: http://localhost:18120/api/v1
     EDXAPP_EDXNOTES_INTERNAL_API: http://localhost:18120/api/v1
 
-    edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
+    edx_platform_repo: "https://{{git_username}}:{{git_password}}@{{ COMMON_GIT_MIRROR }}/Learningtribes/platform.git"
     edx_platform_version: master
 
   serial: "{{ serial_count }}"
