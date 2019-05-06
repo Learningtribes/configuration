@@ -38,7 +38,7 @@
 - name: checkout edx-platform repo into {{ edxapp_code_dir }}
   git:
     dest: "{{ edxapp_code_dir }}"
-    repo: "{{ edx_platform_repo }}"
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
     version: "{{ edx_platform_version }}"
     accept_hostkey: yes
     force: yes
