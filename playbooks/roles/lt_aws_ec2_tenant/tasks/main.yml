@@ -177,3 +177,13 @@
   args:
     chdir: "{{inventory_repo_folder}}"
   when: check_ec2_result['instances'][0] is not defined
+- name: remove theme role from tenant instance step1
+  lineinfile:
+    path: "./lt_edxapp_with_worker.yml"
+    state: absent
+    regexp: lt_themes
+- name: remove theme role from tenant instance step2
+  lineinfile:
+    path: "./lt_edxapp_with_worker.yml"
+    state: absent
+    regexp: assets
