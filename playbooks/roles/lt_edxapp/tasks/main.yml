@@ -1,0 +1,83 @@
+---
+- name: checkout edx-platform repo into {{ edxapp_code_dir }}
+  git:
+    dest: "{{ edxapp_code_dir }}"
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
+    version: "{{ edx_platform_version }}"
+    accept_hostkey: yes
+    force: yes
+  become_user: "{{ edxapp_user }}"
+  register: edxapp_platform_checkout
+
+- name: git clean after checking out edx-platform
+  shell: cd {{ edxapp_code_dir }} && git clean -xdf
+  become_user: "{{ edxapp_user }}"
+
+- name: Stat each Python requirements file to ensure it exists
+  stat:
+    path: "{{ item }}"
+  with_items: "{{ edxapp_requirements_files }} + {{ [openstack_requirements_file] if EDXAPP_SETTINGS == 'openstack' else [] }}"
+  register: python_requirement_files
+
+- name: install python requirements
+  command: "{{ edxapp_venv_dir }}/bin/pip install {{ COMMON_PIP_VERBOSITY }} -i {{ COMMON_PYPI_MIRROR_URL }} --exists-action w -r {{ item.item }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_user }}"
+  environment: "{{ edxapp_environment }}"
+  when: item.stat.exists
+  with_items: "{{ python_requirement_files.results }}"
+
+- name: install python private requirements
+  shell: "{{ edxapp_venv_dir }}/bin/pip install {{ COMMON_PIP_VERBOSITY }} -i {{ COMMON_PYPI_MIRROR_URL }} --exists-action w {{ item.extra_args|default('') }} {{ item.name }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  with_items:
+  - "{{ EDXAPP_PRIVATE_REQUIREMENTS }}"
+  become_user: "{{ edxapp_user }}"
+  environment:
+    GIT_SSH: "{{ edxapp_git_ssh }}"
+  when: EDXAPP_INSTALL_PRIVATE_REQUIREMENTS
+
+- name: install python extra requirements
+  pip:
+    name: "{{ item.name }}"
+    version: "{{ item.version|default(omit) }}"
+    extra_args: "--exists-action w {{ item.extra_args|default('') }}"
+    virtualenv: "{{ edxapp_venv_dir }}"
+    state: present
+  with_items: "{{ EDXAPP_EXTRA_REQUIREMENTS }}"
+  become_user: "{{ edxapp_user }}"
+
+- name: install node dependencies
+  shell: "{{ edxapp_nodeenv_bin }}/npm install"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  environment: "{{ edxapp_environment }}"
+  become_user: "{{ edxapp_user }}"
+
+- name: migrate lt edxapp 
+  command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
+  when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
+  with_items: "{{ service_variants_enabled }}"
+
+- name: restart edxapp
+  supervisorctl:
+    name: "{{ item }}"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  when: edxapp_installed is defined and celery_worker is not defined and not disable_edx_services
+  become_user: "{{ supervisor_service_user }}"
+  with_items:
+    - 'lms'
+    - 'cms'
+
+- name: restart edxapp_workers
+  supervisorctl:
+    name: "edxapp_worker:"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  when: edxapp_installed is defined and celery_worker is defined and not disable_edx_services
+  become_user: "{{ common_web_user }}"
