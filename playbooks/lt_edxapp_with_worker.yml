@@ -42,3 +42,5 @@
      when: ENABLE_DEMO is defined and ENABLE_DEMO
    - role: devstack_sqlite_fix
      when: devstack is defined and devstack
+   - role: lt_edxapp
+     tags: ['never', 'lt-deploy']
