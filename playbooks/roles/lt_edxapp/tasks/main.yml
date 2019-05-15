@@ -6,33 +6,37 @@
     version: "{{ edx_platform_version }}"
     accept_hostkey: yes
     force: yes
-  become_user: "{{ edxapp_user }}"
-  register: edxapp_platform_checkout
-
-- name: git clean after checking out edx-platform
-  shell: cd {{ edxapp_code_dir }} && git clean -xdf
-  become_user: "{{ edxapp_user }}"
+  become_user: edxapp
+  tags: ['never', 'deploy']
 
 - name: migrate lt edxapp 
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
   when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
-  with_items: "{{ service_variants_enabled }}"
-
-- name: restart edxapp
-  supervisorctl:
-    name: "{{ item }}"
-    supervisorctl_path: "{{ supervisor_ctl }}"
-    config: "{{ supervisor_cfg }}"
-    state: restarted
-  become_user: "{{ supervisor_service_user }}"
   with_items:
     - 'lms'
     - 'cms'
+  tags: ['never', 'deploy']
 
-- name: restart edxapp_workers
+- name: restart edxapp lms
   supervisorctl:
-    name: "edxapp_worker:"
+    name: lms
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  become_user: "{{ common_web_user }}"
+  tags: ['never', 'restart-lms']
+
+- name: restart edxapp cms
+  supervisorctl:
+    name: cms
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  tags: ['never', 'restart-cms']
+
+- name: restart edxapp all
+  supervisorctl:
+    name: all
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  tags: ['never', 'deploy', 'restart-all']
