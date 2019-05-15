@@ -39,4 +39,5 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
+  become_user: root
   tags: ['never', 'deploy', 'restart-all']
