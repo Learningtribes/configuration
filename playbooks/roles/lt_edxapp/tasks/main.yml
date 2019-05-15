@@ -23,7 +23,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  tags: ['never', 'deploy', 'restart-lms', 'restart-all']
+  tags: ['never', 'deploy', 'restart-lms', 'restart-all', 'restart-edxapp']
 
 - name: restart edxapp cms
   supervisorctl:
@@ -31,7 +31,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  tags: ['never', 'deploy', 'restart-cms', 'restart-all']
+  tags: ['never', 'deploy', 'restart-cms', 'restart-all', 'restart-edxapp']
 
 - name: restart edxapp worker
   supervisorctl:
