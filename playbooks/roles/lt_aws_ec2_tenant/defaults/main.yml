@@ -3,3 +3,5 @@ ec2_instance_tenant_name: Platform APP {{client_name}}
 tenant_instance_type: c5.xlarge
 elb_instance_tenant_name: Platform-ELB-{{client_name}}
 s3_tenant_name: lt-{{client_name}}-default
+EDXAPP_ENABLE_COMPREHENSIVE_THEMING: true
+EDXAPP_COMPREHENSIVE_THEME_DIR: "/edx/app/edxapp/themes"
