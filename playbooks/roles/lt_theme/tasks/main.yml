@@ -11,6 +11,17 @@
   with_items: "{{LT_THEME}}"
   tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
 
+- name: Download themes
+  become_user: edxapp
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/hawthorn_inventory.git"
+    dest: "/edx/app/edxapp/themes/{{item}}"
+    version: "master"
+    clone: yes
+    force: yes
+  with_items: "{{LT_THEME}}"
+  tags: ['never', 'deploy-theme']
+
 - name: Compile all themes
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
   tags: ['never', 'all-theme']
