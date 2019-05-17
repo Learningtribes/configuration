@@ -13,4 +13,4 @@
 
 - name: Compile all themes
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
-  tags: ['never', 'theme']
+  tags: ['never', 'all-themes']
