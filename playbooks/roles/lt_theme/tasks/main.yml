@@ -16,28 +16,33 @@
   tags: ['never', 'all-theme']
 
 - name: Compile lms themes
-  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item}}"
-  args:
-    executable: /bin/bash
-  with_items: "{{LT_THEME}}"
-  become_user: edxapp
+  block:
+    - name: Get theme folder
+      stat: 
+        path: "/edx/app/edxapp/themes/{{item}}"
+      with_items: "{{LT_THEME}}"
+      register: check_lms_theme
+    - name: Compile lms
+      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+      args:
+        executable: /bin/bash
+      when: item.stat.exists and item.stat.isdir 
+      with_items: "{{check_lms_theme['results']}}"
+      become_user: edxapp
   tags: ['never', 'lms-theme']
 
 - name: Compile cms themes
   block:
     - name: Get theme folder
       stat: 
-        paths: "/edx/app/edxapp/themes/{{item}}"
+        path: "/edx/app/edxapp/themes/{{item}}"
       with_items: "{{LT_THEME}}"
       register: check_cms_theme
-    - debug:
-        msg: "{{check_cms_theme}}"
+    - name: Complie cms
+      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+      args:
+        executable: /bin/bash
+      when: item.stat.exists and item.stat.isdir 
+      with_items: "{{check_cms_theme['results']}}"
+      become_user: edxapp    
   tags: ['never', 'cms-theme']
-  
-- name: Coomplie cms
-  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
-  args:
-    executable: /bin/bash
-  with_items: "{{LT_THEME}}"
-  become_user: edxapp
-  tags: ['never']
