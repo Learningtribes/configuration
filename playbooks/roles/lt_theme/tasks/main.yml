@@ -10,3 +10,7 @@
     force: yes
   with_items: "{{LT_THEME}}"
   tags: ['never', 'theme']
+
+- name: Compile all themes
+  command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
+  tags: ['never', 'theme']
