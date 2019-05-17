@@ -17,12 +17,16 @@
 
 - name: Compile lms themes
   shell: "bash source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item}}"
+  args:
+    executable: /bin/bash
   with_items: "{{LT_THEME}}"
   become_user: edxapp
   tags: ['never', 'lms-theme']
 
 - name: Compile cms themes
   shell: "bash source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
+  args:
+    executable: /bin/bash
   with_items: "{{LT_THEME}}"
   become_user: edxapp
   tags: ['never', 'cms-theme']
