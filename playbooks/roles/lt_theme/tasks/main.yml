@@ -26,18 +26,18 @@
 - name: Compile cms themes
   block:
     - name: Get theme folder
-      find: 
+      stat: 
         paths: "/edx/app/edxapp/themes/{{item}}"
-        file_type: 'directory'
       with_items: "{{LT_THEME}}"
       register: check_cms_theme
     - debug:
         msg: "{{check_cms_theme}}"
-
-    - name: Coomplie cms
-      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
-      args:
-        executable: /bin/bash
-      with_items: "{{LT_THEME}}"
-      become_user: edxapp
   tags: ['never', 'cms-theme']
+  
+- name: Coomplie cms
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
+  args:
+    executable: /bin/bash
+  with_items: "{{LT_THEME}}"
+  become_user: edxapp
+  tags: ['never']
