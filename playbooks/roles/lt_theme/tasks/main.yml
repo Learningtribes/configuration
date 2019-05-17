@@ -16,13 +16,13 @@
   tags: ['never', 'all-theme']
 
 - name: Compile lms themes
-  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item}}"
+  shell: "bash source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item}}"
   with_items: "{{LT_THEME}}"
   become_user: edxapp
   tags: ['never', 'lms-theme']
 
 - name: Compile cms themes
-  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
+  shell: "bash source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
   with_items: "{{LT_THEME}}"
   become_user: edxapp
   tags: ['never', 'cms-theme']
