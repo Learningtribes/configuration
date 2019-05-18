@@ -12,12 +12,9 @@ parser.read(hosts_file)
 
 for i in parser.items(region_setion):
     if 'stateful' not in i[0]:
-        single_tenant_list = []
         tenant_name = i[0]
-        single_tenant_list.append(tenant_name)
+        single_tenant_string = tenant_name
         tenant_ip_list = parser.items(i[0])
         for j in tenant_ip_list:
-            single_tenant_list.append(j[0])
-        tenant_list.append(single_tenant_list)
-
-print tenant_list
+            single_tenant_string = single_tenant_string + ',' + j[0]
+        print single_tenant_string
