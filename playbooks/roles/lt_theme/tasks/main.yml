@@ -20,7 +20,7 @@
     clone: yes
     force: yes
   with_items: "{{LT_THEME}}"
-  tags: ['never', 'deploy-theme', 'stage-auto-theme']
+  tags: ['never', 'deploy-theme', 'stage-auto-theme', 'stage-theme-lms', 'stage-theme-cms']
 
 - name: Compile all themes
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
@@ -48,7 +48,7 @@
     executable: /bin/bash
   with_items: "{{LT_THEME}}"
   become_user: edxapp
-  tags: ['never', 'deploy-theme','stage-auto-theme']
+  tags: ['never', 'deploy-theme','stage-auto-theme', 'stage-theme-lms']
 
 - name: Deploy cms themes
   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
@@ -56,7 +56,7 @@
     executable: /bin/bash
   with_items: "{{LT_THEME}}"
   become_user: edxapp
-  tags: ['never', 'stage-auto-theme']
+  tags: ['never', 'stage-auto-theme', 'stage-theme-cms']
 
 - name: Compile cms themes
   block:
