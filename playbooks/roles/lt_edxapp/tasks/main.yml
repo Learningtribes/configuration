@@ -61,9 +61,10 @@
 
 - name: restart xqueue
   supervisorctl:
-    name: xqueue
+    name: "{{item}}"
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
+  with_items: ['xqueue', 'xqueue_consumer']
   ignore_errors: yes
   tags: ['never', 'deploy', 'restart-all']
