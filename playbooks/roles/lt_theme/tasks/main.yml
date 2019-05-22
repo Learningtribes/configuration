@@ -1,0 +1,75 @@
+---
+- name: Download themes
+  become_user: edxapp
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+    dest: "/edx/app/edxapp/themes/{{item}}"
+    version: "{{item}}"
+    clone: no
+    update: yes
+    force: yes
+  with_items: "{{LT_THEME}}"
+  tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
+
+- name: Download themes
+  become_user: edxapp
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+    dest: "/edx/app/edxapp/themes/{{item}}"
+    version: "{{item}}"
+    clone: yes
+    force: yes
+  with_items: "{{LT_THEME}}"
+  tags: ['never', 'deploy-theme', 'stage-auto-theme', 'stage-theme-lms', 'stage-theme-cms']
+
+- name: Compile all themes
+  command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
+  tags: ['never', 'all-theme']
+
+- name: Compile lms themes
+  block:
+    - name: Get theme folder
+      stat: 
+        path: "/edx/app/edxapp/themes/{{item}}"
+      with_items: "{{LT_THEME}}"
+      register: check_lms_theme
+    - name: Compile lms
+      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+      args:
+        executable: /bin/bash
+      when: item.stat.exists and item.stat.isdir 
+      with_items: "{{check_lms_theme['results']}}"
+      become_user: edxapp
+  tags: ['never', 'lms-theme']
+
+- name: Deploy lms themes
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item}}"
+  args:
+    executable: /bin/bash
+  with_items: "{{LT_THEME}}"
+  become_user: edxapp
+  tags: ['never', 'deploy-theme','stage-auto-theme', 'stage-theme-lms']
+
+- name: Deploy cms themes
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item}}"
+  args:
+    executable: /bin/bash
+  with_items: "{{LT_THEME}}"
+  become_user: edxapp
+  tags: ['never', 'stage-auto-theme', 'stage-theme-cms']
+
+- name: Compile cms themes
+  block:
+    - name: Get theme folder
+      stat: 
+        path: "/edx/app/edxapp/themes/{{item}}"
+      with_items: "{{LT_THEME}}"
+      register: check_cms_theme
+    - name: Complie cms
+      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+      args:
+        executable: /bin/bash
+      when: item.stat.exists and item.stat.isdir 
+      with_items: "{{check_cms_theme['results']}}"
+      become_user: edxapp    
+  tags: ['never', 'cms-theme']

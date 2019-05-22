@@ -40,3 +40,31 @@
     config: "{{ supervisor_cfg }}"
     state: restarted
   tags: ['never', 'deploy', 'restart-all']
+
+- name: restart forum
+  supervisorctl:
+    name: forum
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  ignore_errors: yes
+  tags: ['never', 'deploy', 'restart-all']
+
+- name: restart certificate
+  supervisorctl:
+    name: certs
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  ignore_errors: yes
+  tags: ['never', 'deploy', 'restart-all']
+
+- name: restart xqueue
+  supervisorctl:
+    name: "{{item}}"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  with_items: ['xqueue', 'xqueue_consumer']
+  ignore_errors: yes
+  tags: ['never', 'deploy', 'restart-all']

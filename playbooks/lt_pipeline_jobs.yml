@@ -9,3 +9,4 @@
     - roles/edxapp/defaults/main.yml
   roles:
     - role: lt_edxapp
+    - role: lt_theme
