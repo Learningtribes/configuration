@@ -8,6 +8,7 @@ region_setion = str(region) + ':children'
 
 tenant_list = []
 parser = SafeConfigParser(allow_no_value=True)
+parser.optionxform = str
 parser.read(hosts_file)
 
 for i in parser.items(region_setion):
