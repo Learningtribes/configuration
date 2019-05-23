@@ -51,7 +51,7 @@ for i in file_hosts_dict.keys():
         git = repo.git
         git.add('hosts.ini')
         git.commit('-m', 'remove ' + tenant_name)
-        git.push()
+        git.push('--set-upstream', 'origin master')
     else:
         for j in response['Reservations'][0]['Instances']:
             real_ip_list.append(j['PublicIpAddress'])   
@@ -72,5 +72,5 @@ for i in file_hosts_dict.keys():
             git = repo.git
             git.add('hosts.ini')
             git.commit('-m', 'modify ' + tenant_name + ' IP: ' + str(real_ip_list))
-            git.push()
+            git.push('--set-upstream', 'origin master')
 
