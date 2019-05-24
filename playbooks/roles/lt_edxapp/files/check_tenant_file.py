@@ -8,6 +8,8 @@ from git import Repo
 
 ACCESS_KEY = os.environ['AWS_ACCESS_KEY_ID']
 SECRET_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+GITHUB_USERNAME = os.environ['GITHUB_USERNAME']
+GITHUB_PASSWORD = os.environ['GITHUB_PASSWORD']
 
 
 repo_path = sys.argv[1]
@@ -49,12 +51,13 @@ for i in file_hosts_dict.keys():
         parser.write(fp)
         fp.close()
         repo = Repo(repo_path)
-        git = repo.git
-        git.config('credential.helper', '/bin/bash ' + credential_file)
-        git.add('hosts.ini')
-        git.commit('-m', 'remove ' + tenant_name)
-        git.push('--set-upstream', 'origin master')
-        git.config('--remove-section', 'credential')
+        with repo.git.custom_environment(GIT_USERNAME=GITHUB_USERNAME, GIT_PASSWORD=GITHUB_PASSWORD):
+            repo.git.config('credential.helper', '/bin/bash ' + credential_file)
+            repo.git.branch('--set-upstream-to=origin/master', 'master')
+            repo.git.add('hosts.ini')
+            repo.git.commit('-m', 'remove ' + tenant_name)
+            repo.git.push()
+            repo.git.config('--remove-section', 'credential')
     else:
         for j in response['Reservations'][0]['Instances']:
             real_ip_list.append(j['PublicIpAddress'])   
@@ -72,10 +75,11 @@ for i in file_hosts_dict.keys():
             parser.write(fp)
             fp.close()
             repo = Repo(repo_path)
-            git = repo.git
-            git.config('credential.helper', '/bin/bash ' + credential_file)
-            git.add('hosts.ini')
-            git.commit('-m', '"modify ' + tenant_name + ' IP: ' + str(real_ip_list) + '"')
-            git.push('--set-upstream', 'origin master')
-            git.config('--remove-section', 'credential')
+            with repo.git.custom_environment(GIT_USERNAME=GITHUB_USERNAME, GIT_PASSWORD=GITHUB_PASSWORD):
+                repo.git.config('credential.helper', '/bin/bash ' + credential_file)
+                repo.git.branch('--set-upstream-to=origin/master', 'master')
+                repo.git.add('hosts.ini')
+                repo.git.commit('-m', '"modify ' + tenant_name + ' IP: ' + str(real_ip_list) + '"')
+                repo.git.push()
+                repo.git.config('--remove-section', 'credential')
 
