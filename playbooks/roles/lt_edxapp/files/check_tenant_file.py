@@ -12,6 +12,7 @@ SECRET_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
 repo_path = sys.argv[1]
 region = sys.argv[2]
+credential_file = sys.argv[3]
 
 hosts_file = repo_path + '/hosts.ini'
 region_setion = str(region) + ':children'
@@ -49,9 +50,11 @@ for i in file_hosts_dict.keys():
         fp.close()
         repo = Repo(repo_path)
         git = repo.git
+        git.config('credential.helper', '/bin/bash ' + credential_file)
         git.add('hosts.ini')
         git.commit('-m', 'remove ' + tenant_name)
         git.push('--set-upstream', 'origin master')
+        git.config('--remove-section', 'credential')
     else:
         for j in response['Reservations'][0]['Instances']:
             real_ip_list.append(j['PublicIpAddress'])   
@@ -70,7 +73,9 @@ for i in file_hosts_dict.keys():
             fp.close()
             repo = Repo(repo_path)
             git = repo.git
+            git.config('credential.helper', '/bin/bash ' + credential_file)
             git.add('hosts.ini')
             git.commit('-m', 'modify ' + tenant_name + ' IP: ' + str(real_ip_list))
             git.push('--set-upstream', 'origin master')
+            git.config('--remove-section', 'credential')
 
