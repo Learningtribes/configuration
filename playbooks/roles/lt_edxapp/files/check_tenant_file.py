@@ -75,7 +75,7 @@ for i in file_hosts_dict.keys():
             git = repo.git
             git.config('credential.helper', '/bin/bash ' + credential_file)
             git.add('hosts.ini')
-            git.commit('-m', 'modify ' + tenant_name + ' IP: ' + str(real_ip_list))
+            git.commit('-m', '"modify ' + tenant_name + ' IP: ' + str(real_ip_list) + '"')
             git.push('--set-upstream', 'origin master')
             git.config('--remove-section', 'credential')
 
