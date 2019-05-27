@@ -1,7 +1,7 @@
 ---
 - name: Install xblock
   pip:
-    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{ XBLOCK_NAME }}.git@master"
+    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{ xblock_name }}.git@master"
     virtualenv: "{{ edxapp_venv_dir }}"
     state: forcereinstall
   become_user: edxapp
