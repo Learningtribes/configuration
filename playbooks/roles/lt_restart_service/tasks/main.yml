@@ -4,7 +4,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  tags: ['never', 'deploy', 'restart-lms', 'restart-all', 'restart-edxapp']
+  tags: ['never', 'restart-lms', 'restart-all', 'restart-edxapp']
 
 - name: restart edxapp cms
   supervisorctl:
@@ -12,7 +12,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  tags: ['never', 'deploy', 'restart-cms', 'restart-all', 'restart-edxapp']
+  tags: ['never', 'restart-cms', 'restart-all', 'restart-edxapp']
 
 - name: restart edxapp worker
   supervisorctl:
@@ -20,7 +20,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  tags: ['never', 'deploy', 'restart-all']
+  tags: ['never', 'restart-all']
 
 - name: restart forum
   supervisorctl:
@@ -29,7 +29,7 @@
     config: "{{ supervisor_cfg }}"
     state: restarted
   ignore_errors: yes
-  tags: ['never', 'deploy', 'restart-all']
+  tags: ['never', 'restart-all']
 
 - name: restart certificate
   supervisorctl:
@@ -38,7 +38,7 @@
     config: "{{ supervisor_cfg }}"
     state: restarted
   ignore_errors: yes
-  tags: ['never', 'deploy', 'restart-all']
+  tags: ['never', 'restart-all']
 
 - name: restart xqueue
   supervisorctl:
@@ -48,4 +48,4 @@
     state: restarted
   with_items: ['xqueue', 'xqueue_consumer']
   ignore_errors: yes
-  tags: ['never', 'deploy', 'restart-all']
+  tags: ['never', 'restart-all']
