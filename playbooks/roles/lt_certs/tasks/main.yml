@@ -1,0 +1,9 @@
+---
+- name: checkout edx-certificaties repo into {{ certs_code_dir }}
+  git:
+    dest: "{{ certs_code_dir }}"
+    repo: "{{ CERTS_REPO }}"
+    version: "{{ certs_version }}"
+    accept_hostkey: yes
+  become_user: "{{ certs_user }}"
+  tags: ['never', 'deploy-certs']

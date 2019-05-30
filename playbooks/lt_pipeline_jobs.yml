@@ -7,6 +7,10 @@
     - roles/common_vars/defaults/main.yml
     - roles/supervisor/defaults/main.yml
     - roles/edxapp/defaults/main.yml
+    - roles/certs/defaults/main.yml
   roles:
     - role: lt_edxapp
     - role: lt_theme
+    - role: lt_certs
+    - role: lt_xblock
+    - role: lt_restart_service

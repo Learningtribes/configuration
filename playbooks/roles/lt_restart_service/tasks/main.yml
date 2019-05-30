@@ -1,0 +1,51 @@
+- name: restart edxapp lms
+  supervisorctl:
+    name: lms
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  tags: ['never', 'restart-lms', 'restart-all', 'restart-edxapp']
+
+- name: restart edxapp cms
+  supervisorctl:
+    name: cms
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  tags: ['never', 'restart-cms', 'restart-all', 'restart-edxapp']
+
+- name: restart edxapp worker
+  supervisorctl:
+    name: "edxapp_worker:"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  tags: ['never', 'restart-all']
+
+- name: restart forum
+  supervisorctl:
+    name: forum
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  ignore_errors: yes
+  tags: ['never', 'restart-all']
+
+- name: restart certificate
+  supervisorctl:
+    name: certs
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  ignore_errors: yes
+  tags: ['never', 'restart-all']
+
+- name: restart xqueue
+  supervisorctl:
+    name: "{{item}}"
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  with_items: ['xqueue', 'xqueue_consumer']
+  ignore_errors: yes
+  tags: ['never', 'restart-all']
