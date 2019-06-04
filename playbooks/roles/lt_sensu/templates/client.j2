@@ -1,0 +1,16 @@
+{
+  "client": {
+    "name": "{{client_name}}",
+    "address": "{{get_public_ip_address['content']}}",
+    "environment": "hawthorn-production",
+    "subscriptions": [
+      "ubuntu-host",
+      "hawthorn-prod",
+      "{{sensu_subscription}}"
+    ],
+    "socket": {
+      "bind": "127.0.0.1",
+      "port": 3030
+    }
+  }
+}
