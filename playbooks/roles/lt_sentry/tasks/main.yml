@@ -1,29 +1,55 @@
 ---
-# - name: create sentry project
-#   uri:
-#     url: http://sentry.learning-tribes.com.cn:9000/api/0/teams/sentry/learning-tribes/projects/
-#     method: POST
-#     headers:
-#       Content-Type: 'application/json'
-#       Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
-#     body_format: json
-#     body:
-#       name: "{{sentry_project}}"
-#     status_code: 201
-
-- name: get sentry project key
+- name: create sentry lms project
   uri:
-    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}/keys/
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/teams/sentry/learning-tribes/projects/
+    method: POST
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+    body_format: json
+    body:
+      name: "{{sentry_project}}-LMS"
+    status_code: 201
+
+- name: get sentry lms project key
+  uri:
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-lms/keys/
     method: GET
     headers:
       Content-Type: 'application/json'
       Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
     status_code: 200
     return_content: yes
-  register: get_sentry_project_key
+  register: get_sentry_lms_project_key
 
 - set_fact: 
-    sentry_project_key_fact: "{{get_sentry_project_key['content']}}"
+    sentry_project_lms_key_fact: "{{get_sentry_lms_project_key['json'][0]['dsn']['secret']}}"
+
+- name: create sentry cms project
+  uri:
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/teams/sentry/learning-tribes/projects/
+    method: POST
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+    body_format: json
+    body:
+      name: "{{sentry_project}}-CMS"
+    status_code: 201
+
+- name: get sentry cms project key
+  uri:
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-cms/keys/
+    method: GET
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+    status_code: 200
+    return_content: yes
+  register: get_sentry_cms_project_key
+
+- set_fact: 
+    sentry_project_cms_key_fact: "{{get_sentry_cms_project_key['json'][0]['dsn']['secret']}}"
 
 - name: test temp
   template:

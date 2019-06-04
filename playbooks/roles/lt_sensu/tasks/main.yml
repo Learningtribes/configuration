@@ -42,9 +42,6 @@
     return_content: yes
   register: get_public_ip_address
 
-- set_fact: 
-    public_ip_fact: "{{get_public_ip_address['content']}}"
-
 - name: create sensu client file
   template:
     src: client.j2
