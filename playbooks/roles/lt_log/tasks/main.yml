@@ -1,0 +1,63 @@
+---
+- name: create logbeat ssl file folder
+  file:
+    path: /opt/ssl/logstash
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: create ssl file
+  copy:
+    src: ../files/{{item}}
+    dest: /opt/ssl/logstash/{{item}}
+    mode: 0400
+  with_items: ['ca.pem', 'beat.crt', 'beat.key']
+  become: yes
+
+- name: auditbeat part
+  block:
+    - name: install auditbeat package
+      apt:
+        deb: https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-6.5.4-amd64.deb
+    - name: create auditbeat configuration file
+      copy:
+        src: ../files/auditbeat.yml
+        dest: /etc/auditbeat/auditbeat.yml
+        backup: yes
+        mode: 0600
+    - name: start auditbeat service
+      service:
+        name: auditbeat
+        state: started
+  become: yes
+
+- name: filebeat part
+  block:
+    - name: install filebeat package
+      apt:
+        deb: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-amd64.deb
+    - name: enable nginx module at filebeat
+      command: filebeat modules enable nginx
+    - name: enable mongodb module at filebeat
+      command: filebeat modules enable mongodb
+    - name: enable system module at filebeat
+      command: filebeat modules enable system
+    - name: create filebeat modules configuration file
+      copy:
+        src: ../files/{{item}}.yml
+        dest: /etc/filebeat/modules.d/{{item}}.yml
+        backup: yes
+        mode: 0600
+      with_items: ['nginx', 'mongodb', 'system']
+    - name: create filebeat configuration file
+      copy:
+        src: ../files/filebeat.yml
+        dest: /etc/filebeat/filebeat.yml
+        backup: yes
+        mode: 0600    
+    - name: start filebeat service
+      service:
+        name: filebeat
+        state: started
+  become: yes
+
