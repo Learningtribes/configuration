@@ -5,7 +5,7 @@
     method: POST
     headers:
       Content-Type: 'application/json'
-      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+      Authorization: 'Bearer {{sentry_token}}'
     body_format: json
     body:
       name: "{{sentry_project}}-LMS"
@@ -17,13 +17,13 @@
     method: GET
     headers:
       Content-Type: 'application/json'
-      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+      Authorization: 'Bearer {{sentry_token}}'
     status_code: 200
     return_content: yes
   register: get_sentry_lms_project_key
 
 - set_fact: 
-    sentry_project_lms_key_fact: "{{get_sentry_lms_project_key['json'][0]['dsn']['secret']}}"
+    RAVEN_LMS_DSN_CONFIG: { 'dsn': "{{get_sentry_lms_project_key['json'][0]['dsn']['secret']}}" }
 
 - name: create sentry cms project
   uri:
@@ -31,7 +31,7 @@
     method: POST
     headers:
       Content-Type: 'application/json'
-      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+      Authorization: 'Bearer {{sentry_token}}'
     body_format: json
     body:
       name: "{{sentry_project}}-CMS"
@@ -43,17 +43,13 @@
     method: GET
     headers:
       Content-Type: 'application/json'
-      Authorization: 'Bearer 5f3813c2dec14bbcaa4504b707d4da1c45fddd0e55b544d6ab653cc7b096a573'
+      Authorization: 'Bearer {{sentry_token}}'
     status_code: 200
     return_content: yes
   register: get_sentry_cms_project_key
 
 - set_fact: 
-    sentry_project_cms_key_fact: "{{get_sentry_cms_project_key['json'][0]['dsn']['secret']}}"
+    RAVEN_CMS_DSN_CONFIG: { 'dsn': "{{get_sentry_cms_project_key['json'][0]['dsn']['secret']}}" }
 
-- name: test temp
-  template:
-    src: test.j2
-    dest: ~/test.txt
 
 

@@ -1,0 +1,4 @@
+---
+- set_fact: 
+    EDXAPP_LMS_ELASTIC_APM: "{{LMS_ELASTIC_APM}}"
+    EDXAPP_CMS_ELASTIC_APM: "{{CMS_ELASTIC_APM}}"

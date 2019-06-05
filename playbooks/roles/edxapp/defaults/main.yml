@@ -376,15 +376,17 @@ EDXAPP_SOCIAL_MEDIA_FOOTER_URLS: {}
 EDXAPP_MOBILE_STORE_URLS: {}
 EDXAPP_FOOTER_ORGANIZATION_IMAGE: "images/logo.png"
 
-EDXAPP_ENV_EXTRA:
-  ELASTIC_APM: "{{ EDXAPP_ELASTIC_APM }}"
-EDXAPP_ELASTIC_APM: 
-  SERVICE_NAME: "{{ EDXAPP_ELASTIC_APM_SERVICE_NAME }}"
-  SECRET_TOKEN: "{{ EDXAPP_ELASTIC_APM_SECRET_TOKEN }}"
-  SERVER_URL: "{{ EDXAPP_ELASTIC_APM_SERVER_URL }}"
-EDXAPP_ELASTIC_APM_SERVICE_NAME: "edxapp"
-EDXAPP_ELASTIC_APM_SECRET_TOKEN: ""
-EDXAPP_ELASTIC_APM_SERVER_URL: "https://kibana.learning-tribes.com.cn:8200"
+EDXAPP_ENV_EXTRA: {}
+EDXAPP_LMS_ELASTIC_APM: {}
+EDXAPP_CMS_ELASTIC_APM: {}
+#   SERVICE_NAME: "{{ EDXAPP_ELASTIC_APM_SERVICE_NAME }}"
+#   SECRET_TOKEN: "{{ EDXAPP_ELASTIC_APM_SECRET_TOKEN }}"
+#   SERVER_URL: "{{ EDXAPP_ELASTIC_APM_SERVER_URL }}"
+# EDXAPP_ELASTIC_APM_SERVICE_NAME: "edxapp"
+# EDXAPP_ELASTIC_APM_SECRET_TOKEN: ""
+# EDXAPP_ELASTIC_APM_SERVER_URL: "https://kibana.learning-tribes.com.cn:8200"
+RAVEN_LMS_DSN_CONFIG: {}
+RAVEN_CMS_DSN_CONFIG: {}
 EDXAPP_AUTH_EXTRA: {}
 EDXAPP_LMS_ENV_EXTRA: "{{ EDXAPP_ENV_EXTRA }}"
 EDXAPP_CMS_ENV_EXTRA: "{{ EDXAPP_ENV_EXTRA }}"
@@ -483,6 +485,8 @@ EDXAPP_INSTALL_PRIVATE_REQUIREMENTS: false
 EDXAPP_EXTRA_REQUIREMENTS: 
     - name: elastic-apm
       version: 4.1.0
+    - name: raven
+      version: 6.8.0
 
 # List of private requirements that should be installed into the
 # edxapp virtual environment.
@@ -524,8 +528,7 @@ EDXAPP_PRIVATE_REQUIREMENTS:
 # List of custom middlewares that should be used in edxapp to process
 # incoming HTTP resquests. Should be a list of plain strings that fully
 # qualify Python classes or functions that can be used as Django middleware.
-EDXAPP_EXTRA_MIDDLEWARE_CLASSES: 
-    - "elasticapm.contrib.django.middleware.TracingMiddleware"
+EDXAPP_EXTRA_MIDDLEWARE_CLASSES: []
 
 EDXAPP_GOOGLE_ANALYTICS_ACCOUNT: "None"
 EDXAPP_GOOGLE_ANALYTICS_LINKEDIN: ""
@@ -1423,6 +1426,8 @@ lms_env_config:
   ANALYTICS_API_URL: "{{ EDXAPP_LMS_ANALYTICS_API_URL }}"
   GOOGLE_SITE_VERIFICATION_ID: "{{ EDXAPP_GOOGLE_SITE_VERIFICATION_ID }}"
   STATIC_URL_BASE: "{{ EDXAPP_LMS_STATIC_URL_BASE }}"
+  RAVEN_CONFIG: "{{ RAVEN_LMS_DSN_CONFIG }}"
+  ELASTIC_APM: "{{ EDXAPP_LMS_ELASTIC_APM }}"
 
 cms_auth_config:
   <<: *edxapp_generic_auth
@@ -1463,6 +1468,8 @@ cms_env_config:
   ALTERNATE_WORKER_QUEUES: "lms"
   COURSE_IMPORT_EXPORT_BUCKET: "{{ EDXAPP_IMPORT_EXPORT_BUCKET }}"
   STATIC_URL_BASE: "{{ EDXAPP_CMS_STATIC_URL_BASE }}"
+  RAVEN_CONFIG: "{{ RAVEN_CMS_DSN_CONFIG }}"
+  ELASTIC_APM: "{{ EDXAPP_CMS_ELASTIC_APM }}"
 
 # install dir for the edx-platform repo
 edxapp_code_dir: "{{ edxapp_app_dir }}/edx-platform"
