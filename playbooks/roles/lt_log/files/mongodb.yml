@@ -1,0 +1,4 @@
+- module: mongodb
+  log:
+    enabled: true
+    var.paths: ["/edx/var/log/mongo/mongodb.log"]

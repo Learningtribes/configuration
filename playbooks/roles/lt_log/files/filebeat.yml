@@ -1,0 +1,159 @@
+filebeat.inputs:
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_high_mem_*-stderr.log
+  fields:
+    logtype: worker
+    logclass: lms_hign_mem
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_high_?-stderr.log
+  fields:
+    logtype: worker
+    logclass: lms_hign
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_low_*-stderr.log
+  fields:
+    logtype: worker
+    logclass: lms_low
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_default_*-stderr.log
+  fields:
+    logtype: worker
+    logclass: lms_default
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms-stderr.log
+  fields:
+    logtype: lms
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms_high_*-stderr.log
+  fields:
+    logtype: worker
+    logclass: cms_hign
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms_low_*-stderr.log
+  fields:
+    logtype: worker
+    logclass: cms_low
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms_default_*-stderr.log
+  fields:
+    logtype: worker
+    logclass: cms_default
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms-stderr.log
+  fields:
+    logtype: cms
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/forum-stderr.log
+  fields:
+    logtype: forum
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\w,\s'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /var/log/rabbitmq/rabbit@*.log
+  fields:
+    logtype: rabbitmq
+  fields_under_root: true
+  multiline.pattern: '^='
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/supervisord.log
+  fields:
+    logtype: supervisord
+  fields_under_root: true
+
+- type: log
+  enabled: false
+  paths:
+    - /var/log/*.log
+
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+
+setup.template.settings:
+  index.number_of_shards: 3
+
+
+output.logstash:
+  hosts: ["kibana.learning-tribes.com.cn:5044"]
+  ssl.certificate_authorities: ["/opt/ssl/logstash/ca.pem"]
+  ssl.certificate: "/opt/ssl/logstash/beat.crt"
+  ssl.key: "/opt/ssl/logstash/beat.key"
+
+
+logging.level: info

@@ -1,4 +1,16 @@
 ---
+- name: change hostname
+  hostname:
+    name: "learning-tribes.{{client_name}}"
+  become: yes
+
+- name: change hosts file
+  replace: 
+    path: /etc/hosts
+    regexp: '^127.0.0.1.*'
+    replace: "127.0.0.1  localhost  learning-tribes.{{client_name}}"
+  become: yes
+
 - name: add sensu apt key
   apt_key:
     url: https://sensu.global.ssl.fastly.net/apt/pubkey.gpg

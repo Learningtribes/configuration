@@ -1,0 +1,23 @@
+auditbeat.modules:
+- module: auditd
+  audit_rules: |
+    -a exit,always -F arch=b64 -F auid>=1000 -F auid!=4294967295 -S execve -k nonrootcommands
+
+setup.template.settings:
+  index.number_of_shards: 3
+
+setup.kibana:
+
+output.logstash:
+  hosts: ["kibana.learning-tribes.com.cn:5044"]
+  ssl.certificate_authorities: ["/opt/ssl/logstash/ca.pem"]
+  ssl.certificate: "/opt/ssl/logstash/beat.crt"
+  ssl.key: "/opt/ssl/logstash/beat.key"
+
+processors:
+  - drop_event:
+      when:
+        equals:
+          user.name_map.auid: "root"
+  - include_fields:
+      fields: ["auditd.summary", "user.name_map", "beat", "process"]
