@@ -16,6 +16,8 @@
    - roles/lt_aws_initial/vars/main.yml
   serial: "{{ serial_count }}"
   roles:
+   - role: lt_sentry
+   - role: lt_apm
    - role: swapfile
      SWAPFILE_SIZE: 4GB
    - role: aws
@@ -42,3 +44,5 @@
      when: ENABLE_DEMO is defined and ENABLE_DEMO
    - role: devstack_sqlite_fix
      when: devstack is defined and devstack
+   - role: lt_sensu
+   - role: lt_log
