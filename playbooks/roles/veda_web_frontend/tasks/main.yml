@@ -34,3 +34,4 @@
     --skip_authorization
   become_user: "{{ veda_web_frontend_user }}"
   environment: "{{ VEDA_WEB_FRONTEND_ENVIRONMENT }}"
+  when: migrate_db is defined and migrate_db|lower == "yes"
