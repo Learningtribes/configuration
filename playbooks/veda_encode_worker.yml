@@ -30,6 +30,6 @@
   #   VIDEO_PIPELINE_BASE_SOCIAL_AUTH_EDX_OIDC_SECRET: "0af9306906b6150c6c7ddeadfeddb3e979e4c095"
   #   VIDEO_PIPELINE_BASE_VAL_PASSWORD: veda_service_user
   #   VIDEO_PIPELINE_BASE_VAL_USERNAME: veda_service_user
-   roles:
+  roles:
     - aws
     - veda_encode_worker
