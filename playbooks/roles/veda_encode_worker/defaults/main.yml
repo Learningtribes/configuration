@@ -33,7 +33,7 @@ veda_encode_worker_environment:
   PATH: '{{ veda_encode_worker_venv_bin }}:{{ ansible_env.PATH }}'
   PYTHONPATH: "{{ veda_encode_worker_code_dir }}"
   VEDA_ENCODE_WORKER_CFG: '{{ COMMON_CFG_DIR }}/{{ veda_encode_worker_service_name }}.yml'
-  AWS_ACCESS_KEY_ID: "$(grep veda_access_key_id {{ COMMON_CFG_DIR }}/{{ veda_encode_worker_service_name }}.yml |cut -d ' ' -f 2"
+  AWS_ACCESS_KEY_ID: "$(grep veda_access_key_id {{ COMMON_CFG_DIR }}/{{ veda_encode_worker_service_name }}.yml |cut -d ' ' -f 2)"
   AWS_SECRET_ACCESS_KEY: "$(grep veda_secret_access_key {{ COMMON_CFG_DIR }}/{{ veda_encode_worker_service_name }}.yml |cut -d ' ' -f 2)"
 
 VEDA_ENCODE_WORKER_GIT_IDENTITY: !!null
