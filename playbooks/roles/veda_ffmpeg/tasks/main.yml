@@ -30,7 +30,7 @@
 
 - name: compile v_videocompile
   command: "v_videocompile"
-  become: False
+  # become: False
   tags:
     - install
     - install:system-requirements
