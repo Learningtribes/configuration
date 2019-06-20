@@ -184,6 +184,7 @@ video_pipeline_base_config_default:
   rabbitmq_broker: "{{ VIDEO_PIPELINE_BASE_RABBITMQ_BROKER }}"
   rabbitmq_user: "{{ VIDEO_PIPELINE_BASE_RABBITMQ_USER }}"
   rabbitmq_pass: "{{ VIDEO_PIPELINE_BASE_RABBITMQ_PASS }}"
+  rabbitmq_vhost: "{{ VIDEO_PIPELINE_BASE_RABBITMQ_VHOST }}"
   onsite_worker: False
 
   # ---
