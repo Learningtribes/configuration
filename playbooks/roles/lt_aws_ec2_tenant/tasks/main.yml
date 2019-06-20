@@ -114,19 +114,70 @@
   with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
 # - debug:
 #     msg: "{{s3_get_id_fact}}"
-- name: create AWS S3
+- name: create AWS S3 default bucket
   aws_s3:
     #aws_access_key: "{{aws_access_key}}"
     #aws_secret_key: "{{aws_secret_key}}"
     region: "{{region}}"
     bucket: "{{s3_tenant_name}}"
     mode: create
-    permission: public-read
+    permission: private
   register: create_s3_result
   when: s3_get_id_fact == false
 # - debug:
 #     msg: "{{create_s3_result}}"
 #   when: s3_get_id_fact == false
+- set_fact:
+    s3_public_id_fact: "{{s3_public_tenant_name}}"
+- set_fact:
+    s3_get_public_id_fact: false
+- set_fact:
+    s3_get_public_id_fact: true
+  when: s3_public_id_fact == item.name
+  with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+- name: create AWS S3 public bucket
+  aws_s3:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    bucket: "{{s3_public_tenant_name}}"
+    mode: create
+    permission: public-read
+  when: s3_get_public_id_fact == false
+- set_fact:
+    s3_video_id_fact: "{{s3_video_tenant_name}}"
+- set_fact:
+    s3_get_video_id_fact: false
+- set_fact:
+    s3_get_video_id_fact: true
+  when: s3_video_id_fact == item.name
+  with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+- name: create AWS S3 video bucket
+  aws_s3:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    bucket: "{{s3_video_tenant_name}}"
+    mode: create
+    permission: private
+  when: s3_get_video_id_fact == false
+- set_fact:
+    s3_veda_id_fact: "{{s3_veda_tenant_name}}"
+- set_fact:
+    s3_get_veda_id_fact: false
+- set_fact:
+    s3_get_veda_id_fact: true
+  when: s3_veda_id_fact == item.name
+  with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+- name: create AWS S3 veda bucket
+  aws_s3:
+    #aws_access_key: "{{aws_access_key}}"
+    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    bucket: "{{s3_veda_tenant_name}}"
+    mode: create
+    permission: private
+  when: s3_get_veda_id_fact == false
 - name: download inventory repo
   git: 
     repo: "{{inventory_git_url}}"
