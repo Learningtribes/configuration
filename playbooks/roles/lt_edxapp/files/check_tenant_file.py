@@ -2,6 +2,7 @@ from ConfigParser import SafeConfigParser
 import sys
 import boto3
 import os
+import shutil
 from git import Repo 
 
 
