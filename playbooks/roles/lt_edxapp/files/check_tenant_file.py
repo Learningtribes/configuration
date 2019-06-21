@@ -44,6 +44,8 @@ for i in file_hosts_dict.keys():
     instance_name = 'Platform APP ' + i.replace('_tenant','')
     response = client.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': [instance_name]}])
     if len(response['Reservations']) == 0:
+        remove_folder = repo_path + '/group_vars/' + tenant_name
+        shutil.rmtree(remove_folder)
         parser.remove_section(tenant_name)
         parser.remove_option(region_setion, tenant_name)
         parser.remove_option('tenants:children', tenant_name)
@@ -54,7 +56,7 @@ for i in file_hosts_dict.keys():
         with repo.git.custom_environment(GIT_USERNAME=GITHUB_USERNAME, GIT_PASSWORD=GITHUB_PASSWORD):
             repo.git.config('credential.helper', '/bin/bash ' + credential_file)
             repo.git.branch('--set-upstream-to=origin/master', 'master')
-            repo.git.add('hosts.ini')
+            repo.git.add('-A')
             repo.git.commit('-m', 'remove ' + tenant_name)
             repo.git.push()
             repo.git.config('--remove-section', 'credential')
