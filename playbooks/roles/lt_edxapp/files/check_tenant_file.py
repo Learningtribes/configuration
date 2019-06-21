@@ -46,6 +46,8 @@ for i in file_hosts_dict.keys():
     if len(response['Reservations']) == 0:
         remove_folder = repo_path + '/group_vars/' + tenant_name
         shutil.rmtree(remove_folder)
+        remove_config_folder = repo_path + '/configuration_files/' + tenant_name
+        shutil.rmtree(remove_config_folder)
         parser.remove_section(tenant_name)
         parser.remove_option(region_setion, tenant_name)
         parser.remove_option('tenants:children', tenant_name)
