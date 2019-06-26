@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: True
+  gather_facts: False
+  vars_files:
+    - roles/lt_aws_initial/defaults/main.yml
+    - roles/lt_aws_initial/vars/main.yml
+  roles:
+    - lt_aws_ec2_tenant_after

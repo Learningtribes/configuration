@@ -13,4 +13,5 @@
     - role: lt_theme
     - role: lt_certs
     - role: lt_xblock
+    - role: lt_config_file
     - role: lt_restart_service

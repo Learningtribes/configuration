@@ -1,4 +1,11 @@
 ---
+- name: set swappiness
+  sysctl:
+    name: vm.swappiness
+    value: 5
+    state: present
+    reload: yes
+
 - name: create sentry lms project
   uri:
     url: http://sentry.learning-tribes.com.cn:9000/api/0/teams/sentry/learning-tribes/projects/

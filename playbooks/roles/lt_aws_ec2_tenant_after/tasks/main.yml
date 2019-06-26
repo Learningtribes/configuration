@@ -1,0 +1,26 @@
+---
+- name: download inventory repo
+  git: 
+    repo: "{{inventory_git_url}}"
+    dest: "{{inventory_repo_folder}}"
+    version: "{{inventory_repo_branch}}"
+- name: create tenant configuration folder 
+  file:
+    path: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant"
+    state: directory
+    mode: 0755
+- name: get tenant configuration files
+  command: cp {{item.file_src}} {{item.file_dest}}
+  with_items:
+    - { file_src: "/etc/nginx/sites-enabled/lms", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/lms" }
+    - { file_src: "/etc/nginx/sites-enabled/cms", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/cms" }
+    - { file_src: "/edx/app/edxapp/lms.env.json", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/lms.env.json" }
+    - { file_src: "/edx/app/edxapp/cms.env.json", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/cms.env.json" }
+- name: git push code
+  shell: "git add -A; git commit -m 'add {{client_name}} tenant configuration files'; git push"
+  args:
+    chdir: "{{inventory_repo_folder}}"
+- name: remove inventory repo folder
+  file:
+    path: "{{inventory_repo_folder}}"
+    state: absent
