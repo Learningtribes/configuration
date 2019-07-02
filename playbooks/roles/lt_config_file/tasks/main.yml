@@ -14,7 +14,7 @@
   register: get_hostname_string
   tags: ['never', 'update_nginx', 'update_platform']
 - set_fact:
-    hostname_fact: "{{get_hostname_string['stdout'] | regex_replace('learning-tribes.??-')}}"
+    hostname_fact: "{{get_hostname_string['stdout'][20:]}}"
   tags: ['never', 'update_nginx', 'update_platform']
 - name: updage nginx file
   shell: cp {{item.file_src}} {{item.file_dest}}
