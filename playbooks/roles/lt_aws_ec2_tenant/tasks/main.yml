@@ -12,9 +12,9 @@
 - set_fact:
     ec2_id_fact: "{{check_ec2_result['instances'][0]['instance_id']}}"
   when: check_ec2_result['instances'][0] is defined
-# - fail:
-#     msg: instance had exist
-#   when: check_ec2_result['instances'][0] is defined
+- fail:
+    msg: instance had exist
+  when: check_ec2_result['instances'][0] is defined
 - name: create AWS EC2 instance
   ec2_instance:
     state: present
