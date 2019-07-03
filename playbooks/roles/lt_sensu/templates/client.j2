@@ -8,6 +8,15 @@
       "hawthorn-prod",
       "{{sensu_subscription}}"
     ],
+    "keepalive": {
+      "handlers": [
+        "mailer",
+        "slack"
+      ],
+      "subscribers": [
+        "ubuntu-host"
+      ]
+    },
     "socket": {
       "bind": "127.0.0.1",
       "port": 3030

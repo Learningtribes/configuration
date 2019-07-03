@@ -93,6 +93,11 @@ error_page {{ k }} {{ v }};
   add_header Strict-Transport-Security "max-age={{ NGINX_HSTS_MAX_AGE }}";
   {% endif %}
 
+  server_name {{ LMS_HOSTNAME }};
+
+  # root /edx/var/nginx/server-static;
+  # rewrite ^.*$ /maintenance.html;
+
   # Prevent invalid display courseware in IE 10+ with high privacy settings
   add_header P3P '{{ NGINX_P3P_MESSAGE }}';
 

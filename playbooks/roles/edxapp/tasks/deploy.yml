@@ -275,6 +275,20 @@
     - install
     - install:app-requirements
 
+- name: code sandbox | Install base sandbox requirements matplotlib 
+  pip:
+    chdir: "{{ edxapp_code_dir }}"
+    name: matplotlib==1.3.1
+    virtualenv: "{{ edxapp_sandbox_venv_dir }}"
+    state: present
+    extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }} --exists-action w"
+  become_user: "{{ edxapp_sandbox_user }}"
+  when: EDXAPP_PYTHON_SANDBOX
+  tags:
+    - edxapp-sandbox
+    - install
+    - install:app-requirements
+
 - name: code sandbox | put code sandbox into aa-enforce or aa-complain mode, depending on EDXAPP_SANDBOX_ENFORCE
   command: /usr/sbin/{{ edxapp_aa_command }} /etc/apparmor.d/code.sandbox
   when: EDXAPP_PYTHON_SANDBOX

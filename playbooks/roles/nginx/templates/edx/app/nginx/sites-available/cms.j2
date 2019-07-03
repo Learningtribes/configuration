@@ -52,13 +52,16 @@ error_page {{ k }} {{ v }};
 
   server_name {{ CMS_HOSTNAME }};
 
+  # root /edx/var/nginx/server-static;
+  # rewrite ^.*$ /maintenance.html;
+
   access_log {{ nginx_log_dir }}/access.log {{ NGINX_LOG_FORMAT_NAME }};
   error_log {{ nginx_log_dir }}/error.log error;
 
   # CS184 requires uploads of up to 4MB for submitting screenshots. 
   # CMS requires larger value for course assest, values provided 
   # via hiera.
-  client_max_body_size 100M;
+  client_max_body_size 300M;
   
   rewrite ^(.*)/favicon.ico$ /static/images/favicon.ico last;
 
