@@ -61,44 +61,60 @@
   when: check_elb_result['elbs'][0] is not defined
 # - debug:
 #     msg: "{{check_acm_result}}"
-- name: create AWS ELB instance
-  ec2_elb_lb:
+- name: create AWS ELB target group
+  elb_target_group:
     state: present
-    #aws_access_key: "{{aws_access_key}}"
-    #aws_secret_key: "{{aws_secret_key}}"
+    region: "{{region}}"
+    name: "{{elb_target_group_tenant_name}}"
+    target_type: instance
+    vpc_id: "{{vpc_id_fact}}"
+    protocol: http
+    port: 80
+    health_check_protocol: http
+    health_check_port: traffic-port
+    health_check_timeout: 5
+    healthy_threshold_count: 5
+    unhealthy_threshold_count: 2
+    health_check_interval: 30
+    successful_response_codes: "200"
+    targets:
+      - Id: "{{ec2_id_fact}}"
+        Port: 80
+  register: create_elb_target_group_result
+  when: check_elb_result['elbs'][0] is not defined
+- name: create AWS ELB instance
+  elb_application_lb:
+    state: present
     region: "{{region}}"
     name: "{{elb_instance_tenant_name}}"
     scheme: internet-facing
-    listeners:
-      - protocol: http
-        load_balancer_port: 80
-        instance_protocol: http
-        instance_port: 80
-      - protocol: https
-        load_balancer_port: 443
-        instance_protocol: https
-        instance_port: 443
-        ssl_certificate_id: "{{check_acm_result['certificates'][0]['certificate_arn']}}"
+    security_groups: Platform APP Security Group
     subnets:
       - "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
       - "{{check_subnet_result['results'][1]['subnets'][0]['subnet_id']}}"
+    deletion_protection: yes
+    http2: yes
+    listeners:
+      - Protocol: HTTPS
+        Port: 443
+        DefaultActions:
+          - Type: forward
+            TargetGroupName: "{{elb_target_group_tenant_name}}"
+        Certificates:
+          - CertificateArn: "{{check_acm_result['certificates'][0]['certificate_arn']}}"
+        SslPolicy: ELBSecurityPolicy-2016-08
     tags:
-      Name: Platform ELB {{client_name}}
-      COST: "{{client_name}}"
-    security_group_names: Platform APP Security Group
-    health_check:
-      ping_protocol: http
-      ping_port: 80
-      ping_path: "/login"
-      response_timeout: 10
-      interval: 60
-      unhealthy_threshold: 3
-      healthy_threshold: 3
-    instance_ids: "{{ec2_id_fact}}"
+      Name: Platform ELB {{client_name}} 
+      COST: "{{client_name}}" 
   register: create_elb_result
   when: check_elb_result['elbs'][0] is not defined
 # - debug:
 #     msg: "{{create_elb_result}}"
+- name: "Add http to https redirect listener to ELB"
+  command: > 
+    aws elbv2 --region {{region}} create-listener 
+    --load-balancer-arn {{create_elb_result['load_balancer_arn']}} --protocol HTTP --port 80 
+    --default-actions 'Type=redirect,RedirectConfig={Protocol=HTTPS,Port=443,Host="#{host}",Path="/#{path}",Query="#{query}",StatusCode=HTTP_301}'
 - name: check AWS S3
   aws_s3_bucket_facts:
     #aws_access_key: "{{aws_access_key}}"
