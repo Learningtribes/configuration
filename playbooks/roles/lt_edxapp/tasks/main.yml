@@ -1,5 +1,5 @@
 ---
-- name: checkout edx-platform repo into {{ edxapp_code_dir }}
+- name: checkout edx-platform repo
   git:
     dest: "{{ edxapp_code_dir }}"
     repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
@@ -9,10 +9,35 @@
   become_user: edxapp
   tags: ['never', 'deploy']
 
+- name: return instance ID
+  command: curl http://169.254.169.254/latest/meta-data/instance-id
+  register: instanceid
+  tags: ['never', 'deploy-production']
+
+- name: get branch name on instance tag
+  ec2_tag:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    region: "{{ lt_ec2_region }}"
+    resource: "{{ instanceid.stdout }}"
+    state: list
+  register: ec2_tags
+  tags: ['never', 'deploy-production']
+
+- name: checkout edx-platform repo into {{ edxapp_code_dir }}
+  git:
+    dest: "{{ edxapp_code_dir }}"
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
+    version: "{{ec2_tags['tags']['branch_name']}}"
+    accept_hostkey: yes
+    force: yes
+  become_user: edxapp
+  tags: ['never', 'deploy-production']
+
 - name: migrate lt edxapp 
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
   when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
   with_items:
     - 'lms'
     - 'cms'
-  tags: ['never', 'deploy']
+  tags: ['never', 'deploy', 'deploy-production']
