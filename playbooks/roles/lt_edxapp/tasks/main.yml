@@ -24,7 +24,7 @@
   register: ec2_tags
   tags: ['never', 'deploy-production']
 
-- name: checkout edx-platform repo into {{ edxapp_code_dir }}
+- name: checkout {{ec2_tags['tags']['branch_name']}} from edx-platform repo into {{ edxapp_code_dir }}
   git:
     dest: "{{ edxapp_code_dir }}"
     repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
