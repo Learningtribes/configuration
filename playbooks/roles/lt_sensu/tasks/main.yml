@@ -74,5 +74,11 @@
   shell: /opt/sensu/bin/sensu-service start client fork
   become: yes
 
+- name: install pip boto3
+  pip:
+    name: boto3
+  become: yes
+
+
 
 
