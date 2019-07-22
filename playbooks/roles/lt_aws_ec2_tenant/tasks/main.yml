@@ -140,6 +140,13 @@
     permission: private
   register: create_s3_result
   when: s3_get_id_fact == false
+- name: add default bucket Tag
+  s3_bucket:
+    region: "{{region}}"
+    bucket: "{{s3_tenant_name}}"
+    tags:
+      COST: "{{client_name}}"
+  when: s3_get_id_fact == false
 # - debug:
 #     msg: "{{create_s3_result}}"
 #   when: s3_get_id_fact == false
@@ -160,6 +167,13 @@
     mode: create
     permission: public-read
   when: s3_get_public_id_fact == false
+- name: add public bucket Tag
+  s3_bucket:
+    region: "{{region}}"
+    bucket: "{{s3_public_tenant_name}}"
+    tags:
+      COST: "{{client_name}}"
+  when: s3_get_public_id_fact == false
 - set_fact:
     s3_video_id_fact: "{{s3_video_tenant_name}}"
 - set_fact:
@@ -177,6 +191,30 @@
     mode: create
     permission: private
   when: s3_get_video_id_fact == false
+- name: add video bucket Tag
+  s3_bucket:
+    region: "{{region}}"
+    bucket: "{{s3_video_tenant_name}}"
+    tags:
+      COST: "{{client_name}}"
+  when: s3_get_video_id_fact == false
+- name: add video bucket CORS
+  aws_s3_cors:
+    region: "{{region}}"
+    bucket: "{{s3_video_tenant_name}}"
+    state: present
+    rules:
+      - allowed_origins:
+          - '*'
+        allowed_methods:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+        allowed_headers:
+          - '*'
+        max_age_seconds: 3600
+  when: s3_get_video_id_fact == false
 - set_fact:
     s3_veda_id_fact: "{{s3_veda_tenant_name}}"
 - set_fact:
@@ -193,6 +231,13 @@
     bucket: "{{s3_veda_tenant_name}}"
     mode: create
     permission: private
+  when: s3_get_veda_id_fact == false
+- name: add veda bucket Tag
+  s3_bucket:
+    region: "{{region}}"
+    bucket: "{{s3_veda_tenant_name}}"
+    tags:
+      COST: "{{client_name}}"
   when: s3_get_veda_id_fact == false
 - name: download inventory repo
   git: 
