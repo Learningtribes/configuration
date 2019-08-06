@@ -216,7 +216,7 @@
 - name: add video bucket CORS
   aws_s3_cors:
     region: "{{region}}"
-    bucket: "{{s3_video_tenant_name}}"
+    name: "{{s3_video_tenant_name}}"
     state: present
     rules:
       - allowed_origins:
