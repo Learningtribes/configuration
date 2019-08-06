@@ -337,6 +337,7 @@
     region: "{{region}}"
     domain_name: "*.learning-tribes.com"
   register: check_acm_result
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{check_acm_result}}"
 - name: import AWS ACM
@@ -346,15 +347,18 @@
   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
   register: import_acm_result
   when: check_acm_result['certificates'][0] is not defined
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{import_acm_result['stdout'] | from_json}}"
 #   when: check_acm_result['certificates'][0] is not defined
 - set_fact:
     acm_fact: "{{import_acm_result['stdout'] | from_json}}"
   when: check_acm_result['certificates'][0] is not defined
+  tags: ['skip-cn']
 - set_fact:
     acm_id_fact: "{{acm_fact['CertificateArn']}}"
   when: check_acm_result['certificates'][0] is not defined
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{acm_id_fact}}"
 #   when: check_acm_result['certificates'][0] is not defined
