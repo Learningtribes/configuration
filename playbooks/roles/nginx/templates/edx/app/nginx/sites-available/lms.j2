@@ -285,7 +285,7 @@ location ~ ^{{ EDXAPP_MEDIA_URL }}/(?P<file>.*) {
 location ^~ /xblock/ {
     proxy_set_header Host      {{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com;
     proxy_set_header X-Real-IP $remote_addr;
-    proxy_pass       https://{{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com/{{ EDXAPP_DJFS['prefix'] }}/;
+    proxy_pass       https://{{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com/{{ EDXAPP_DJFS['prefix'] }};
 }
 
 {% if NGINX_DJANGO_ADMIN_ACCESS_CIDRS and EDXAPP_ENABLE_DJANGO_ADMIN_RESTRICTION %}

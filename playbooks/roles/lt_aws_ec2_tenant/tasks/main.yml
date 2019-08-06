@@ -49,6 +49,7 @@
     region: "{{region}}"
     names: "{{elb_instance_tenant_name}}"
   register: check_elb_result
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{check_elb_result}}"
 - name: check AWS ACM
@@ -59,6 +60,7 @@
     domain_name: "*.learning-tribes.com"
   register: check_acm_result
   when: check_elb_result['elbs'][0] is not defined
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{check_acm_result}}"
 - name: create AWS ELB target group
@@ -82,6 +84,7 @@
         Port: 80
   register: create_elb_target_group_result
   when: check_elb_result['elbs'][0] is not defined
+  tags: ['skip-cn']
 - name: create AWS ELB instance
   elb_application_lb:
     state: present
@@ -108,6 +111,7 @@
       COST: "{{client_name}}" 
   register: create_elb_result
   when: check_elb_result['elbs'][0] is not defined
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{create_elb_result}}"
 - name: "Add http to https redirect listener to ELB"
@@ -115,19 +119,23 @@
     aws elbv2 --region {{region}} create-listener 
     --load-balancer-arn {{create_elb_result['load_balancer_arn']}} --protocol HTTP --port 80 
     --default-actions 'Type=redirect,RedirectConfig={Protocol=HTTPS,Port=443,Host="#{host}",Path="/#{path}",Query="#{query}",StatusCode=HTTP_301}'
+  tags: ['skip-cn']
 - name: check AWS S3
   aws_s3_bucket_facts:
     #aws_access_key: "{{aws_access_key}}"
     #aws_secret_key: "{{aws_secret_key}}"
   register: check_s3_result
+  tags: ['skip-cn']
 - set_fact:
     s3_id_fact: "{{s3_tenant_name}}"
+  tags: ['skip-cn']
 - set_fact:
     s3_get_id_fact: false
 - set_fact:
     s3_get_id_fact: true
   when: s3_id_fact == item.name
   with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{s3_get_id_fact}}"
 - name: create AWS S3 default bucket
@@ -143,21 +151,24 @@
 - name: add default bucket Tag
   s3_bucket:
     region: "{{region}}"
-    bucket: "{{s3_tenant_name}}"
+    name: "{{s3_tenant_name}}"
     tags:
       COST: "{{client_name}}"
   when: s3_get_id_fact == false
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{create_s3_result}}"
 #   when: s3_get_id_fact == false
 - set_fact:
     s3_public_id_fact: "{{s3_public_tenant_name}}"
+  tags: ['skip-cn']
 - set_fact:
     s3_get_public_id_fact: false
 - set_fact:
     s3_get_public_id_fact: true
   when: s3_public_id_fact == item.name
   with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+  tags: ['skip-cn']
 - name: create AWS S3 public bucket
   aws_s3:
     #aws_access_key: "{{aws_access_key}}"
@@ -170,18 +181,21 @@
 - name: add public bucket Tag
   s3_bucket:
     region: "{{region}}"
-    bucket: "{{s3_public_tenant_name}}"
+    name: "{{s3_public_tenant_name}}"
     tags:
       COST: "{{client_name}}"
   when: s3_get_public_id_fact == false
+  tags: ['skip-cn']
 - set_fact:
     s3_video_id_fact: "{{s3_video_tenant_name}}"
+  tags: ['skip-cn']
 - set_fact:
     s3_get_video_id_fact: false
 - set_fact:
     s3_get_video_id_fact: true
   when: s3_video_id_fact == item.name
   with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+  tags: ['skip-cn']
 - name: create AWS S3 video bucket
   aws_s3:
     #aws_access_key: "{{aws_access_key}}"
@@ -194,14 +208,15 @@
 - name: add video bucket Tag
   s3_bucket:
     region: "{{region}}"
-    bucket: "{{s3_video_tenant_name}}"
+    name: "{{s3_video_tenant_name}}"
     tags:
       COST: "{{client_name}}"
   when: s3_get_video_id_fact == false
+  tags: ['skip-cn']
 - name: add video bucket CORS
   aws_s3_cors:
     region: "{{region}}"
-    bucket: "{{s3_video_tenant_name}}"
+    name: "{{s3_video_tenant_name}}"
     state: present
     rules:
       - allowed_origins:
@@ -215,14 +230,17 @@
           - '*'
         max_age_seconds: 3600
   when: s3_get_video_id_fact == false
+  tags: ['skip-cn']
 - set_fact:
     s3_veda_id_fact: "{{s3_veda_tenant_name}}"
+  tags: ['skip-cn']
 - set_fact:
     s3_get_veda_id_fact: false
 - set_fact:
     s3_get_veda_id_fact: true
   when: s3_veda_id_fact == item.name
   with_items: "{{check_s3_result['ansible_facts']['buckets']}}"
+  tags: ['skip-cn']
 - name: create AWS S3 veda bucket
   aws_s3:
     #aws_access_key: "{{aws_access_key}}"
@@ -235,10 +253,11 @@
 - name: add veda bucket Tag
   s3_bucket:
     region: "{{region}}"
-    bucket: "{{s3_veda_tenant_name}}"
+    name: "{{s3_veda_tenant_name}}"
     tags:
       COST: "{{client_name}}"
   when: s3_get_veda_id_fact == false
+  tags: ['skip-cn']
 - name: download inventory repo
   git: 
     repo: "{{inventory_git_url}}"
