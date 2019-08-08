@@ -9,7 +9,7 @@
     update: yes
     force: yes
   with_items: "{{LT_THEME}}"
-  tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
+  tags: ['never', 'all-theme', 'lms-theme']
 
 - name: Download themes
   become_user: edxapp
@@ -60,16 +60,41 @@
 
 - name: Compile cms themes
   block:
-    - name: Get theme folder
-      stat: 
-        path: "/edx/app/edxapp/themes/{{item}}"
-      with_items: "{{LT_THEME}}"
-      register: check_cms_theme
-    - name: Complie cms
-      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+    - name: return instance ID
+      command: curl http://169.254.169.254/latest/meta-data/instance-id
+      register: instanceid
+    - name: get branch name on instance tag
+      ec2_tag:
+        aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+        aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+        region: "{{ lt_ec2_region }}"
+        resource: "{{ instanceid.stdout }}"
+        state: list
+      register: ec2_cms_tags
+    - name: Download cms themes
+      become_user: edxapp
+      git:
+        repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+        dest: "/edx/app/edxapp/themes/{{ec2_cms_tags['tags']['theme_name']}}"
+        version: "{{ec2_cms_tags['tags']['theme_name']}}"
+        clone: no
+        update: yes
+        force: yes
+    - name: Deploy cms themes
+      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{ec2_cms_tags['tags']['theme_name']}}"
       args:
         executable: /bin/bash
-      when: item.stat.exists and item.stat.isdir 
-      with_items: "{{check_cms_theme['results']}}"
-      become_user: edxapp    
+      become_user: edxapp
+    # - name: Get theme folder
+    #   stat: 
+    #     path: "/edx/app/edxapp/themes/{{item}}"
+    #   with_items: "{{LT_THEME}}"
+    #   register: check_cms_theme
+    # - name: Complie cms
+    #   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+    #   args:
+    #     executable: /bin/bash
+    #   when: item.stat.exists and item.stat.isdir 
+    #   with_items: "{{check_cms_theme['results']}}"
+    #   become_user: edxapp    
   tags: ['never', 'cms-theme']
