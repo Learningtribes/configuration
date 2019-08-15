@@ -16,6 +16,8 @@
     - { file_src: "/etc/nginx/sites-enabled/cms", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/cms" }
     - { file_src: "/edx/app/edxapp/lms.env.json", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/lms.env.json" }
     - { file_src: "/edx/app/edxapp/cms.env.json", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/cms.env.json" }
+    - { file_src: "/edx/app/edxapp/lms.auth.json", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/lms.auth.json" }
+    - { file_src: "/edx/app/edxapp/cms.auth.json", file_dest: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/cms.auth.json" }
 - name: git push code
   shell: "git add -A; git commit -m 'add {{client_name}} tenant configuration files'; git push"
   args:
