@@ -32,6 +32,8 @@
   with_items:
     - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/lms.env.json", file_dest: "/edx/app/edxapp/lms.env.json" }
     - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/cms.env.json", file_dest: "/edx/app/edxapp/cms.env.json" }
+    - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/lms.auth.json", file_dest: "/edx/app/edxapp/lms.auth.json" }
+    - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/cms.auth.json", file_dest: "/edx/app/edxapp/cms.auth.json" }
   become_user: edxapp
   tags: ['never', 'update_platform']
 - name: remove inventory repo folder
