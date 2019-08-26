@@ -13,7 +13,6 @@
 
 - name: get initial sql file
   shell: "curl  -u {{GITHUB_USERNAME}}:{{GITHUB_PASSWORD}} https://raw.githubusercontent.com/Learningtribes/platform/master/scripts/default-config.sql > /tmp/initial.sql"
-  tags: sql-test
 
 - name: copy edxapp sql file
   copy: 
