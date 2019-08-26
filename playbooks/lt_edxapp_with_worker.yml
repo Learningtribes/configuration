@@ -46,3 +46,4 @@
      when: devstack is defined and devstack
    - role: lt_sensu
    - role: lt_log
+   - role: lt_sql

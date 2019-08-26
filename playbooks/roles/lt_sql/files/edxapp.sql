@@ -1,0 +1,5 @@
+insert into auth_user (password, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values ('pbkdf2_sha256$36000$YnO3qYfAPxBv$5UDJjRF9qhWuOH42HQRw+BnPO+NEdfOzUGnMSPJLlNU=', 1, 'staff6', 'staff6', 'staff6', 'staff6@example.com', 1, 1, now());
+insert into auth_user (password, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values ('pbkdf2_sha256$36000$YnO3qYfAPxBv$5UDJjRF9qhWuOH42HQRw+BnPO+NEdfOzUGnMSPJLlNU=', 1, 'staff7', 'staff7', 'staff7', 'staff7@example.com', 1, 1, now());
+update auth_user SET password='pbkdf2_sha256$36000$x6yC9D26hoLj$iHidHhnBcKGNXeVyACsyGedjQ4zWb/j2uSVB83ncyI0=', is_superuser=1 WHERE username='veda_service_user';
+insert into oauth2_client (name, url, redirect_uri, client_id, client_secret, client_type, user_id) values ('veda', 'http://127.0.0.1:8000/api/val/v0', 'http://127.0.0.1', '89d85fb47ae6f00fb527', '0af9306906b6150c6c7ddeadfeddb3e979e4c095', 0, 3);
+insert into video_pipeline_videouploadsenabledbydefault (enabled, enabled_for_all_courses, change_date) values (1, 1, now());

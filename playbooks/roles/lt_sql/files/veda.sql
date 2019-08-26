@@ -1,0 +1,6 @@
+insert into VEDA_OS01_destination (destination_name, destination_active, destination_nick) values ('High resolution', 1, 'HLS');
+insert into VEDA_OS01_destination (destination_name, destination_active, destination_nick) values ('Normal', 1, 'NML');
+insert into VEDA_OS01_destination (destination_name, destination_active, destination_nick) values ('Amazon AWS', 1, 'S31');
+insert into VEDA_OS01_encode (encode_name, profile_active, encode_suffix, encode_filetype, encode_bitdepth, encode_resolution, product_spec, encode_destination_id) values ('Desktop - High', 1, 'DTH', 'mp4', 27, 720 ,'desktop_mp4', 3);
+insert into VEDA_OS01_encode (encode_name, profile_active, encode_suffix, encode_filetype, encode_bitdepth, encode_resolution, product_spec, encode_destination_id) values ('Mobile - Low', 1, 'MB2', 'mp4', 27, 360 ,'mobile_low', 3);
+insert into VEDA_OS01_encode (encode_name, profile_active, encode_suffix, encode_filetype, encode_bitdepth, encode_resolution, product_spec, encode_destination_id) values ('HLS', 0, 'DTH', 'mp4', 0, 0 ,'hls', 3);
