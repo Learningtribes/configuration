@@ -34,6 +34,23 @@
   become_user: edxapp
   tags: ['never', 'deploy-production']
 
+- name: install system requirement package
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop: "{{ lookup('file', '/edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt').splitlines() }}"
+  ignore_errors: yes
+  tags: ['never', 'deploy', 'deploy-production']
+
+- name: install python requirement package
+  pip:
+    chdir: /edx/app/edxapp/edx-platform/requirements/edx
+    requirements: base.txt
+    virtualenv: /edx/app/edxapp/venvs/edxapp
+  become_user: edxapp
+  tags: ['never', 'deploy', 'deploy-production']
+
 - name: migrate lt edxapp 
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
   when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
