@@ -1538,6 +1538,7 @@ edx_platform_repo: "https://{{ COMMON_GIT_MIRROR }}/edx/edx-platform.git"
 edx_platform_version: 'release'
 custom_requirements_file:   "{{ edxapp_code_dir }}/requirements/edx/custom.txt"
 base_requirements_file:   "{{ edxapp_code_dir }}/requirements/edx/base.txt"
+third_party_requirements_file:   "{{ edxapp_code_dir }}/requirements/edx/third-party.txt"
 django_requirements_file:   "{{ edxapp_code_dir }}/requirements/edx/django.txt"
 openstack_requirements_file: "{{ edxapp_code_dir }}/requirements/edx/openstack.txt"
 
@@ -1548,6 +1549,7 @@ sandbox_base_requirements:  "{{ edxapp_code_dir }}/requirements/edx-sandbox/base
 edxapp_requirements_files:
   - "{{ custom_requirements_file }}"
   - "{{ base_requirements_file }}"
+  - "{{ third_party_requirements_file }}"
 
 # All edxapp requirements files potentially containing Github URLs.  When using a custom
 # Github mirror, occurrences of "github.com" are replaced by the custom mirror in these
