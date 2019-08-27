@@ -34,12 +34,18 @@
   become_user: edxapp
   tags: ['never', 'deploy-production']
 
+- name: get system requirement content
+  command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
+  register: system_package_content
+  ignore_errors: yes
+  tags: ['never', 'deploy', 'deploy-production']
+
 - name: install system requirement package
   apt:
     name: "{{ item }}"
     state: present
     update_cache: yes
-  loop: "{{ lookup('file', '/edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt').splitlines() }}"
+  with_items: "{{ system_package_content['stdout_lines'] }}"
   become: yes
   ignore_errors: yes
   tags: ['never', 'deploy', 'deploy-production']
