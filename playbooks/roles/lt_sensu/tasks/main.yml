@@ -67,7 +67,10 @@
 
 - name: install requirement package
   apt:
-    name: sysstat
+    name: "{{ item }}"
+  with_items: 
+    - sysstat
+    - tmux
   become: yes
 
 - name: start sensu client
