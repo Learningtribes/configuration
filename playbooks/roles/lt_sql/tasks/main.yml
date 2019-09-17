@@ -12,7 +12,7 @@
     mode: '754'
 
 - name: get initial sql file
-  shell: "curl  -u {{GITHUB_USERNAME}}:{{GITHUB_PASSWORD}} https://raw.githubusercontent.com/Learningtribes/platform/master/scripts/default-config.sql > /tmp/initial.sql"
+  shell: "curl  -u {{git_username}}:{{git_password}} https://raw.githubusercontent.com/Learningtribes/platform/master/scripts/default-config.sql > /tmp/initial.sql"
 
 - name: copy edxapp sql file
   copy: 

@@ -47,3 +47,4 @@
    - role: lt_sensu
    - role: lt_log
    - role: lt_sql
+   - role: lt_ldap

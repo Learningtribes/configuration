@@ -91,9 +91,13 @@
     - "{{ edxapp_course_data_dir }}"
     - "{{ edxapp_upload_dir }}"
     - "{{ edxapp_media_dir }}"
+    - "{{ edxapp_analytics_report_dir }}"
   tags:
     - install
     - install:base
+
+- name: link to analytics report dir
+  shell: "ln -s {{ edxapp_analytics_report_dir }} {{ edxapp_media_dir }}/analytics-report"
 
 - name: install system packages on which LMS and CMS rely
   apt:
