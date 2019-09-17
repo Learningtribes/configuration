@@ -1,0 +1,52 @@
+---
+- name: install ldap client system package
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  become: yes
+  with_items:
+    - libnss-ldap
+    - libpam-ldap
+    - ldap-utils
+    - nscd
+
+- name: backup ldap configuration file
+  shell: mv /etc/ldap.conf /etc/ldap.conf.backup
+  become: yes
+
+- name: create ldap configuration file
+  copy: 
+    src: ../files/{{item}}
+    dest: /etc/{{item}}
+    mode: 400
+  with_items: ['ldap.conf', 'ldap.secret']
+  become: yes
+
+- name: enable ldap on auth 
+  shell: auth-client-config -t nss -p lac_ldap
+  become: yes
+
+- name: enable create user home folder
+  lineinfile:
+    path: /etc/pam.d/common-session
+    insertbefore: "# end of pam-auth-update config"
+    line: session optional                        pam_mkhomedir.so
+  become: yes
+
+- name: start nscd service
+  service:
+    name: nscd
+    state: started
+  become: yes
+
+- name: enable password login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: PasswordAuthentication yes
+  become: yes
+
+- name: restart ssh service
+  service:
+    name: ssh
+    state: restarted

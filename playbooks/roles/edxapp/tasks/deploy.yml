@@ -122,6 +122,20 @@
     - install
     - install:app-requirements
 
+- name: get system requirement content
+  command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
+  register: system_package_content
+  ignore_errors: yes
+
+- name: install system requirement package
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ system_package_content['stdout_lines'] }}"
+  become: yes
+  ignore_errors: yes
+
 - name: Stat each Python requirements file to ensure it exists
   stat:
     path: "{{ item }}"
@@ -165,6 +179,14 @@
   tags:
     - install
     - install:app-requirements
+
+- name: install python requirement third party package
+  pip:
+    chdir: /edx/app/edxapp/edx-platform/requirements/edx
+    requirements: third-party.txt
+    virtualenv: /edx/app/edxapp/venvs/edxapp
+  become_user: edxapp
+  ignore_errors: yes
 
 # Install any custom extra requirements if defined in EDXAPP_EXTRA_REQUIREMENTS.
 - name: install python extra requirements

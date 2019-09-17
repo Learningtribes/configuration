@@ -79,16 +79,3 @@
     name: boto3
   become: yes
 
-- name: get system requirement content
-  command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
-  register: system_package_content
-  ignore_errors: yes
-
-- name: install system requirement package
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  with_items: "{{ system_package_content['stdout_lines'] }}"
-  become: yes
-  ignore_errors: yes
