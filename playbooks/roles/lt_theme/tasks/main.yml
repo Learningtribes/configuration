@@ -1,15 +1,63 @@
 ---
+- name: return instance ID
+  command: curl http://169.254.169.254/latest/meta-data/instance-id
+  register: instanceid
+  tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
+- name: get branch name on instance tag
+  ec2_tag:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    region: "{{ lt_ec2_region }}"
+    resource: "{{ instanceid.stdout }}"
+    state: list
+  register: ec2_theme_tags
+  tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
 - name: Download themes
-  become_user: edxapp
   git:
     repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
-    dest: "/edx/app/edxapp/themes/{{item}}"
-    version: "{{item}}"
+    dest: "/edx/app/edxapp/themes/{{ec2_theme_tags['tags']['theme_name']}}"
+    version: "{{ec2_theme_tags['tags']['theme_name']}}"
     clone: no
     update: yes
     force: yes
-  with_items: "{{LT_THEME}}"
-  tags: ['never', 'all-theme', 'lms-theme']
+  become_user: edxapp
+  tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
+
+- name: return instance ID 2
+  command: curl http://169.254.169.254/latest/meta-data/instance-id
+  register: instanceid
+  tags: ['never', 'all-theme-commitid', 'lms-theme-commitid', 'cms-theme-commitid']
+- name: get branch name on instance tag 2
+  ec2_tag:
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    region: "{{ lt_ec2_region }}"
+    resource: "{{ instanceid.stdout }}"
+    state: list
+  register: ec2_theme_tags
+  tags: ['never', 'all-theme-commitid', 'lms-theme-commitid', 'cms-theme-commitid']
+- name: Download themes 2
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+    dest: "/edx/app/edxapp/themes/{{ec2_theme_tags['tags']['theme_name']}}"
+    version: "{{theme_commitid}}"
+    clone: no
+    update: yes
+    force: yes
+  become_user: edxapp
+  tags: ['never', 'all-theme-commitid', 'lms-theme-commitid', 'cms-theme-commitid']
+
+# - name: Download themes
+#   become_user: edxapp
+#   git:
+#     repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+#     dest: "/edx/app/edxapp/themes/{{item}}"
+#     version: "{{item}}"
+#     clone: no
+#     update: yes
+#     force: yes
+#   with_items: "{{LT_THEME}}"
+#   tags: ['never', 'all-theme', 'lms-theme']
 
 - name: Download themes
   become_user: edxapp
@@ -26,21 +74,35 @@
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
   tags: ['never', 'all-theme']
 
-- name: Compile lms themes
-  block:
-    - name: Get theme folder
-      stat: 
-        path: "/edx/app/edxapp/themes/{{item}}"
-      with_items: "{{LT_THEME}}"
-      register: check_lms_theme
-    - name: Compile lms
-      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
-      args:
-        executable: /bin/bash
-      when: item.stat.exists and item.stat.isdir 
-      with_items: "{{check_lms_theme['results']}}"
-      become_user: edxapp
+- name: Deploy lms themes
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{ec2_theme_tags['tags']['theme_name']}}"
+  args:
+    executable: /bin/bash
+  become_user: edxapp
   tags: ['never', 'lms-theme']
+
+- name: Deploy cms themes
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{ec2_theme_tags['tags']['theme_name']}}"
+  args:
+    executable: /bin/bash
+  become_user: edxapp
+  tags: ['never', 'cms-theme']
+
+# - name: Compile lms themes
+#   block:
+#     - name: Get theme folder
+#       stat: 
+#         path: "/edx/app/edxapp/themes/{{item}}"
+#       with_items: "{{LT_THEME}}"
+#       register: check_lms_theme
+#     - name: Compile lms
+#       shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+#       args:
+#         executable: /bin/bash
+#       when: item.stat.exists and item.stat.isdir 
+#       with_items: "{{check_lms_theme['results']}}"
+#       become_user: edxapp
+#   tags: ['never', 'lms-theme']
 
 - name: Deploy lms themes
   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{item}}"
@@ -56,45 +118,45 @@
     executable: /bin/bash
   with_items: "{{LT_THEME}}"
   become_user: edxapp
-  tags: ['never', 'stage-auto-theme', 'stage-theme-cms']
+  tags: ['never', 'deploy-theme', 'stage-auto-theme', 'stage-theme-cms']
 
-- name: Compile cms themes
-  block:
-    - name: return instance ID
-      command: curl http://169.254.169.254/latest/meta-data/instance-id
-      register: instanceid
-    - name: get branch name on instance tag
-      ec2_tag:
-        aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
-        aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
-        region: "{{ lt_ec2_region }}"
-        resource: "{{ instanceid.stdout }}"
-        state: list
-      register: ec2_cms_tags
-    - name: Download cms themes
-      become_user: edxapp
-      git:
-        repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
-        dest: "/edx/app/edxapp/themes/{{ec2_cms_tags['tags']['theme_name']}}"
-        version: "{{ec2_cms_tags['tags']['theme_name']}}"
-        clone: no
-        update: yes
-        force: yes
-    - name: Deploy cms themes
-      shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{ec2_cms_tags['tags']['theme_name']}}"
-      args:
-        executable: /bin/bash
-      become_user: edxapp
-    # - name: Get theme folder
-    #   stat: 
-    #     path: "/edx/app/edxapp/themes/{{item}}"
-    #   with_items: "{{LT_THEME}}"
-    #   register: check_cms_theme
-    # - name: Complie cms
-    #   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
-    #   args:
-    #     executable: /bin/bash
-    #   when: item.stat.exists and item.stat.isdir 
-    #   with_items: "{{check_cms_theme['results']}}"
-    #   become_user: edxapp    
-  tags: ['never', 'cms-theme']
+# - name: Compile cms themes
+#   block:
+#     - name: return instance ID
+#       command: curl http://169.254.169.254/latest/meta-data/instance-id
+#       register: instanceid
+#     - name: get branch name on instance tag
+#       ec2_tag:
+#         aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+#         aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+#         region: "{{ lt_ec2_region }}"
+#         resource: "{{ instanceid.stdout }}"
+#         state: list
+#       register: ec2_cms_tags
+#     - name: Download cms themes
+#       become_user: edxapp
+#       git:
+#         repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+#         dest: "/edx/app/edxapp/themes/{{ec2_cms_tags['tags']['theme_name']}}"
+#         version: "{{ec2_cms_tags['tags']['theme_name']}}"
+#         clone: no
+#         update: yes
+#         force: yes
+#     - name: Deploy cms themes
+#       shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{ec2_cms_tags['tags']['theme_name']}}"
+#       args:
+#         executable: /bin/bash
+#       become_user: edxapp
+#     # - name: Get theme folder
+#     #   stat: 
+#     #     path: "/edx/app/edxapp/themes/{{item}}"
+#     #   with_items: "{{LT_THEME}}"
+#     #   register: check_cms_theme
+#     # - name: Complie cms
+#     #   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws --themes={{item.stat.path | regex_replace('/edx/app/edxapp/themes/')}}"
+#     #   args:
+#     #     executable: /bin/bash
+#     #   when: item.stat.exists and item.stat.isdir 
+#     #   with_items: "{{check_cms_theme['results']}}"
+#     #   become_user: edxapp    
+#   tags: ['never', 'cms-theme']
