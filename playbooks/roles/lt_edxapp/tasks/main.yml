@@ -34,11 +34,21 @@
   become_user: edxapp
   tags: ['never', 'deploy-production']
 
+- name: checkout {{ edx_platform_commitid }} from edx-platform repo into {{ edxapp_code_dir }}
+  git:
+    dest: "{{ edxapp_code_dir }}"
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
+    version: "{{edx_platform_commitid}}"
+    accept_hostkey: yes
+    force: yes
+  become_user: edxapp
+  tags: ['never', 'deploy-production-commitid']
+
 - name: get system requirement content
   command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
   register: system_package_content
   ignore_errors: yes
-  tags: ['never', 'deploy', 'deploy-production']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
 
 - name: install system requirement package
   apt:
@@ -48,7 +58,7 @@
   with_items: "{{ system_package_content['stdout_lines'] }}"
   become: yes
   ignore_errors: yes
-  tags: ['never', 'deploy', 'deploy-production']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
 
 - name: install python requirement package
   pip:
@@ -57,7 +67,7 @@
     virtualenv: /edx/app/edxapp/venvs/edxapp
   become_user: edxapp
   ignore_errors: yes
-  tags: ['never', 'deploy', 'deploy-production']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
 
 - name: migrate lt edxapp 
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
@@ -65,4 +75,4 @@
   with_items:
     - 'lms'
     - 'cms'
-  tags: ['never', 'deploy', 'deploy-production']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']

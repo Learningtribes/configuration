@@ -7,3 +7,12 @@
     accept_hostkey: yes
   become_user: "{{ certs_user }}"
   tags: ['never', 'deploy-certs']
+
+- name: checkout {{certs_commitid}} repo into {{ certs_code_dir }}
+  git:
+    dest: "{{ certs_code_dir }}"
+    repo: "{{ CERTS_REPO }}"
+    version: "{{ certs_commitid }}"
+    accept_hostkey: yes
+  become_user: "{{ certs_user }}"
+  tags: ['never', 'deploy-certs-commitid']
