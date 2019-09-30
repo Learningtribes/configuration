@@ -19,19 +19,10 @@
     src: ../files/edxapp.sql
     dest: /tmp/edxapp.sql 
 
-- name: copy veda sql file
-  copy: 
-    src: ../files/veda.sql
-    dest: /tmp/veda.sql
-
 - name: execute initial sql
   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /tmp/initial.sql"
   become: yes
 
 - name: execute edxapp sql
   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /tmp/edxapp.sql"
-  become: yes
-
-- name: execute veda sql
-  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{VEDA_WEB_FRONTEND_DEFAULT_DB_NAME}} < /tmp/veda.sql"
   become: yes

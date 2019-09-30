@@ -97,6 +97,7 @@
       - "{{check_subnet_result['results'][1]['subnets'][0]['subnet_id']}}"
     deletion_protection: yes
     http2: yes
+    idle_timeout: 120
     listeners:
       - Protocol: HTTPS
         Port: 443
