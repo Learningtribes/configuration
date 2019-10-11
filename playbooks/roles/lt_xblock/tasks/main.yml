@@ -8,4 +8,11 @@
   with_items: "{{xblock_name}}"
   tags: ['never', 'deploy-xblock']
 
-
+- name: Install xblock on stage
+  pip:
+    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{item}}.git@{{branch_name}}"
+    virtualenv: "{{ edxapp_venv_dir }}"
+    state: forcereinstall
+  become_user: edxapp
+  with_items: "{{xblock_name}}"
+  tags: ['never', 'stage-deploy-xblock']
