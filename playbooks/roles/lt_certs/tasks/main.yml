@@ -16,3 +16,12 @@
     accept_hostkey: yes
   become_user: "{{ certs_user }}"
   tags: ['never', 'deploy-certs-commitid']
+
+- name: checkout edx-certificaties repo into {{ certs_code_dir }}
+  git:
+    dest: "{{ certs_code_dir }}"
+    repo: "{{ CERTS_REPO }}"
+    version: "{{ branch_name }}"
+    accept_hostkey: yes
+  become_user: "{{ certs_user }}"
+  tags: ['never', 'stage-deploy-certs']
