@@ -272,6 +272,7 @@ EDXAPP_SHOW_HEADER_LANGUAGE_SELECTOR: false
 EDXAPP_SHOW_FOOTER_LANGUAGE_SELECTOR: true
 
 EDXAPP_FEATURES:
+  ALLOW_HIDING_DISCUSSION_TAB: true
   AUTH_USE_OPENID_PROVIDER: true
   ENABLE_DISCUSSION_SERVICE: true
   ENABLE_INSTRUCTOR_ANALYTICS: false
@@ -398,6 +399,11 @@ EDXAPP_EDXMKTG_USER_INFO_COOKIE_NAME: "edx-user-info"
 EDXAPP_GRADE_STORAGE_CLASS: 'django.core.files.storage.FileSystemStorage'
 EDXAPP_GRADE_STORAGE_KWARGS:
   location: /tmp/edx-s3/grades
+
+# Settings for Analytic Report downloads
+EDXAPP_ANALYTIC_REPORT_STORAGE_CLASS: 'django.core.files.storage.FileSystemStorage'
+EDXAPP_ANALYTIC_REPORT_STORAGE_KWARGS:
+  location: /tmp/edx-s3/analytics
 
 # These set the url for static files
 # Override this var to use a CDN
@@ -1438,6 +1444,12 @@ lms_env_config:
   ELASTIC_APM: "{{ EDXAPP_LMS_ELASTIC_APM }}"
   DEFAULT_FROM_EMAIL_SHOW_NAME: "Triboo"
   LEARNER_NO_EMAIL: "noemail@learning-tribes.com"
+  TRIBOO_ANALYTICS_REPORTS:
+    STORAGE_CLASS: "{{ EDXAPP_ANALYTIC_REPORTE_STORAGE_CLASS | default(None) }}"
+    STORAGE_KWARGS: "{{ EDXAPP_ANALYTIC_REPORTE_STORAGE_KWARGS | default(None) }}"
+    STORAGE_TYPE: "{{ EDXAPP_ANALYTIC_REPORTE_STORAGE_TYPE | default(None) }}"
+    BUCKET: "{{ EDXAPP_ANALYTIC_REPORTE_BUCKET | default(None) }}"
+    ROOT_PATH: "{{ EDXAPP_ANALYTIC_REPORTE_ROOT_PATH | default(None) }}"
 
 cms_auth_config:
   <<: *edxapp_generic_auth
