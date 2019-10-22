@@ -27,8 +27,8 @@
 - name: Download multi themes
   git:
     repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
-    dest: "/edx/app/edxapp/themes/{{ec2_theme_tags['tags']['theme_name']}}"
-    version: "{{ec2_theme_tags['tags']['theme_name']}}"
+    dest: "/edx/app/edxapp/themes/{{item}}"
+    version: "{{item]}}"
     clone: no
     update: yes
     force: yes
