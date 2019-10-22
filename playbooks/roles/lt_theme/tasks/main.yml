@@ -22,6 +22,20 @@
     force: yes
   become_user: edxapp
   tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
+  when: "',' not in ec2_theme_tags['tags']['theme_name']"
+
+- name: Download multi themes
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+    dest: "/edx/app/edxapp/themes/{{item}}"
+    version: "{{item}}"
+    clone: no
+    update: yes
+    force: yes
+  become_user: edxapp
+  loop: "{{ec2_theme_tags['tags']['theme_name'].split(',')}}"
+  tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
+  when: "',' in ec2_theme_tags['tags']['theme_name']"
 
 - name: return instance ID 2
   command: curl http://169.254.169.254/latest/meta-data/instance-id
