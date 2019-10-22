@@ -28,7 +28,7 @@
   git:
     repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
     dest: "/edx/app/edxapp/themes/{{item}}"
-    version: "{{item]}}"
+    version: "{{item}}"
     clone: no
     update: yes
     force: yes
