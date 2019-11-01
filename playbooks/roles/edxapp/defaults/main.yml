@@ -400,8 +400,8 @@ EDXAPP_GRADE_STORAGE_KWARGS:
   location: /tmp/edx-s3/grades
 
 # Settings for Analytic Report downloads
-EDXAPP_ANALYTIC_REPORT_STORAGE_CLASS: 'django.core.files.storage.FileSystemStorage'
-EDXAPP_ANALYTIC_REPORT_STORAGE_KWARGS:
+EDXAPP_ANALYTIC_REPORTE_STORAGE_CLASS: 'django.core.files.storage.FileSystemStorage'
+EDXAPP_ANALYTIC_REPORTE_STORAGE_KWARGS:
   location: /tmp/edx-s3/analytics
 
 # These set the url for static files
