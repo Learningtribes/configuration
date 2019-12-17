@@ -34,6 +34,16 @@
   become_user: edxapp
   tags: ['never', 'deploy-production']
 
+- name: checkout master-sephora from edx-platform repo into {{ edxapp_code_dir }}
+  git:
+    dest: "{{ edxapp_code_dir }}"
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/platform.git"
+    version: "master-sephora"
+    accept_hostkey: yes
+    force: yes
+  become_user: edxapp
+  tags: ['never', 'azure-deploy-production']
+
 - name: checkout {{ edx_platform_commitid }} from edx-platform repo into {{ edxapp_code_dir }}
   git:
     dest: "{{ edxapp_code_dir }}"
@@ -75,4 +85,4 @@
   with_items:
     - 'lms'
     - 'cms'
-  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
