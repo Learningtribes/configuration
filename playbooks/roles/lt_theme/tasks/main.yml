@@ -37,6 +37,17 @@
   tags: ['never', 'all-theme', 'lms-theme', 'cms-theme']
   when: "',' in ec2_theme_tags['tags']['theme_name']"
 
+- name: Download themes azure 2
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+    dest: /edx/app/edxapp/themes/hawthorn-sephora
+    version: hawthorn-sephora
+    clone: no
+    update: yes
+    force: yes
+  become_user: edxapp
+  tags: ['never', 'all-theme-azure', 'lms-theme-azure', 'cms-theme-azure']
+
 - name: return instance ID 2
   command: curl http://169.254.169.254/latest/meta-data/instance-id
   register: instanceid
@@ -60,6 +71,17 @@
     force: yes
   become_user: edxapp
   tags: ['never', 'all-theme-commitid', 'lms-theme-commitid', 'cms-theme-commitid']
+
+- name: Download themes azure 
+  git:
+    repo: "https://{{git_username}}:{{git_password}}@github.com/Learningtribes/triboo-theme.git"
+    dest: /edx/app/edxapp/themes/hawthorn-sephora
+    version: "{{theme_commitid}}"
+    clone: no
+    update: yes
+    force: yes
+  become_user: edxapp
+  tags: ['never', 'all-theme-azure-commitid', 'lms-theme-azure-commitid', 'cms-theme-azure-commitid']
 
 # - name: Download themes
 #   become_user: edxapp
@@ -86,21 +108,21 @@
 
 - name: Compile all themes
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
-  tags: ['never', 'all-theme']
+  tags: ['never', 'all-theme', 'all-theme-commitid', 'all-theme-azure-commitid', 'all-theme-azure']
 
 - name: Deploy lms themes
   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{ec2_theme_tags['tags']['theme_name']}}"
   args:
     executable: /bin/bash
   become_user: edxapp
-  tags: ['never', 'lms-theme']
+  tags: ['never', 'lms-theme', 'lms-theme-commitid', 'lms-theme-azure-commitid', 'lms-theme-azure']
 
 - name: Deploy cms themes
   shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{ec2_theme_tags['tags']['theme_name']}}"
   args:
     executable: /bin/bash
   become_user: edxapp
-  tags: ['never', 'cms-theme']
+  tags: ['never', 'cms-theme', 'cms-theme-commitid', 'cms-theme-azure-commitid', 'cms-theme-azure']
 
 # - name: Compile lms themes
 #   block:
