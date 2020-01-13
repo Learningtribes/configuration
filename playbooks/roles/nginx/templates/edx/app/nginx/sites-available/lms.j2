@@ -288,7 +288,12 @@ location ~ ^/analytics-report/(?P<file>.*) {
     expires {{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}s;
 }
 
-location ^~ /xblock/ {
+location ~ ^/xblock/resources/(?P<file>.*) {
+      root /edx/var/edxapp/staticfiles/xblock/resources;
+      try_files /$file =404;
+}
+
+location /xblock/ {
     proxy_set_header Host      {{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_pass       https://{{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com{{ EDXAPP_DJFS['prefix'] }};
