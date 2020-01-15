@@ -1507,6 +1507,7 @@ cms_env_config:
     - ubcpi
     - personalitytest
     - scormxblock
+    - pdf
 
 # install dir for the edx-platform repo
 edxapp_code_dir: "{{ edxapp_app_dir }}/edx-platform"
