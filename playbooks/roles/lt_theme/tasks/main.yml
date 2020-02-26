@@ -111,14 +111,14 @@
   tags: ['never', 'all-theme', 'all-theme-commitid', 'all-theme-azure-commitid', 'all-theme-azure']
 
 - name: Deploy lms themes
-  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{ec2_theme_tags['tags']['theme_name']}}"
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws
   args:
     executable: /bin/bash
   become_user: edxapp
   tags: ['never', 'lms-theme', 'lms-theme-commitid', 'lms-theme-azure-commitid', 'lms-theme-azure']
 
 - name: Deploy cms themes
-  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets lms --settings=aws --themes={{ec2_theme_tags['tags']['theme_name']}}"
+  shell: "source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; paver update_assets cms --settings=aws
   args:
     executable: /bin/bash
   become_user: edxapp
