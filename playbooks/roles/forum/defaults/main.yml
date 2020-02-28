@@ -81,7 +81,7 @@ devstack_forum_env:
 forum_user: "forum"
 forum_ruby_version: "2.4.1"
 forum_source_repo: "https://github.com/edx/cs_comments_service.git"
-forum_version: "master"
+forum_version: "90240509a681575b47f270a0710eda61732d6833"
 
 #
 # test config

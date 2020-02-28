@@ -11,8 +11,8 @@
     state: file
     mode: '754'
 
-- name: get initial sql file
-  shell: "curl  -u {{git_username}}:{{git_password}} https://raw.githubusercontent.com/Learningtribes/platform/master/scripts/default-config.sql > /tmp/initial.sql"
+#- name: get initial sql file
+#  shell: "curl  -u {{git_username}}:{{git_password}} https://raw.githubusercontent.com/Learningtribes/platform/master/scripts/default-config.sql > /tmp/initial.sql"
 
 - name: copy edxapp sql file
   copy: 
@@ -20,7 +20,7 @@
     dest: /tmp/edxapp.sql 
 
 - name: execute initial sql
-  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /tmp/initial.sql"
+  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /edx/app/edxapp/edx-platform/scripts/default-config.sql"
   become: yes
 
 - name: execute edxapp sql

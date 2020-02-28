@@ -98,6 +98,7 @@
 
 - name: link to analytics report dir
   shell: "ln -s {{ edxapp_analytics_report_dir }} {{ edxapp_media_dir }}/analytics-report"
+  ignore_errors: yes
 
 - name: install system packages on which LMS and CMS rely
   apt:
