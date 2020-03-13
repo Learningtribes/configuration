@@ -1,4 +1,13 @@
 ---
+- name: change edx-platform folder owner
+  file:
+    path: /edx/app/edxapp/edx-platform
+    state: directory
+    recurse: yes
+    owner: edxapp
+    group: edxapp
+  tags: always
+
 - name: checkout edx-platform repo
   git:
     dest: "{{ edxapp_code_dir }}"
