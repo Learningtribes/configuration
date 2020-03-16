@@ -6,7 +6,7 @@
     recurse: yes
     owner: edxapp
     group: edxapp
-  tags: always
+  tags: ['never', 'deploy', 'deploy-production', 'azure-deploy-production', 'deploy-production-commitid']
 
 - name: checkout edx-platform repo
   git:
