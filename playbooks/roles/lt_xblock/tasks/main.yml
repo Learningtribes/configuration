@@ -1,18 +1,20 @@
 ---
 - name: Install xblock
   pip:
-    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{item}}.git@hawthorn"
+    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{item}}.git@hawthorn#egg={{item}}"
     virtualenv: "{{ edxapp_venv_dir }}"
     state: forcereinstall
+    editable: yes
   become_user: edxapp
   with_items: "{{xblock_name}}"
   tags: ['never', 'deploy-xblock']
 
 - name: Install xblock on stage
   pip:
-    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{item}}.git@{{branch_name}}"
+    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{item}}.git@{{branch_name}}#egg={{item}}"
     virtualenv: "{{ edxapp_venv_dir }}"
     state: forcereinstall
+    editable: yes
   become_user: edxapp
   with_items: "{{xblock_name}}"
   tags: ['never', 'stage-deploy-xblock']
