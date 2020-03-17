@@ -13,7 +13,7 @@
   shell:
     executable: /bin/bash
     chdir: /edx/app/edxapp/edx-platform
-    cmd: "source /edx/app/edxapp/edxapp_env && python manage lms migrate --settings=aws && python manage lms fetch_edflex_dataa --settings=aws"
+    cmd: "source /edx/app/edxapp/edxapp_env && python manage.py lms migrate --settings=aws && python manage.py lms fetch_edflex_data --settings=aws"
   become_user: edxapp
   when: xblock_name == "edflex-xblock"
   tags: ['never', 'deploy-xblock']
