@@ -15,7 +15,7 @@
     chdir: /edx/app/edxapp/edx-platform
     cmd: "source /edx/app/edxapp/edxapp_env && python manage lms migrate --settings=aws && python manage lms fetch_edflex_dataa --settings=aws"
   become_user: edxapp
-  when: "{{xblock_name}}" == "edflex-xblock"
+  when: "{{xblock_name}} == 'edflex-xblock'"
   tags: ['never', 'deploy-xblock']
 
 - name: Install xblock on stage
