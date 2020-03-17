@@ -67,7 +67,7 @@
   command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
   register: system_package_content
   ignore_errors: yes
-  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: install system requirement package
   apt:
@@ -77,7 +77,7 @@
   with_items: "{{ system_package_content['stdout_lines'] }}"
   become: yes
   ignore_errors: yes
-  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: install python requirement package
   pip:
@@ -86,7 +86,7 @@
     virtualenv: /edx/app/edxapp/venvs/edxapp
   become_user: edxapp
   ignore_errors: yes
-  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid']
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: migrate lt edxapp 
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
@@ -94,4 +94,13 @@
   with_items:
     - 'lms'
     - 'cms'
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+
+- name: install node package
+  shell:
+    executable: /bin/bash 
+    chdir: /edx/app/edxapp/edx-platform
+    cmd: "source /edx/app/edxapp/edxapp_env && npm install"
+  become_user: edxapp
+  when: run_npm_install is defined and run_npm_install|lower == "yes"
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
