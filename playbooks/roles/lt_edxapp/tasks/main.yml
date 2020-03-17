@@ -97,9 +97,10 @@
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: install node package
-  shell: 
-    cmd: /edx/app/edxapp/nodeenvs/edxapp/bin/npm install
-    chdir: /edx/app/edxapp/edx-platform
+  npm: 
+    path: /edx/app/edxapp/edx-platform
+  environment:
+    PATH: "/edx/app/edxapp/nodeenvs/edxapp/bin:{{ ansible_env.PATH }}"
   become_user: edxapp
   when: run_npm_install is defined and run_npm_install|lower == "yes"
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
