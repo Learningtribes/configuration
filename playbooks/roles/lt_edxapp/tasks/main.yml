@@ -97,7 +97,8 @@
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: install node package
-  shell: 
+  shell:
+    executable: /bin/bash 
     chdir: /edx/app/edxapp/edx-platform
     cmd: "source /edx/app/edxapp/edxapp_env && npm install"
   become_user: edxapp
