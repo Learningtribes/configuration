@@ -9,6 +9,15 @@
   with_items: "{{xblock_name}}"
   tags: ['never', 'deploy-xblock']
 
+- name: Edflex xblock
+  shell:
+    executable: /bin/bash
+    chdir: /edx/app/edxapp/edx-platform
+    cmd: "source /edx/app/edxapp/edxapp_env && python manage lms migrate --settings=aws && python manage lms fetch_edflex_dataa --settings=aws"
+  become_user: edxapp
+  when: "{{xblock_name}}" == "edflex-xblock"
+  tags: ['never', 'deploy-xblock']
+
 - name: Install xblock on stage
   pip:
     name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/{{item}}.git@{{branch_name}}#egg={{item}}"
