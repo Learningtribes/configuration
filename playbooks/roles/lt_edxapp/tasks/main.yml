@@ -101,4 +101,5 @@
     path: /edx/app/edxapp/edx-platform
     executable: /edx/app/edxapp/nodeenvs/edxapp/bin/npm
   become_user: edxapp
+  when: run_npm_install is defined and run_npm_install|lower == "yes"
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
