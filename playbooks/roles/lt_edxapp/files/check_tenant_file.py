@@ -63,7 +63,7 @@ for i in file_hosts_dict.keys():
             repo.git.commit('-m', 'remove ' + tenant_name)
             repo.git.push()
             repo.git.config('--remove-section', 'credential')
-    elif response['Reservations'][0]['Instances']['State']['Name'] != 'running':
+    elif response['Reservations'][0]['Instances'][0]['State']['Name'] != 'running':
         pass
     else:
         for j in response['Reservations'][0]['Instances']:
