@@ -6,6 +6,7 @@
     hour: "1"
     job: "bash /edx/app/edxapp/edx-platform/scripts/course_email_reminder.sh"
     disabled: yes
+  become_user: ubuntu
 
 - name: add analytics generate reports cron job
   cron: 
@@ -13,6 +14,7 @@
     minute: "40"
     hour: "1"
     job: "bash /edx/app/edxapp/edx-platform/scripts/analytics_generate_reports.sh"
+  become_user: ubuntu
 
 - name: add check license number cron job
   cron: 
@@ -21,6 +23,8 @@
     hour: "10"
     weekday: "1-5"
     job: "python /opt/scripts/check_license_number.py"
+    disabled: yes
+  become_user: ubuntu
 
 - name: install pip requests
   pip:
