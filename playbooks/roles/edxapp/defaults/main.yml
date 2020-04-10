@@ -737,7 +737,11 @@ EDXAPP_PARSE_KEYS: {}
 EDXAPP_EDXNOTES_PUBLIC_API: http://localhost:18120/api/v1
 EDXAPP_EDXNOTES_INTERNAL_API: http://localhost:18120/api/v1
 
-EDXAPP_XBLOCK_SETTINGS: {}
+EDXAPP_XBLOCK_SETTINGS:
+  EdflexXBlock:
+    EDFLEX_CLIENT_ID: "123u321"
+    EDFLEX_CLIENT_SECRET: "client123secret"
+    EDFLEX_BASE_API_URL: "https://base/api/url"
 
 # Secret keys shared with credit providers.
 # Used to digitally sign credit requests (us --> provider)
@@ -931,6 +935,10 @@ EDXAPP_MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED: 30
 EDXAPP_ADVANCED_SECURITY_CONFIG: 
   MIN_DAYS_FOR_STUDENT_ACCOUNTS_PASSWORD_RESETS: 1000
   MIN_DAYS_FOR_STAFF_ACCOUNTS_PASSWORD_RESETS: 1000
+
+# extra application to platform
+EDXAPP_ADDL_INSTALLED_APPS:
+  - "edflex"
 #-------- Everything below this line is internal to the role ------------
 
 #Use YAML references (& and *) and hash merge <<: to factor out shared settings
@@ -1340,6 +1348,7 @@ generic_env_config:  &edxapp_generic_env
   PASSWORD_POLICY_COMPLIANCE_ROLLOUT_CONFIG: "{{ EDXAPP_PASSWORD_POLICY_COMPLIANCE_ROLLOUT_CONFIG }}"
   MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED: "{{ EDXAPP_MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED }}"
   ADVANCED_SECURITY_CONFIG: "{{ EDXAPP_ADVANCED_SECURITY_CONFIG }}"
+  ADDL_INSTALLED_APPS: "{{ EDXAPP_ADDL_INSTALLED_APPS }}"
 
 lms_auth_config:
   <<: *edxapp_generic_auth

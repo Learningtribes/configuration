@@ -7,3 +7,4 @@ update auth_user SET password='pbkdf2_sha256$36000$x6yC9D26hoLj$iHidHhnBcKGNXeVy
 update auth_user SET is_superuser=0, is_staff=0, is_active=0 WHERE username='staff';
 insert into oauth2_client (name, url, redirect_uri, client_id, client_secret, client_type, user_id) values ('veda', 'http://127.0.0.1:8000/api/val/v0', 'http://127.0.0.1', '89d85fb47ae6f00fb527', '0af9306906b6150c6c7ddeadfeddb3e979e4c095', 0, 3);
 insert into video_pipeline_videouploadsenabledbydefault (enabled, enabled_for_all_courses, change_date) values (1, 1, now());
+insert into oauth2_provider_application (client_id, client_type, authorization_grant_type, name, skip_authorization, redirect_uris, client_secret) values ('3uSSm4ullAHzkYvQ33fK3VVPkeszB1574F1umM7O', 'public', 'password', 'grant_by_account_password', 0, '', '');

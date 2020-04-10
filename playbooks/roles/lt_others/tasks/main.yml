@@ -26,6 +26,14 @@
     disabled: yes
   become_user: ubuntu
 
+- name: add fetch edflex data
+  cron:
+    name: "fetch edflex data"
+    minute: "*/30"
+    job: "/edx/app/edxapp/venvs/edxapp/bin/python /edx/app/edxapp/edx-platform/manage.py lms fetch_edflex_data --settings=aws"
+    disabled: yes
+  become_user: edxapp
+
 - name: install pip requests
   pip:
     name: requests
