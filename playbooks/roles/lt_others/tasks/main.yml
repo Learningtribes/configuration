@@ -23,7 +23,6 @@
     hour: "10"
     weekday: "1-5"
     job: "python /opt/scripts/check_license_number.py"
-    disabled: yes
   become_user: ubuntu
 
 - name: add fetch edflex data
