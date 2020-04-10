@@ -1,0 +1,60 @@
+---
+- name: add course email reminder cron job
+  cron:
+    name: "course email reminder"
+    minute: "0"
+    hour: "1"
+    job: "bash /edx/app/edxapp/edx-platform/scripts/course_email_reminder.sh"
+    disabled: yes
+  become_user: ubuntu
+
+- name: add analytics generate reports cron job
+  cron: 
+    name: "analytics generate reports"
+    minute: "40"
+    hour: "1"
+    job: "bash /edx/app/edxapp/edx-platform/scripts/analytics_generate_reports.sh"
+  become_user: ubuntu
+
+- name: add check license number cron job
+  cron: 
+    name: "check license number"
+    minute: "0"
+    hour: "10"
+    weekday: "1-5"
+    job: "python /opt/scripts/check_license_number.py"
+  become_user: ubuntu
+
+- name: add fetch edflex data
+  cron:
+    name: "fetch edflex data"
+    minute: "*/30"
+    job: "/edx/app/edxapp/venvs/edxapp/bin/python /edx/app/edxapp/edx-platform/manage.py lms fetch_edflex_data --settings=aws"
+    disabled: yes
+  become_user: edxapp
+
+- name: install pip requests
+  pip:
+    name: requests
+  become: yes
+
+- name: create script folder
+  file:
+    path: /opt/scripts
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: yes
+
+- name: copy cron job file
+  copy: 
+    src: ../files/check_license_number.py
+    dest: /opt/scripts/check_license_number.py 
+
+- name: change lms log folder permission
+  file:
+    path: /edx/var/log/lms
+    mode: "777"
+    state: directory
+  become: yes
