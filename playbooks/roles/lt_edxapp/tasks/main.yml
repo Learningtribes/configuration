@@ -88,6 +88,15 @@
   ignore_errors: yes
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
+- name: run translation script
+  shell:
+    executable: /bin/bash
+    chdir: /edx/app/edxapp/edx-platform
+    cmd: "source /edx/app/edxapp/edxapp_env && python scripts/trans.py --all --settings=aws"
+  become_user: edxapp_env
+  when: run_trans_script is defined and run_trans_script|lower == "yes"
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+
 - name: migrate lt edxapp 
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
   when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
