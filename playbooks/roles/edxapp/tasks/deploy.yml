@@ -188,6 +188,13 @@
   become_user: edxapp
   ignore_errors: yes
 
+- name: install edflex xblock package
+  pip:
+    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/edflex-xblock.git@hawthorn#egg=edflex-xblock"
+    virtualenv: "{{ edxapp_venv_dir }}"
+    editable: yes
+  become_user: edxapp
+
 # Install any custom extra requirements if defined in EDXAPP_EXTRA_REQUIREMENTS.
 - name: install python extra requirements
   pip:
