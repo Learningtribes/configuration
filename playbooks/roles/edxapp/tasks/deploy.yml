@@ -296,6 +296,17 @@
     - install
     - install:app-requirements
 
+- name: code sandbox | fix pip version
+  pip:
+    name: pip==20.0.2
+    virtualenv: "{{ edxapp_sandbox_venv_dir }}"
+  become_user: "{{ edxapp_sandbox_user }}"
+  when: EDXAPP_PYTHON_SANDBOX
+  tags:
+    - edxapp-sandbox
+    - install
+    - install:app-requirements
+
 - name: code sandbox | Install base sandbox requirements and create sandbox virtualenv
   pip:
     chdir: "{{ edxapp_code_dir }}"
