@@ -1,7 +1,7 @@
 ---
 ec2_instance_tenant_name: Platform APP {{client_name}}
 tenant_instance_type: m5.large
-elb_instance_tenant_name: ELB-{{client_name}}
+elb_instance_tenant_name: Platform-ELB-{{client_name}}
 elb_target_group_tenant_name: ELB-TG-{{client_name}}
 s3_tenant_name: lt-{{client_name}}-default
 s3_public_tenant_name: lt-{{client_name}}-public
