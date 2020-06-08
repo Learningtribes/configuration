@@ -16,10 +16,15 @@
     name: "{{ item }}"
   with_items: "{{ oraclejdk_debian_pkgs }}"
 
+#- name: Download Oracle Java
+#  get_url:
+#    url: "{{ oraclejdk_url }}"
+#    headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
+#    dest: "/var/tmp/{{ oraclejdk_file }}"
+
 - name: Download Oracle Java
   get_url:
-    url: "{{ oraclejdk_url }}"
-    headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
+    url: https://lt-learning-demo-public.s3-eu-west-1.amazonaws.com/jdk-8u131-linux-x64.tar.gz
     dest: "/var/tmp/{{ oraclejdk_file }}"
 
 - name: Create jvm dir
