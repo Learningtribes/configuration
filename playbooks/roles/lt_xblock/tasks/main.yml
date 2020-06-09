@@ -24,6 +24,7 @@
     virtualenv: "{{ edxapp_venv_dir }}"
     state: forcereinstall
     editable: yes
+    extra_args: --exists-action s
   become_user: edxapp
   with_items: "{{xblock_name}}"
   tags: ['never', 'stage-deploy-xblock']
