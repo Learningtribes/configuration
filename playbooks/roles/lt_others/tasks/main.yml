@@ -21,7 +21,6 @@
     name: "check license number"
     minute: "0"
     hour: "10"
-    weekday: "1-5"
     job: "python /opt/scripts/check_license_number.py"
   become_user: ubuntu
 
