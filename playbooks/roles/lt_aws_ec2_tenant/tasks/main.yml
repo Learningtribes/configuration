@@ -12,9 +12,9 @@
 - set_fact:
     ec2_id_fact: "{{check_ec2_result['instances'][0]['instance_id']}}"
   when: check_ec2_result['instances'][0] is defined
-- fail:
-    msg: instance had exist
-  when: check_ec2_result['instances'][0] is defined
+# - fail:
+#     msg: instance had exist
+#   when: check_ec2_result['instances'][0] is defined
 - name: create AWS EC2 instance
   ec2_instance:
     state: present
@@ -155,6 +155,24 @@
     name: "{{s3_tenant_name}}"
     tags:
       COST: "{{client_name}}"
+  when: s3_get_id_fact == false
+  tags: ['skip-cn']
+- name: add default bucket CORS
+  aws_s3_cors:
+    region: "{{region}}"
+    name: "{{s3_tenant_name}}"
+    state: present
+    rules:
+      - allowed_origins:
+          - '*'
+        allowed_methods:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+        allowed_headers:
+          - '*'
+        max_age_seconds: 3600
   when: s3_get_id_fact == false
   tags: ['skip-cn']
 # - debug:
