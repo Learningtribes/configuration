@@ -157,6 +157,24 @@
       COST: "{{client_name}}"
   when: s3_get_id_fact == false
   tags: ['skip-cn']
+- name: add default bucket CORS
+  aws_s3_cors:
+    region: "{{region}}"
+    name: "{{s3_tenant_name}}"
+    state: present
+    rules:
+      - allowed_origins:
+          - '*'
+        allowed_methods:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+        allowed_headers:
+          - '*'
+        max_age_seconds: 3600
+  when: s3_get_id_fact == false
+  tags: ['skip-cn']
 # - debug:
 #     msg: "{{create_s3_result}}"
 #   when: s3_get_id_fact == false
