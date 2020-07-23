@@ -6,31 +6,31 @@
     state: present
     reload: yes
 
-# - name: create sentry lms project
-#   uri:
-#     url: http://sentry.learning-tribes.com.cn:9000/api/0/teams/sentry/learning-tribes/projects/
-#     method: POST
-#     headers:
-#       Content-Type: 'application/json'
-#       Authorization: 'Bearer {{sentry_token}}'
-#     body_format: json
-#     body:
-#       name: "{{sentry_project}}-LMS"
-#     status_code: 201
+- name: create sentry lms project
+  uri:
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/teams/sentry/learning-tribes/projects/
+    method: POST
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{sentry_token}}'
+    body_format: json
+    body:
+      name: "{{sentry_project}}-LMS"
+    status_code: 201
 
-# - name: get sentry lms project key
-#   uri:
-#     url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-lms/keys/
-#     method: GET
-#     headers:
-#       Content-Type: 'application/json'
-#       Authorization: 'Bearer {{sentry_token}}'
-#     status_code: 200
-#     return_content: yes
-#   register: get_sentry_lms_project_key
+- name: get sentry lms project key
+  uri:
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-lms/keys/
+    method: GET
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{sentry_token}}'
+    status_code: 200
+    return_content: yes
+  register: get_sentry_lms_project_key
 
-# - set_fact: 
-#     RAVEN_LMS_DSN_CONFIG: { 'dsn': "{{get_sentry_lms_project_key['json'][0]['dsn']['secret']}}" }
+- set_fact: 
+    RAVEN_LMS_DSN_CONFIG: { 'dsn': "{{get_sentry_lms_project_key['json'][0]['dsn']['secret']}}" }
 
 - name: create sentry cms project
   uri:
@@ -44,19 +44,19 @@
       name: "{{sentry_project}}-CMS"
     status_code: 201
 
-# - name: get sentry cms project key
-#   uri:
-#     url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-cms/keys/
-#     method: GET
-#     headers:
-#       Content-Type: 'application/json'
-#       Authorization: 'Bearer {{sentry_token}}'
-#     status_code: 200
-#     return_content: yes
-#   register: get_sentry_cms_project_key
+- name: get sentry cms project key
+  uri:
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-cms/keys/
+    method: GET
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{sentry_token}}'
+    status_code: 200
+    return_content: yes
+  register: get_sentry_cms_project_key
 
-# - set_fact: 
-#     RAVEN_CMS_DSN_CONFIG: { 'dsn': "{{get_sentry_cms_project_key['json'][0]['dsn']['secret']}}" }
+- set_fact: 
+    RAVEN_CMS_DSN_CONFIG: { 'dsn': "{{get_sentry_cms_project_key['json'][0]['dsn']['secret']}}" }
 
 
 
