@@ -23,6 +23,14 @@
   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /edx/app/edxapp/edx-platform/scripts/default-config.sql"
   become: yes
 
+- name: execute leaderboard total sql
+  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /edx/app/edxapp/edx-platform/scripts/leaderboard_sql/leaderboard_total.sql"
+  become: yes
+
+- name: execute leaderboard view sql
+  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /edx/app/edxapp/edx-platform/scripts/leaderboard_sql/leaderboard_view.sql"
+  become: yes
+
 - name: execute edxapp sql
   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{EDXAPP_MYSQL_DB_NAME}} < /tmp/edxapp.sql"
   become: yes
