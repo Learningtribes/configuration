@@ -47,6 +47,7 @@
   become_user: "{{ forum_user }}"
   register: forum_checkout
   notify: restart the forum service
+  ignore_errors: yes
   tags:
     - install
     - install:code
