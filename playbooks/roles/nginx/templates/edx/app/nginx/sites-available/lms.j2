@@ -155,6 +155,31 @@ error_page {{ k }} {{ v }};
     {{ NGINX_EDXAPP_LMS_APP_EXTRA }}
   }
 
+  location @proxy_to_lms_app_login {
+    {% if NGINX_SET_X_FORWARDED_HEADERS %}
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    {% else %}
+    proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    proxy_set_header X-Forwarded-Port $http_x_forwarded_port;
+    proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+    {% endif %}
+
+    # newrelic-specific header records the time when nginx handles a request.
+    proxy_set_header X-Queue-Start "t=${msec}";
+
+    proxy_set_header Host $http_host;
+
+    proxy_hide_header     X-Frame-Options;
+    add_header    X-Frame-Options ALLOW;
+
+    proxy_redirect off;
+    proxy_pass http://lms-backend;
+
+    {{ NGINX_EDXAPP_LMS_APP_EXTRA }}
+  }
+
   location / {
     {% if EDXAPP_LMS_ENABLE_BASIC_AUTH|bool %}
       {% include "basic-auth.j2" %}
@@ -176,7 +201,7 @@ error_page {{ k }} {{ v }};
       return 403;
     }
 
-    try_files $uri @proxy_to_lms_app;
+    try_files $uri @proxy_to_lms_app_login;
   }
 
 {% if NGINX_EDXAPP_EMBARGO_CIDRS %}
