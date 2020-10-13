@@ -88,12 +88,22 @@
   ignore_errors: yes
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
-- name: migrate lt edxapp 
-  command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
+- name: migrate lt edxapp lms
+  shell:
+    executable: /bin/bash 
+    chdir: /edx/app/edxapp/edx-platform
+    cmd: "source /edx/app/edxapp/edxapp_env && python manage.py lms migrate --settings=aws"
+  become_user: edxapp
   when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
-  with_items:
-    - 'lms'
-    - 'cms'
+  tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+
+- name: migrate lt edxapp cms
+  shell:
+    executable: /bin/bash 
+    chdir: /edx/app/edxapp/edx-platform
+    cmd: "source /edx/app/edxapp/edxapp_env && python manage.py cms migrate --settings=aws"
+  become_user: edxapp
+  when: migrate_lt_db is defined and migrate_lt_db|lower == "yes" 
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: install node package

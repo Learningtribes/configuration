@@ -52,6 +52,26 @@
     - install
     - install:code
 
+- name: modify Gemfile
+  lineinfile:
+    path: "{{ forum_code_dir }}/Gemfile"
+    regexp: '^(.*)codecov(.*)$'
+    state: absent
+  become_user: "{{ forum_user }}" 
+  tags:
+    - install
+    - install:code
+
+- name: modify Gemfile.lock
+  replace:
+    path: "{{ forum_code_dir }}/Gemfile.lock"
+    after: 'DEPENDENCIES'
+    regexp: '^(.*)codecov(.*)$'
+  become_user: "{{ forum_user }}" 
+  tags:
+    - install
+    - install:code
+
 - name: install comments service bundle
   shell: "bundle install --deployment --path {{ forum_gem_root }} chdir={{ forum_code_dir }}"
   become_user: "{{ forum_user }}"
