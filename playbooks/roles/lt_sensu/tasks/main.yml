@@ -56,6 +56,22 @@
   with_items: ['remediation_veda_ingest.sh', 'remediation_veda_encode.sh', 'remediation_veda_deliver.sh'] 
   become: yes
 
+- name: create script folder
+  file:
+    path: /opt/scripts
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: yes
+
+- name: create checkpoint scripts
+  copy:
+    src: ../files/{{item}}
+    dest: /opt/scripts/{{item}}
+  with_items: ['check_webpack_error.sh']
+  become: yes
+
 - name: get public ip
   uri:
     url: http://169.254.169.254/latest/meta-data/public-ipv4
