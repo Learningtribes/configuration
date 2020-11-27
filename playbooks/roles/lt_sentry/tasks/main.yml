@@ -17,10 +17,15 @@
     body:
       name: "{{sentry_project}}-LMS"
     status_code: 201
+    return_content: yes
+  register: get_sentry_lms_project_slug
+
+- set_fact:
+    RAVEN_LMS_CALL: "{{get_sentry_lms_project_slug['json']['slug']}}"
 
 - name: get sentry lms project key
   uri:
-    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-lms/keys/
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{RAVEN_LMS_CALL}}/keys/
     method: GET
     headers:
       Content-Type: 'application/json'
@@ -43,10 +48,15 @@
     body:
       name: "{{sentry_project}}-CMS"
     status_code: 201
+    return_content: yes
+  register: get_sentry_cms_project_slug
+
+- set_fact:
+    RAVEN_CMS_CALL: "{{get_sentry_cms_project_slug['json']['slug']}}"
 
 - name: get sentry cms project key
   uri:
-    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{sentry_project|lower}}-cms/keys/
+    url: http://sentry.learning-tribes.com.cn:9000/api/0/projects/sentry/{{RAVEN_CMS_CALL}}/keys/
     method: GET
     headers:
       Content-Type: 'application/json'
