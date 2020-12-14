@@ -24,6 +24,14 @@
     job: "python /opt/scripts/check_license_number.py"
   become_user: ubuntu
 
+- name: add check uv number cron job
+  cron: 
+    name: "check uv number"
+    minute: "10"
+    hour: "10"
+    job: "python /opt/scripts/check_uv_number.py"
+  become_user: ubuntu
+
 - name: add fetch edflex data
   cron:
     name: "fetch edflex data"
@@ -48,8 +56,9 @@
 
 - name: copy cron job file
   copy: 
-    src: ../files/check_license_number.py
-    dest: /opt/scripts/check_license_number.py 
+    src: ../files/{{item}}
+    dest: /opt/scripts/{{item}}
+  with_items: ['check_license_number.py', 'check_uv_number.sh']
 
 - name: change lms log folder permission
   file:
