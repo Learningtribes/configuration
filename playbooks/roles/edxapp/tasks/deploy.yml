@@ -194,6 +194,15 @@
   become_user: edxapp
   ignore_errors: yes
 
+- name: fix pyopenssl version
+  pip:
+    name:
+      - pyOpenSSL==19.1.0
+      - cffi==1.11.5
+      - cryptography==2.2.2
+    virtualenv: /edx/app/edxapp/venvs/edxapp
+  become_user: edxapp
+
 - name: install edflex xblock package
   pip:
     name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/edflex-xblock.git@hawthorn#egg=edflex-xblock"
