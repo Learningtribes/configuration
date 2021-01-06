@@ -4,9 +4,20 @@ import os
 username = os.environ['GITHUB_USERNAME']
 password = os.environ['GITHUB_PASSWORD']
 
-payload = {'per_page': '999'}
-r = requests.get('https://api.github.com/repos/Learningtribes/platform/branches', auth=(username, password), params=payload)
+branches_list = []
+page_num = 1
+i = 20
 
+while i < 30:
+    payload = {'per_page': '100', 'page': page_num}
+    r = requests.get('https://api.github.com/repos/Learningtribes/platform/branches', auth=(username, password), params=payload)
+    for j in r.json():
+        branches_list.append(j['name'])
+    branches_num = len(r.json())
+    if branches_num == 100:
+        page_num += 1
+    else:
+        i = 30
 
-for i in r.json():
-    print i['name']
+for i in branches_list:
+    print i
