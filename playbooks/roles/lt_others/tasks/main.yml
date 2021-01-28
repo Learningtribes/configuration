@@ -29,7 +29,7 @@
     name: "check uv number"
     minute: "10"
     hour: "10"
-    job: "python /opt/scripts/check_uv_number.sh"
+    job: "bash /opt/scripts/check_uv_number.sh"
   become_user: ubuntu
 
 - name: add fetch edflex data
