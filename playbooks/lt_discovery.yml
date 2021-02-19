@@ -4,11 +4,6 @@
   gather_facts: True
   vars:
     DISCOVERY_VERSION: 'open-release/hawthorn.master'
-    DISCOVERY_MYSQL: "{{ MYSQL_HOST }}"
-    DISCOVERY_MYSQL_USER: "{{ TENANT_MYSQL_USER }}"
-    DISCOVERY_MYSQL_PASSWORD: "{{ TENANT_MYSQL_PASS }}"
-    DISCOVERY_SOCIAL_AUTH_EDX_OIDC_KEY: ''
-    DISCOVERY_SOCIAL_AUTH_EDX_OIDC_SECRET: ''
   roles:
     - role: aws
       when: COMMON_ENABLE_AWS_ROLE
