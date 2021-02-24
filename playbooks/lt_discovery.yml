@@ -11,3 +11,4 @@
       nginx_default_sites:
         - discovery
     - discovery
+    - lt_sql_discovery

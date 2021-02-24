@@ -1,0 +1,1 @@
+insert into auth_user (password, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined, referral_tracking_id) values ('pbkdf2_sha256$36000$7UO6EKAwDZ53$LHZGaD+IsBWJROrD35qiyhfV8jd04HghpKNoA1mj+cg=', 1, 'lt_admin', 'LT', 'ADMIN', 'support@learning-tribes.com', 1, 1, now(), '');
