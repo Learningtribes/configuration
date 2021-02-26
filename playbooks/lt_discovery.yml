@@ -4,6 +4,7 @@
   gather_facts: True
   vars:
     DISCOVERY_VERSION: 'open-release/hawthorn.master'
+    NGINX_SET_X_FORWARDED_HEADERS: False
   roles:
     - role: aws
       when: COMMON_ENABLE_AWS_ROLE

@@ -21,3 +21,12 @@
     minute: "*/5"
     job: "cd /edx/app/discovery/discovery/ && source ../discovery_env && python manage.py refresh_course_metadata"
   become_user: discovery
+
+- name: create script folder
+  file:
+    path: /edx/var/discovery/media/media/programs/banner_images
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+  become: yes
