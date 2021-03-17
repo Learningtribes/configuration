@@ -58,7 +58,7 @@
   copy: 
     src: ../files/{{item}}
     dest: /opt/scripts/{{item}}
-  with_items: ['check_license_number.py', 'check_uv_number.sh']
+  with_items: ['check_license_number.py', 'check_uv_number.sh', 'check_platform_commit.sh']
 
 - name: change lms log folder permission
   file:
