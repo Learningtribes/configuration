@@ -30,3 +30,10 @@ else
   current_id=$(check_current_id)
   echo "current: $current_id" >> $commit_file
 fi
+
+
+if [ -n "$1" ] && [ "$1" = "previous" ];
+then
+  previous_id=$(grep 'previous' $commit_file | awk '{print $2}')
+  echo $previous_id  
+fi
