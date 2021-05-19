@@ -143,6 +143,11 @@
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
 
 - name: record commit ID
-  command: "bash /opt/scripts/check_platform_commit.sh"
+  command: "bash /opt/scripts/check_platform_commit.sh record"
   become_user: root
-  tags: ['never', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production', 'revert-production']
+  tags: ['never', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+
+- name: record revert 
+  command: "bash /opt/scripts/check_platform_commit.sh revert"
+  become_user: root
+  tags: ['never', 'revert-production']
