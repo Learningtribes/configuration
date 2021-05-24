@@ -21,9 +21,9 @@
   pip:
     name:
       - apache-airflow==1.10.11
-      - apache-airflow[celery]==1.10.11
-      - apache-airflow[mysql]==1.10.11
-      - apache-airflow[password]==1.10.11
+      - 'apache-airflow[celery]==1.10.11'
+      - 'apache-airflow[mysql]==1.10.11'
+      - 'apache-airflow[password]==1.10.11'
     virtualenv: /opt/airflow-worker
     virtualenv_command: /usr/local/bin/virtualenv
 
