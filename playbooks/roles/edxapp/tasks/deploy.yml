@@ -146,7 +146,7 @@
     - install:app-requirements
 
 - name: upgrade pip version
-  command: "{{ edxapp_venv_dir }}/bin/pip install --upgrade pip"
+  command: "{{ edxapp_venv_dir }}/bin/pip install pip==20.3.4"
   become_user: "{{ edxapp_user }}"
   environment: "{{ edxapp_environment }}" 
   tags:
