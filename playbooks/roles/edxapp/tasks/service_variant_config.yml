@@ -149,6 +149,13 @@
     - install
     - install:configuration
 
+- name: fix migration confliction
+  shell:
+    executable: /bin/bash 
+    chdir: /edx/app/edxapp/edx-platform
+    cmd: "source /edx/app/edxapp/edxapp_env && python manage.py lms makemigrations --merge --noinput --settings aws"
+  become_user: "{{ edxapp_user }}"
+
 # migrate when the migrate user is overridden in extra vars
 - name: migrate
   command: "{{ COMMON_BIN_DIR }}/edxapp-migrate-{{ item }}"
