@@ -145,6 +145,14 @@
     - install
     - install:app-requirements
 
+- name: upgrade pip version
+  command: "{{ edxapp_venv_dir }}/bin/pip install --upgrade pip"
+  become_user: "{{ edxapp_user }}"
+  environment: "{{ edxapp_environment }}" 
+  tags:
+    - install
+    - install:app-requirements
+
 # - name: temp to fix file
 #   lineinfile:
 #     path: "/edx/app/edxapp/edx-platform/requirements/edx/base.txt"
