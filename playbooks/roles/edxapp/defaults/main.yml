@@ -938,7 +938,7 @@ EDXAPP_ADVANCED_SECURITY_CONFIG:
   MIN_DAYS_FOR_STAFF_ACCOUNTS_PASSWORD_RESETS: 1000
 
 # extra application to platform
-EDXAPP_ADDL_INSTALLED_APPS:
+EDXAPP_ADDL_INSTALLED_APPS: []
 #  - "edflex"
 #-------- Everything below this line is internal to the role ------------
 
