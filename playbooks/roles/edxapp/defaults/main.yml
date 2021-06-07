@@ -629,6 +629,7 @@ EDXAPP_CELERY_WORKERS:
     service_variant: lms
     concurrency: 1
     monitor: True
+    max_tasks_per_child: 1
   - queue: high_mem
     service_variant: lms
     concurrency: 1
