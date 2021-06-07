@@ -939,7 +939,7 @@ EDXAPP_ADVANCED_SECURITY_CONFIG:
 
 # extra application to platform
 EDXAPP_ADDL_INSTALLED_APPS:
-  - "edflex"
+#  - "edflex"
 #-------- Everything below this line is internal to the role ------------
 
 #Use YAML references (& and *) and hash merge <<: to factor out shared settings
