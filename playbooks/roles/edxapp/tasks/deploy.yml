@@ -157,7 +157,7 @@
   lineinfile:
     path: "/edx/app/edxapp/edx-platform/requirements/edx/base.txt"
     regexp: '^.*py2neo==3.1.2.*'
-    line: "-e pip install git+https://github.com/technige/py2neo.git@py2neo-3.1.2#egg=py2neo"
+    line: "-e git+https://github.com/technige/py2neo.git@py2neo-3.1.2#egg=py2neo"
 
 # - name: temp to fix file
 #   lineinfile:
