@@ -48,4 +48,5 @@
    - role: lt_log
    - role: lt_sql
    - role: lt_ldap
+   - role: lt_airflow
    - role: lt_others

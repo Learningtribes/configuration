@@ -141,3 +141,13 @@
   ignore_errors: yes
   when: run_trans_script is defined and run_trans_script|lower == "yes"
   tags: ['never', 'deploy', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+
+- name: record commit ID
+  command: "bash /opt/scripts/check_platform_commit.sh record"
+  become_user: root
+  tags: ['never', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+
+- name: record revert 
+  command: "bash /opt/scripts/check_platform_commit.sh revert"
+  become_user: root
+  tags: ['never', 'revert-production']

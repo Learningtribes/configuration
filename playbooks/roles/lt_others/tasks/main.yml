@@ -32,6 +32,20 @@
     job: "bash /opt/scripts/check_uv_number.sh"
   become_user: ubuntu
 
+- name: change shell cron job by root account
+  cron:
+    env: yes
+    name: SHELL
+    job: /bin/bash
+  become: yes
+
+- name: add check platform commit cron job
+  cron: 
+    name: "check platform commit"
+    minute: "*/10"
+    job: "bash /opt/scripts/check_platform_commit.sh"
+  become: yes
+
 - name: add fetch edflex data
   cron:
     name: "fetch edflex data"

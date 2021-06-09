@@ -1,0 +1,51 @@
+---
+- name: create airflow worker folder
+  file:
+    path: /opt/airflow-worker
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: www-data
+  become: yes
+
+- name: create airflow conf folder
+  file:
+    path: /home/ubuntu/airflow
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: yes
+
+- name: install airflow worker
+  pip:
+    name: apache-airflow==1.10.11
+    virtualenv: /opt/airflow-worker
+    virtualenv_command: /usr/local/bin/virtualenv
+
+- name: install airflow celery
+  pip:
+    name: 'apache-airflow[celery]==1.10.11'
+    virtualenv: /opt/airflow-worker
+
+- name: install airflow mysql
+  pip:
+    name: 'apache-airflow[mysql]==1.10.11'
+    virtualenv: /opt/airflow-worker
+
+- name: install airflow password
+  pip:
+    name: 'apache-airflow[password]==1.10.11'
+    virtualenv: /opt/airflow-worker
+
+- name: install special requirement version
+  pip:
+    name:
+      - SQLAlchemy==1.3.22
+      - Flask-SQLAlchemy==2.4.4
+    virtualenv: /opt/airflow-worker
+
+- name: copy airflow conf file
+  copy: 
+    src: ../files/airflow.cfg
+    dest: /home/ubuntu/airflow/airflow.cfg

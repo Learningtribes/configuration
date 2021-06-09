@@ -145,6 +145,20 @@
     - install
     - install:app-requirements
 
+- name: upgrade pip version
+  command: "{{ edxapp_venv_dir }}/bin/pip install pip==20.3.4"
+  become_user: "{{ edxapp_user }}"
+  environment: "{{ edxapp_environment }}" 
+  tags:
+    - install
+    - install:app-requirements
+
+- name: fix py2neo version
+  lineinfile:
+    path: "/edx/app/edxapp/edx-platform/requirements/edx/base.txt"
+    regexp: '^.*py2neo==3.1.2.*'
+    line: "-e git+https://github.com/technige/py2neo.git@py2neo-3.1.2#egg=py2neo"
+
 # - name: temp to fix file
 #   lineinfile:
 #     path: "/edx/app/edxapp/edx-platform/requirements/edx/base.txt"
@@ -203,12 +217,12 @@
     virtualenv: /edx/app/edxapp/venvs/edxapp
   become_user: edxapp
 
-- name: install edflex xblock package
-  pip:
-    name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/edflex-xblock.git@hawthorn#egg=edflex-xblock"
-    virtualenv: "{{ edxapp_venv_dir }}"
-    editable: yes
-  become_user: edxapp
+# - name: install edflex xblock package
+#   pip:
+#     name: "git+http://{{git_username}}:{{git_password}}@github.com/Learningtribes/edflex-xblock.git@hawthorn#egg=edflex-xblock"
+#     virtualenv: "{{ edxapp_venv_dir }}"
+#     editable: yes
+#   become_user: edxapp
 
 # Install any custom extra requirements if defined in EDXAPP_EXTRA_REQUIREMENTS.
 - name: install python extra requirements

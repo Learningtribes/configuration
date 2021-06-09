@@ -629,6 +629,7 @@ EDXAPP_CELERY_WORKERS:
     service_variant: lms
     concurrency: 1
     monitor: True
+    max_tasks_per_child: 1
   - queue: high_mem
     service_variant: lms
     concurrency: 1
@@ -937,8 +938,8 @@ EDXAPP_ADVANCED_SECURITY_CONFIG:
   MIN_DAYS_FOR_STAFF_ACCOUNTS_PASSWORD_RESETS: 1000
 
 # extra application to platform
-EDXAPP_ADDL_INSTALLED_APPS:
-  - "edflex"
+EDXAPP_ADDL_INSTALLED_APPS: []
+#  - "edflex"
 #-------- Everything below this line is internal to the role ------------
 
 #Use YAML references (& and *) and hash merge <<: to factor out shared settings
