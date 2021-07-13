@@ -11,10 +11,10 @@
 #     msg: "{{check_ec2_result}}"
 - set_fact:
     tags_region_fact: US
-  when: '"{{region}} == us-east-1"'
+  when: region == "us-east-1"
 - set_fact:
     tags_region_fact: EU
-  when: '"{{region}} == eu-west-1"'
+  when: region == "eu-west-1"
 - set_fact:
     ec2_id_fact: "{{check_ec2_result['instances'][0]['instance_id']}}"
   when: check_ec2_result['instances'][0] is defined
