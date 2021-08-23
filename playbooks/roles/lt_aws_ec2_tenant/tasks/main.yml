@@ -10,6 +10,12 @@
 # - debug:
 #     msg: "{{check_ec2_result}}"
 - set_fact:
+    tags_region_fact: US
+  when: region == "us-east-1"
+- set_fact:
+    tags_region_fact: EU
+  when: region == "eu-west-1"
+- set_fact:
     ec2_id_fact: "{{check_ec2_result['instances'][0]['instance_id']}}"
   when: check_ec2_result['instances'][0] is defined
 # - fail:
@@ -32,6 +38,7 @@
       Name: "{{ec2_instance_tenant_name}}"
       COST: "{{client_name}}"
       BACKUP: support
+      Region: "{{tags_region_fact}}"
     termination_protection: yes
     ebs_optimized: yes
     vpc_subnet_id: "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
@@ -110,6 +117,7 @@
     tags:
       Name: Platform ELB {{client_name}} 
       COST: "{{client_name}}" 
+      Region: "{{tags_region_fact}}"
   register: create_elb_result
   when: check_elb_result['elbs'][0] is not defined
   tags: ['skip-cn']
@@ -155,6 +163,7 @@
     name: "{{s3_tenant_name}}"
     tags:
       COST: "{{client_name}}"
+      Region: "{{tags_region_fact}}"
   when: s3_get_id_fact == false
   tags: ['skip-cn']
 - name: add default bucket CORS
@@ -203,6 +212,7 @@
     name: "{{s3_public_tenant_name}}"
     tags:
       COST: "{{client_name}}"
+      Region: "{{tags_region_fact}}"
   when: s3_get_public_id_fact == false
   tags: ['skip-cn']
 - set_fact:
@@ -230,6 +240,7 @@
     name: "{{s3_video_tenant_name}}"
     tags:
       COST: "{{client_name}}"
+      Region: "{{tags_region_fact}}"
   when: s3_get_video_id_fact == false
   tags: ['skip-cn']
 - name: add video bucket CORS
@@ -275,6 +286,7 @@
     name: "{{s3_veda_tenant_name}}"
     tags:
       COST: "{{client_name}}"
+      Region: "{{tags_region_fact}}"
   when: s3_get_veda_id_fact == false
   tags: ['skip-cn']
 - name: download inventory repo

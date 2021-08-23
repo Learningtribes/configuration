@@ -9,6 +9,38 @@
     path: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant"
     state: directory
     mode: 0755
+- name: create saml key
+  openssl_privatekey:
+    path: /tmp/saml.key
+- name: create saml csr
+  openssl_csr:
+    path: /tmp/saml.csr
+    privatekey_path: /tmp/saml.key
+    country_name: FR
+    organization_name: Learningtribes
+    email_address: support@learningtribes.com
+- name: create saml crt
+  openssl_certificate:
+    path: /tmp/saml.crt
+    privatekey_path: /tmp/saml.key
+    csr_path: /tmp/saml.csr
+    provider: selfsigned
+- name: get key content
+  shell: "cat /tmp/saml.key  | grep -v 'PRIVATE KEY'"
+  register: keyfile
+- name: get crt content
+  shell: "cat /tmp/saml.crt  | grep -v CERTIFICATE"
+  register: crtfile 
+- name: add saml key
+  lineinfile:
+    path: /edx/app/edxapp/lms.auth.json
+    regexp: '"SOCIAL_AUTH_SAML_SP_PRIVATE_KEY"'
+    line: '    "SOCIAL_AUTH_SAML_SP_PRIVATE_KEY": "{{keyfile["stdout_lines"]|join("\n")}}",'
+- name: add saml crt
+  lineinfile:
+    path: /edx/app/edxapp/lms.auth.json
+    regexp: '"SOCIAL_AUTH_SAML_SP_PUBLIC_CERT"'
+    line: '    "SOCIAL_AUTH_SAML_SP_PUBLIC_CERT": "{{crtfile["stdout_lines"]|join("\n")}}",'
 - name: get tenant configuration files
   command: cp {{item.file_src}} {{item.file_dest}}
   with_items:
@@ -25,4 +57,16 @@
 - name: remove inventory repo folder
   file:
     path: "{{inventory_repo_folder}}"
+    state: absent
+- name: remove saml key
+  file:
+    path: /tmp/saml.key
+    state: absent
+- name: remove saml csr
+  file:
+    path: /tmp/saml.csr
+    state: absent
+- name: remove saml crt
+  file:
+    path: /tmp/saml.crt
     state: absent
