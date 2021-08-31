@@ -9,6 +9,10 @@
     path: "{{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant"
     state: directory
     mode: 0755
+- name: install pip pyOpenSSL
+  pip:
+    name: pyOpenSSL
+  become: yes
 - name: create saml key
   openssl_privatekey:
     path: /tmp/saml.key
