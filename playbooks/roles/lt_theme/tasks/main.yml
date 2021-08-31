@@ -1,13 +1,14 @@
 ---
 - name: change theme folder owner
   file:
-    path: /edx/app/edxapp/edx-platform
+    path: /edx/app/edxapp/themes
     state: directory
     recurse: yes
     owner: edxapp
     group: edxapp
   become: yes
   tags: ['never', 'stage-auto-theme', 'stage-theme-lms', 'stage-theme-cms']
+
 - name: return instance ID
   command: curl http://169.254.169.254/latest/meta-data/instance-id
   register: instanceid
