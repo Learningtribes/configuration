@@ -64,6 +64,7 @@
     repo: https://github.com/sensu/sensu-go.git
     dest: /opt/sensu-go
     version: tags/v6.1.0
+  become: yes
 
 - name: install sensu-go agent
   shell: /usr/local/go/bin/go build -o bin/sensu-agent ./cmd/sensu-agent
