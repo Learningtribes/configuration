@@ -1,52 +1,41 @@
 ---
-# - name: change hostname
-#   hostname:
-#     name: "learning-tribes.{{client_name}}"
-#   become: yes
+- name: change hostname
+  hostname:
+    name: "learning-tribes.{{client_name}}"
+  become: yes
 
-# - name: change hosts file
-#   replace: 
-#     path: /etc/hosts
-#     regexp: '^127.0.0.1.*'
-#     replace: "127.0.0.1  localhost  learning-tribes.{{client_name}}"
-#   become: yes
+- name: change hosts file
+  replace: 
+    path: /etc/hosts
+    regexp: '^127.0.0.1.*'
+    replace: "127.0.0.1  localhost  learning-tribes.{{client_name}}"
+  become: yes
 
-# - name: install requirement package
-#   apt:
-#     name: sysstat
-#   become: yes
+- name: install requirement package
+  apt:
+    name: sysstat
+  become: yes
 
-# - name: install pip boto3
-#   pip:
-#     name: boto3
-#   become: yes
+- name: install pip boto3
+  pip:
+    name: boto3
+  become: yes
 
-# - name: create script folder
-#   file:
-#     path: /opt/scripts
-#     state: directory
-#     mode: '0755'
-#     owner: ubuntu
-#     group: ubuntu
-#   become: yes
-
-# - name: create checkpoint scripts
-#   copy:
-#     src: ../files/{{item}}
-#     dest: /opt/scripts/{{item}}
-#   with_items: ['check_webpack_error.sh', ]
-#   become: yes
+- name: create script folder
+  file:
+    path: /opt/scripts
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: yes
 
 - name: create checkpoint scripts
   copy:
     src: ../files/{{item}}
     dest: /opt/scripts/{{item}}
-  with_items: ['check-elasticsearch-memory.sh', 'remediation_veda_deliver.sh', 'remediation_veda_ingest.sh', 'remediation_veda_encode.sh']
+  with_items: ['check_webpack_error.sh', 'check-elasticsearch-memory.sh', 'remediation_veda_deliver.sh', 'remediation_veda_ingest.sh', 'remediation_veda_encode.sh']
   become: yes
-
-- name: get hostname
-  shell: hostname | cut -d'.' -f2
-  register: get_hostname_string
 
 - name: download golang package
   shell: wget https://golang.org/dl/go1.13.3.linux-amd64.tar.gz
@@ -96,3 +85,4 @@
     name: sensu-client.service
     enabled: yes
     state: started
+  become: yes
