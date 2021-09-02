@@ -1,0 +1,11 @@
+---
+#name: "{{client_name}}"
+name: "{{get_hostname_string}}"
+subscriptions:
+  - linux
+  - app
+agent-managed-entity: false
+backend-url:
+  - "ws://18.136.26.93:8081"
+deregister: false
+log-level: "warn"
