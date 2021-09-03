@@ -1,2 +1,0 @@
-#!/bin/bash
-ps auxf |grep elastic |grep -v grep | awk '{print $2}' | xargs -i cat /proc/{}/smaps | awk -v timestamp=$(date +"%s") -v hostname=$(hostname) '/Rss:/{ sum += $2 } END { print hostname".memory.elasticsearch", sum*1024, timestamp}'
