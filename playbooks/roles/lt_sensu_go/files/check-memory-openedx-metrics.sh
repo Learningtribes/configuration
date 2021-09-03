@@ -46,4 +46,4 @@ ps auxf |egrep 'unicorn.rb|forum'  | grep -v 'grep' | awk '{print $2}' | xargs -
 
 ps auxf |grep 'certificate_agent.py' | grep -v 'grep' | awk '{print $2}' | xargs -i cat /proc/{}/smaps | awk -v timestamp=$timestamp -v hostname=$hostname '/Rss:/{ sum += $2 } END { print hostname".memory.certs", sum*1024, timestamp}'
 
-ps auxf | grep 'memcached' | awk '{print $2}' | xargs -i cat /proc/{}/smaps | awk -v timestamp=$timestamp -v hostname=$hostname '/Rss:/{ sum += $2 } END { print hostname".memcached.certs", sum*1024, timestamp}'
+ps auxf | grep 'memcached' | grep -v 'grep' | awk '{print $2}' | xargs -i cat /proc/{}/smaps | awk -v timestamp=$timestamp -v hostname=$hostname '/Rss:/{ sum += $2 } END { print hostname".memory.memcached", sum*1024, timestamp}'
