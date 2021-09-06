@@ -22,6 +22,7 @@
     privatekey_path: /tmp/saml.key
     country_name: FR
     organization_name: Learningtribes
+    common_name: ''
     email_address: support@learningtribes.com
 - name: create saml crt
   openssl_certificate:
@@ -75,7 +76,7 @@
     path: /tmp/saml.crt
     state: absent
 - name: run reindex_course task
-  shell: "cat < (echo 'yes') - | /edx/app/edxapp/venvs/edxapp/bin/python manage.py cms reindex_course --all --reconfig --settings=aws"
+  shell: "yes | /edx/app/edxapp/venvs/edxapp/bin/python manage.py cms reindex_course --all --reconfig --settings=aws"
   args:
     chdir: "/edx/app/edxapp/edx-platform"  
   become_user: edxapp
