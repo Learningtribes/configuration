@@ -38,10 +38,10 @@
         deb: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-amd64.deb
     - name: enable nginx module at filebeat
       command: filebeat modules enable nginx
-    - name: enable mongodb module at filebeat
-      command: filebeat modules enable mongodb
-    - name: enable system module at filebeat
-      command: filebeat modules enable system
+    # - name: enable mongodb module at filebeat
+    #   command: filebeat modules enable mongodb
+    # - name: enable system module at filebeat
+    #   command: filebeat modules enable system
     - name: create filebeat modules configuration file
       copy:
         src: ../files/{{item}}.yml

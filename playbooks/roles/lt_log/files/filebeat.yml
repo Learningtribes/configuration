@@ -146,7 +146,7 @@ filebeat.config.modules:
 
 
 setup.template.settings:
-  index.number_of_shards: 3
+  index.number_of_shards: 1
 
 
 output.logstash:
