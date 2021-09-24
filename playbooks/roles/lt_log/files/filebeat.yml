@@ -2,93 +2,9 @@ filebeat.inputs:
 
 - type: log
   paths:
-    - /edx/var/log/supervisor/lms_high_mem_*-stderr.log
-  fields:
-    logtype: worker
-    logclass: lms_hign_mem
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
-    - /edx/var/log/supervisor/lms_high_?-stderr.log
-  fields:
-    logtype: worker
-    logclass: lms_hign
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
-    - /edx/var/log/supervisor/lms_low_*-stderr.log
-  fields:
-    logtype: worker
-    logclass: lms_low
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
-    - /edx/var/log/supervisor/lms_default_*-stderr.log
-  fields:
-    logtype: worker
-    logclass: lms_default
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
     - /edx/var/log/supervisor/lms-stderr.log
   fields:
     logtype: lms
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
-    - /edx/var/log/supervisor/cms_high_*-stderr.log
-  fields:
-    logtype: worker
-    logclass: cms_hign
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
-    - /edx/var/log/supervisor/cms_low_*-stderr.log
-  fields:
-    logtype: worker
-    logclass: cms_low
-    loglevel: error
-  fields_under_root: true
-  multiline.pattern: '^\d{4}-'
-  multiline.negate: true
-  multiline.match: after
-
-- type: log
-  paths:
-    - /edx/var/log/supervisor/cms_default_*-stderr.log
-  fields:
-    logtype: worker
-    logclass: cms_default
     loglevel: error
   fields_under_root: true
   multiline.pattern: '^\d{4}-'
@@ -108,37 +24,163 @@ filebeat.inputs:
 
 - type: log
   paths:
+    - /edx/var/log/supervisor/certs-stdout.log
+  fields:
+    logtype: certs
+    loglevel: stdout
+  fields_under_root: true
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/certs-stderr.log
+  fields:
+    logtype: certs
+    loglevel: stderr
+  fields_under_root: true
+  multiline.pattern: '^\w.*:'
+  multiline.negate: true
+  multiline.match: before
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/xqueue-stderr.log
+  fields:
+    logtype: xqueue
+  fields_under_root: true
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/xqueue_consumer-stderr.log
+  fields:
+    logtype: xqueue_consumer
+  fields_under_root: true
+  multiline.pattern: '^\w.*:'
+  multiline.negate: true
+  multiline.match: before
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/forum-stdout.log
+  fields:
+    logtype: forum
+    loglevel: stdout
+  fields_under_root: true
+  multiline.pattern: '^W,'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
     - /edx/var/log/supervisor/forum-stderr.log
   fields:
     logtype: forum
-    loglevel: error
+    loglevel: stderr
   fields_under_root: true
-  multiline.pattern: '^\w,\s'
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_default_1-stderr.log
+  fields:
+    logtype: worker_lms_default
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
   multiline.negate: true
   multiline.match: after
 
 - type: log
   paths:
-    - /var/log/rabbitmq/rabbit@*.log
+    - /edx/var/log/supervisor/lms_low_1-stderr.log
   fields:
-    logtype: rabbitmq
+    logtype: worker_lms_low
   fields_under_root: true
-  multiline.pattern: '^='
+  multiline.pattern: '^\[?\d{4}-'
   multiline.negate: true
   multiline.match: after
 
 - type: log
   paths:
-    - /edx/var/log/supervisor/supervisord.log
+    - /edx/var/log/supervisor/lms_high_1-stderr.log
   fields:
-    logtype: supervisord
+    logtype: worker_lms_high
   fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_high_mem_1-stderr.log
+  fields:
+    logtype: worker_lms_high_mem
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_grade-stderr.log
+  fields:
+    logtype: worker_lms_grade
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_leaderboard-stderr.log
+  fields:
+    logtype: worker_lms_leaderboard
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/lms_progress-stderr.log
+  fields:
+    logtype: worker_lms_progress
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms_default_1-stderr.log
+  fields:
+    logtype: worker_cms_default
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms_low_1-stderr.log
+  fields:
+    logtype: worker_cms_low
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/cms_high_1-stderr.log
+  fields:
+    logtype: worker_cms_high
+  fields_under_root: true
+  multiline.pattern: '^\[?\d{4}-'
+  multiline.negate: true
+  multiline.match: after
 
 - type: log
   enabled: false
   paths:
     - /var/log/*.log
-
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
