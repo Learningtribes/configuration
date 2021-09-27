@@ -1,0 +1,88 @@
+---
+- name: change hostname
+  hostname:
+    name: "learning-tribes.{{client_name}}"
+  become: yes
+
+- name: change hosts file
+  replace: 
+    path: /etc/hosts
+    regexp: '^127.0.0.1.*'
+    replace: "127.0.0.1  localhost  learning-tribes.{{client_name}}"
+  become: yes
+
+- name: install requirement package
+  apt:
+    name: sysstat
+  become: yes
+
+- name: install pip boto3
+  pip:
+    name: boto3
+  become: yes
+
+- name: create script folder
+  file:
+    path: /opt/scripts
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: yes
+
+- name: create checkpoint scripts
+  copy:
+    src: ../files/{{item}}
+    dest: /opt/scripts/{{item}}
+  with_items: ['check_webpack_error.sh', 'check-memory-openedx-metrics.sh', 'check-memory-airflow-metrics.sh', 'remediation_veda_deliver.sh', 'remediation_veda_ingest.sh', 'remediation_veda_encode.sh']
+  become: yes
+
+- name: download golang package
+  shell: wget https://golang.org/dl/go1.13.3.linux-amd64.tar.gz
+  args:
+    chdir: /tmp
+
+- name: install golang
+  shell: tar -C /usr/local/ -xzf go1.13.3.linux-amd64.tar.gz
+  args:
+    chdir: /tmp
+  become: yes
+
+- name: download sensu-go
+  git:
+    repo: https://github.com/sensu/sensu-go.git
+    dest: /opt/sensu-go
+    version: tags/v6.1.0
+  become: yes
+
+- name: install sensu-go agent
+  shell: /usr/local/go/bin/go build -o bin/sensu-agent ./cmd/sensu-agent
+  args:
+    chdir: /opt/sensu-go
+  become: yes
+
+- name: create sensu-go config folder
+  file:
+    path: /etc/sensu
+    state: directory
+  become: yes
+
+- name: create sensu-go agent config file
+  template:
+    src: agent.j2
+    dest: /etc/sensu/agent.yml
+    mode: 400
+  become: yes
+
+- name: create sensu-go agent systemd file
+  copy:
+    src: ../files/sensu-client.service
+    dest: /etc/systemd/system/sensu-client.service
+  become: yes
+
+- name: start sensu-go agent service
+  systemd:
+    name: sensu-client.service
+    enabled: yes
+    state: started
+  become: yes

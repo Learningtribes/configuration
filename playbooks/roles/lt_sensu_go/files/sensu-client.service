@@ -1,0 +1,11 @@
+[Unit]
+Description=Sensu Client Service
+After=network.target
+
+[Service]
+ExecStart=/opt/sensu-go/bin/sensu-agent start --password 7u4dpCAH64hZ8bqyS4ZhJXVU
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

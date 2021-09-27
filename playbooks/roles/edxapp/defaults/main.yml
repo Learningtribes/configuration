@@ -740,9 +740,9 @@ EDXAPP_EDXNOTES_INTERNAL_API: http://localhost:18120/api/v1
 
 EDXAPP_XBLOCK_SETTINGS:
   EdflexXBlock:
-    EDFLEX_CLIENT_ID: "123u321"
-    EDFLEX_CLIENT_SECRET: "client123secret"
-    EDFLEX_BASE_API_URL: "https://base/api/url"
+    EDFLEX_CLIENT_ID: ""
+    EDFLEX_CLIENT_SECRET: ""
+    EDFLEX_BASE_API_URL: ""
 
 # Secret keys shared with credit providers.
 # Used to digitally sign credit requests (us --> provider)

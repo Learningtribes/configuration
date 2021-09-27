@@ -44,9 +44,9 @@
      when: ENABLE_DEMO is defined and ENABLE_DEMO
    - role: devstack_sqlite_fix
      when: devstack is defined and devstack
-   - role: lt_sensu
+   - role: lt_sensu_go
    - role: lt_log
    - role: lt_sql
-   - role: lt_ldap
+#   - role: lt_ldap
    - role: lt_airflow
    - role: lt_others
