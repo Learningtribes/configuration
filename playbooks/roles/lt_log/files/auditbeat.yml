@@ -4,7 +4,7 @@ auditbeat.modules:
     -a exit,always -F arch=b64 -F auid>=1000 -F auid!=4294967295 -S execve -k nonrootcommands
 
 setup.template.settings:
-  index.number_of_shards: 3
+  index.number_of_shards: 1
 
 setup.kibana:
 

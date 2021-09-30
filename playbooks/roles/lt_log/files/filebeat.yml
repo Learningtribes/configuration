@@ -215,6 +215,23 @@ filebeat.inputs:
   multiline.match: after
 
 - type: log
+  paths:
+    - /edx/var/log/supervisor/discovery-stdout.log
+  fields:
+    logtype: discovery
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/discovery-stderr.log
+  fields:
+    logtype: discovery
+  fields_under_root: true
+
+- type: log
   enabled: false
   paths:
     - /var/log/*.log
