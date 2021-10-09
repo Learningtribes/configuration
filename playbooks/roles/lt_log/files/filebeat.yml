@@ -178,6 +178,60 @@ filebeat.inputs:
   multiline.match: after
 
 - type: log
+  paths:
+    - /edx/var/log/supervisor/veda_pipeline_worker_ingest-stdout.log
+  fields:
+    logtype: veda_ingest_worker
+  fields_under_root: true
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/veda_pipeline_worker_ingest-stderr.log
+  fields:
+    logtype: veda_ingest_worker
+  fields_under_root: true
+  multiline.pattern: '^[/T]'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/veda_encode_worker-stderr.log
+  fields:
+    logtype: veda_encode_worker
+  fields_under_root: true
+  multiline.pattern: '^[[TI]'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/veda_pipeline_worker_deliver-stderr.log
+  fields:
+    logtype: veda_deliver_worker
+  fields_under_root: true
+  multiline.pattern: '^[[/T]'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/discovery-stdout.log
+  fields:
+    logtype: discovery
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
+  paths:
+    - /edx/var/log/supervisor/discovery-stderr.log
+  fields:
+    logtype: discovery
+  fields_under_root: true
+
+- type: log
   enabled: false
   paths:
     - /var/log/*.log

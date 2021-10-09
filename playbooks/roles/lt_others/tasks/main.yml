@@ -80,3 +80,21 @@
     mode: "777"
     state: directory
   become: yes
+
+- name: create folder for Edflex SAML keys
+  file:
+    path: /edx/app/edxapp/edx-platform/keys
+    mode: "755"
+    state: directory
+    owner: edxapp
+    group: edxapp
+  become: yes
+
+- name: copy Edflex SAML keys
+  copy:
+    src: ../files{{item}}
+    dest: /edx/app/edxapp/edx-platform/keys/{{item}}
+    owner: edxapp
+    group: edxapp
+    mode: "644"
+  with_items: ['saml-idp-private.key', 'saml-idp-public.cert']
