@@ -250,6 +250,9 @@ output.logstash:
   ssl.certificate_authorities: ["/opt/ssl/logstash/ca.pem"]
   ssl.certificate: "/opt/ssl/logstash/beat.crt"
   ssl.key: "/opt/ssl/logstash/beat.key"
+  compression_level: 0
+  worker: 1
 
 
 logging.level: info
+logging.metrics.enabled: false
