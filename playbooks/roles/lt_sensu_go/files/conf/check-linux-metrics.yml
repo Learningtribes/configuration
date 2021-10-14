@@ -1,0 +1,95 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_cpu_metrics
+  namespace: default
+spec:
+  command: metrics-cpu-pcnt-usage.rb
+  interval: 60
+  timeout: 30
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-cpu-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_disk_metrics
+  namespace: default
+spec:
+  command: metrics-disk-capacity.rb
+  interval: 60
+  timeout: 30
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-disk-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_memory_metrics
+  namespace: default
+spec:
+  command: metrics-memory.rb
+  interval: 60
+  timeout: 30
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-memory-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_network_metrics
+  namespace: default
+spec:
+  command: metrics-netif.rb
+  interval: 60
+  timeout: 30
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-network-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_uptime_metrics
+  namespace: default
+spec:
+  command: metrics-process-uptime.rb -p 1 -s $(hostname).pid
+  interval: 60
+  timeout: 30
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime

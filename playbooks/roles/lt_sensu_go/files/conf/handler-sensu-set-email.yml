@@ -1,0 +1,11 @@
+---
+type: Handler
+api_version: core/v2
+metadata:
+  name: email
+  namespace: default
+spec:
+  handlers:
+  - email_ops
+  - email_fallback
+  type: set

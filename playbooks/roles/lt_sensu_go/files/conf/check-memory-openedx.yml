@@ -1,0 +1,16 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_memory_openedx_metrics
+  namespace: default
+spec:
+  command: bash /opt/scripts/check-memory-openedx-metrics.sh
+  interval: 60
+  timeout: 50
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - app

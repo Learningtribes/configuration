@@ -1,0 +1,55 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: restart_openedx_veda_encode
+  namespace: default
+spec:
+  command: bash /opt/scripts/remediation_veda_encode.sh
+  publish: false
+  interval: 10
+  subscriptions: []
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: restart_openedx_veda_ingest
+  namespace: default
+spec:
+  command: bash /opt/scripts/remediation_veda_ingest.sh
+  publish: false
+  interval: 10
+  subscriptions: []
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: restart_openedx_veda_deliver
+  namespace: default
+spec:
+  command: bash /opt/scripts/remediation_veda_deliver.sh
+  publish: false
+  interval: 10 
+  subscriptions: []
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: restart_elasticsearch
+  namespace: default
+spec:
+  command: /etc/init.d/elasticsearch restart
+  publish: false
+  interval: 10 
+  subscriptions: []
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: restart_openedx_certs
+  namespace: default
+spec:
+  command: /edx/bin/supervisorctl start certs
+  publish: false
+  interval: 10
+  subscriptions: []

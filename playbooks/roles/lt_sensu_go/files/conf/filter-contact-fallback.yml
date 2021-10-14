@@ -1,0 +1,11 @@
+---
+type: EventFilter
+api_version: core/v2
+metadata:
+  name: contact_fallback
+spec:
+  action: allow
+  runtime_assets:
+    - contact-filter
+  expressions:
+    - no_contacts(event)
