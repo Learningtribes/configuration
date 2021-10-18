@@ -11,6 +11,9 @@
   rotate 90
   size 1M
   sharedscripts
+  prerotate
+        /bin/bash /opt/scripts/check_upload_nginx_logs.sh $1
+  endscript
   postrotate
 	[ ! -f /var/run/nginx.pid ] || kill -HUP `cat /var/run/nginx.pid`
   endscript
