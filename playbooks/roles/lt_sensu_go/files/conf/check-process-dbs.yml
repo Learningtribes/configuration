@@ -1,0 +1,124 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_memcache
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -u memcache
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_mongodb
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -u mongodb
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - db
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_mysql
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -u mysql
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - airflow-server
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_rabbitmq
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -u rabbitmq
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - db
+  - airflow-server
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_elasticsearch
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+    io.sensu.remediation.config.actions: |
+      [{
+        "description": "restart elasticsearch process after service stopped.",
+        "request": "restart_elasticsearch",
+        "occurrences": [ 2,5,10,15,20,25,30 ],
+        "severities": [ 2 ]
+      }]
+spec:
+  command: check-process.rb -p elasticsearch
+  handlers:
+  - email
+  - slack
+  - remediation
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime

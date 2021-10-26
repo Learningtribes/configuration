@@ -34,7 +34,14 @@
   copy:
     src: ../files/{{item}}
     dest: /opt/scripts/{{item}}
-  with_items: ['check_webpack_error.sh', 'check-memory-openedx-metrics.sh', 'check-memory-airflow-metrics.sh', 'remediation_veda_deliver.sh', 'remediation_veda_ingest.sh', 'remediation_veda_encode.sh']
+  with_items: ['check_webpack_error.sh', 'check-memory-openedx-metrics.sh', 'check-memory-airflow-metrics.sh', 'remediation_veda_deliver.sh', 'remediation_veda_ingest.sh', 'remediation_veda_encode.sh', 'check_upload_log_files.sh', 'check_upload_nginx_logs.sh']
+  become: yes
+
+- name: change script permission
+  file:
+    path: /opt/scripts/{{item}}
+    mode: '0600'
+  with_items: ['check_upload_log_files.sh', 'check_upload_nginx_logs.sh']
   become: yes
 
 - name: download golang package

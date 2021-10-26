@@ -1,0 +1,69 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_cpu_load
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-load.rb -w 3,2.5,2 -c 5,4,3
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-load-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_disk_usage
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-disk-usage.rb -p /snap/.* -w 90 -c 95 -W 90 -K 95
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-disk-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_memory_usage
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-memory-percent.rb -w 92 -c 97
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - linux
+  runtime_assets:
+  - sensu-plugins-memory-checks
+  - ruby-runtime

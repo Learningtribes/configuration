@@ -1,0 +1,423 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.wsgi
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms_worker_default
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.core.default
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms_worker_high
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.core.high
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms_worker_low
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.core.low
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms_worker_leaderboard
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.core.leaderboard
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms_worker_progress
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.core.progress
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_lms_worker_grade
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p lms.core.grade
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_cms_worker_default
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p cms.core.default
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_cms_worker_high
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p cms.core.high
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_cms_worker_low
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p cms.core.low
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_certs
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+    io.sensu.remediation.config.actions: |
+      [{
+        "description": "restart certs process after certs stopped.",
+        "request": "restart_openedx_certs",
+        "occurrences": [ 5,10,15,20,25,30 ],
+        "severities": [ 2 ]
+      }]
+spec:
+  command: check-process.rb -p certs
+  handlers:
+  - email
+  - slack
+  - remediation
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_forum
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p forum
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_veda_deliver
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+    io.sensu.remediation.config.actions: |
+      [{
+        "description": "restart vede deliver process after multi processes be finded.",
+        "request": "restart_openedx_veda_deliver",
+        "occurrences": [ 5,10,15,20,25,30 ],
+        "severities": [ 2 ]
+      }]
+spec:
+  command: check-process.rb -p '-Q deliver_worker' -c 3
+  handlers:
+  - email
+  - slack
+  - remediation
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_veda_encode
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+    io.sensu.remediation.config.actions: |
+      [{
+        "description": "restart vede encode process after multi processes be finded.",
+        "request": "restart_openedx_veda_encode",
+        "occurrences": [ 5,10,15,20,25,30 ],
+        "severities": [ 2 ]
+      }]
+spec:
+  command: check-process.rb -p '-Q encode_worker' -c 2
+  handlers:
+  - email
+  - slack
+  - remediation
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_veda_ingest
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+    io.sensu.remediation.config.actions: |
+      [{
+        "description": "restart vede ingest process after multi processes be finded.",
+        "request": "restart_openedx_veda_ingest",
+        "occurrences": [ 5,10,15,20,25,30 ],
+        "severities": [ 2 ]
+      }]
+spec:
+  command: check-process.rb -p 'veda_pipeline_worker/bin/loop.py' -c 2
+  handlers:
+  - email
+  - slack
+  - remediation
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_xqueue_consumer
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p run_consumer
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_openedx_xqueue
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p xqueue.wsgi
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime

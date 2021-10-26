@@ -1,0 +1,14 @@
+---
+type: Handler
+api_version: core/v2
+metadata:
+  namespace: default
+  name: graphite_instance
+spec:
+  type: pipe
+  command: sensu-go-graphite-handler -H 127.0.0.1 -n
+  timeout: 10
+  filters:
+  - has_metrics
+  runtime_assets:
+  - graphite-handler

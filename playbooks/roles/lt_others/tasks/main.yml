@@ -92,7 +92,7 @@
 
 - name: copy Edflex SAML keys
   copy:
-    src: ../files{{item}}
+    src: ../files/{{item}}
     dest: /edx/app/edxapp/edx-platform/keys/{{item}}
     owner: edxapp
     group: edxapp

@@ -1,0 +1,46 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_postfix
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p postfix
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - postfix
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_opendkim
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p opendkim
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - postfix
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime

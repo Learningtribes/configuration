@@ -1,0 +1,11 @@
+---
+type: Handler
+api_version: core/v2
+metadata:
+  name: keepalive
+  namespace: default
+spec:
+  handlers:
+  - email
+  - slack
+  type: set

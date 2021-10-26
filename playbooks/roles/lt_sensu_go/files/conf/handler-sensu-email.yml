@@ -1,0 +1,34 @@
+---
+api_version: core/v2
+type: Handler
+metadata:
+  namespace: default
+  name: email_ops
+spec:
+  type: pipe
+  command: sensu-email-handler
+  timeout: 10
+  filters:
+  - is_incident
+  - not_silenced
+  - fatigue_check
+  - contact_ops
+  runtime_assets:
+  - email-handler
+---
+api_version: core/v2
+type: Handler
+metadata:
+  namespace: default
+  name: email_fallback
+spec:
+  type: pipe
+  command: sensu-email-handler 
+  timeout: 10
+  filters:
+  - is_incident
+  - not_silenced
+  - fatigue_check
+  - contact_fallback
+  runtime_assets:
+  - email-handler

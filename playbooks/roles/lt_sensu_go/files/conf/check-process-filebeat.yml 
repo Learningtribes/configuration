@@ -1,0 +1,23 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_process_filebeat
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: check-process.rb -p filebeat
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 30
+  publish: true
+  subscriptions:
+  - app
+  runtime_assets:
+  - sensu-plugins-process-checks
+  - ruby-runtime

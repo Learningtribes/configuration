@@ -1,0 +1,16 @@
+---
+type: Handler
+api_version: core/v2
+metadata:
+  namespace: default
+  name: slack
+spec:
+  type: pipe
+  command: sensu-slack-handler -w https://hooks.slack.com/services/
+  timeout: 10
+  filters:
+  - is_incident
+  - not_silenced
+  - fatigue_check
+  runtime_assets:
+  - slack-handler
