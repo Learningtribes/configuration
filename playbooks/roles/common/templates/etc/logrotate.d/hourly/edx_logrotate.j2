@@ -1,4 +1,5 @@
 {{ COMMON_LOG_DIR }}/*/edx.log {
+  su syslog adm
   create
   compress
   copytruncate
@@ -8,8 +9,7 @@
   missingok
   notifempty
   daily
-  rotate 90
-  size 1M
+  rotate 180
   postrotate
     /usr/bin/killall -HUP rsyslogd
   endscript

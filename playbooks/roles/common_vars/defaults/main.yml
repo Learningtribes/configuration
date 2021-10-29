@@ -201,7 +201,7 @@ common_close_all_caches: |
             cache.close()
 
 COMMON_TRACKING_LOG_ROTATION:
-  - size 1M
+  - size 10M
 
 # If you include configuration from multiple sources and want to ensure that
 # all sources are included when running playbooks, this provides a way to check that.
