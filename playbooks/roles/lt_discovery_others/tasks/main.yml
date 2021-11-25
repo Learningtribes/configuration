@@ -1,13 +1,4 @@
 ---
-- name: copy discovery sql file
-  copy: 
-    src: ../files/discovery.sql
-    dest: /tmp/discovery.sql
-
-- name: execute discovery sql
-  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
-  become: yes
-
 - name: change shell cron job
   cron:
     env: yes
@@ -30,3 +21,17 @@
     owner: www-data
     group: www-data
   become: yes
+
+- name: copy discovery sql file
+  copy: 
+    src: ../files/discovery.sql
+    dest: /tmp/discovery.sql
+
+- name: execute discovery sql
+  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
+  become: yes
+
+- name: run migration about course metadata
+  shell: /edx/app/discovery/venvs/discovery/bin/python3 migrate course_metadata
+  chdir: /edx/app/discovery/discovery
+  become: discovery
