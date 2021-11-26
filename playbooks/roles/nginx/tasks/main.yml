@@ -81,6 +81,7 @@
   tags:
     - install
     - install:system-requirements
+    - skip-nginx-steps
 
 - name: Install the nginx package
   apt:
@@ -91,6 +92,7 @@
   tags:
     - install
     - install:system-requirements
+    - skip-nginx-steps
 
 - name: Remove the default site
   file:
@@ -249,7 +251,7 @@
   tags:
     - install
     - install:configuration
-    - skip-nginx-page
+    - skip-nginx-steps
 
 - name: Create LT maintenance page
   template:
@@ -261,7 +263,7 @@
   tags:
     - install
     - install:configuration
-    - skip-nginx-page
+    - skip-nginx-steps
 
 - name: Write out htpasswd file
   htpasswd:
