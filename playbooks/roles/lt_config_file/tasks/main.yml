@@ -39,7 +39,7 @@
 - name: update discovery file
   shell: cp {{item.file_src}} {{item.file_dest}}
   with_items:
-    - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/private.py", file_dest: "/edx/app/discovery/discovery/course_discovery/settings/private.py" }
+    - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/discovery.auth.json", file_dest: "/edx/app/discovery/discovery/discovery.auth.json" }
   become_user: discovery
   tags: ['never', 'update_discovery']
 - name: remove inventory repo folder
