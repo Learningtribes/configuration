@@ -249,6 +249,7 @@
   tags:
     - install
     - install:configuration
+    - skip-nginx-page
 
 - name: Create LT maintenance page
   template:
@@ -260,6 +261,7 @@
   tags:
     - install
     - install:configuration
+    - skip-nginx-page
 
 - name: Write out htpasswd file
   htpasswd:

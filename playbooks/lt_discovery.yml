@@ -4,6 +4,7 @@
   gather_facts: True
   vars:
     NGINX_SET_X_FORWARDED_HEADERS: False
+    edx_django_service_has_static_assets: false
     migrate_db: "no"
   roles:
     - role: aws
