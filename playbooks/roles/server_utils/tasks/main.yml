@@ -35,6 +35,6 @@
     name: "{{ item }}"
     install_recommends: yes
     state: present 
-    update_cache: yes
+    #update_cache: yes
   with_items: "{{ server_utils_debian_pkgs }}"
   when: ansible_distribution in common_debian_variants
