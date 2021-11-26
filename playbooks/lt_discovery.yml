@@ -4,6 +4,7 @@
   gather_facts: True
   vars:
     NGINX_SET_X_FORWARDED_HEADERS: False
+    migrate_db: "no"
   roles:
     - role: aws
       when: COMMON_ENABLE_AWS_ROLE
