@@ -13,25 +13,25 @@
     job: "cd /edx/app/discovery/discovery/ && source ../discovery_env && python manage.py refresh_course_metadata"
   become_user: discovery
 
-- name: create script folder
-  file:
-    path: /edx/var/discovery/media/media/programs/banner_images
-    state: directory
-    mode: '0755'
-    owner: www-data
-    group: www-data
-  become: yes
+# - name: create script folder
+#   file:
+#     path: /edx/var/discovery/media/media/programs/banner_images
+#     state: directory
+#     mode: '0755'
+#     owner: www-data
+#     group: www-data
+#   become: yes
 
-- name: copy discovery sql file
-  copy: 
-    src: ../files/discovery.sql
-    dest: /tmp/discovery.sql
+# - name: copy discovery sql file
+#   copy: 
+#     src: ../files/discovery.sql
+#     dest: /tmp/discovery.sql
 
-- name: execute discovery sql
-  shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
-  become: yes
+# - name: execute discovery sql
+#   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
+#   become: yes
 
-# - name: run migration about course metadata
-#   shell: /edx/app/discovery/venvs/discovery/bin/python3 migrate course_metadata
+# - name: run discovery migration
+#   shell: /edx/app/discovery/venvs/discovery/bin/python3 migrate 
 #   chdir: /edx/app/discovery/discovery
 #   become: discovery
