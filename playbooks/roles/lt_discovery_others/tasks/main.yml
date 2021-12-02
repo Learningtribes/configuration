@@ -31,7 +31,7 @@
 #   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
 #   become: yes
 
-# - name: run discovery migration
-#   shell: /edx/app/discovery/venvs/discovery/bin/python3 migrate 
-#   chdir: /edx/app/discovery/discovery
-#   become: discovery
+- name: run discovery migration
+  shell: /edx/app/discovery/venvs/discovery/bin/python3 migrate 
+  chdir: /edx/app/discovery/discovery
+  become: discovery
