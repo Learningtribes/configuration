@@ -33,5 +33,6 @@
 
 - name: run discovery migration
   shell: /edx/app/discovery/venvs/discovery/bin/python3 manage.py migrate 
-  chdir: /edx/app/discovery/discovery
+  args:
+    chdir: /edx/app/discovery/discovery
   become: discovery
