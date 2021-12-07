@@ -146,6 +146,7 @@
   command: "bash /opt/scripts/check_platform_commit.sh record"
   become_user: root
   tags: ['never', 'deploy-production', 'deploy-production-commitid', 'azure-deploy-production']
+  ignore_errors: yes
 
 - name: record revert 
   command: "bash /opt/scripts/check_platform_commit.sh revert"

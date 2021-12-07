@@ -1,0 +1,37 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_upload_app_logs
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: bash /opt/scripts/check_upload_log_files.sh
+  handlers:
+  - email
+  - slack
+  interval: 300
+  timeout: 270
+  publish: true
+  subscriptions:
+  - app
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_rotate_elastic_logs
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: find /edx/var/log/elasticsearch -type f -name elasticsearch.log.* -mtime +180 -exec rm -f {} +
+  cron: 20 1 * * *
+  timeout: 270
+  publish: true
+  subscriptions:
+  - app

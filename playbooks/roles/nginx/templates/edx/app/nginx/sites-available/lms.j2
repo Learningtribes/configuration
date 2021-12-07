@@ -172,7 +172,7 @@ error_page {{ k }} {{ v }};
     proxy_set_header Host $http_host;
 
     proxy_hide_header     X-Frame-Options;
-    add_header    X-Frame-Options ALLOW;
+    add_header    X-Frame-Options ALLOWALL;
 
     proxy_redirect off;
     proxy_pass http://lms-backend;

@@ -1,0 +1,39 @@
+---
+- name: change shell cron job
+  cron:
+    env: yes
+    name: SHELL
+    job: /bin/bash
+  become_user: discovery
+
+- name: add refresh course metadata cron job
+  cron:
+    name: "refresh course metadata"
+    minute: "*/5"
+    job: "cd /edx/app/discovery/discovery/ && source ../discovery_env && python manage.py refresh_course_metadata"
+  become_user: discovery
+
+# - name: create script folder
+#   file:
+#     path: /edx/var/discovery/media/media/programs/banner_images
+#     state: directory
+#     mode: '0755'
+#     owner: www-data
+#     group: www-data
+#   become: yes
+
+# - name: copy discovery sql file
+#   copy: 
+#     src: ../files/discovery.sql
+#     dest: /tmp/discovery.sql
+
+# - name: execute discovery sql
+#   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
+#   become: yes
+
+- name: run discovery migration
+  shell: source /edx/app/discovery/discovery_env;/edx/app/discovery/venvs/discovery/bin/python3 manage.py migrate 
+  args:
+    chdir: /edx/app/discovery/discovery
+    executable: /bin/bash
+  become: discovery

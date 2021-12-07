@@ -2,20 +2,20 @@
 - name: import vars file
   include_vars:
     file: roles/lt_aws_initial/defaults/main.yml
-  tags: ['never', 'update_nginx', 'update_platform']
+  tags: ['never', 'update_nginx', 'update_platform', 'update_discovery']
 - name: download inventory repo
   git: 
     repo: "{{inventory_git_url}}"
     dest: "{{inventory_repo_folder}}"
     version: "{{inventory_repo_branch}}"
-  tags: ['never', 'update_nginx', 'update_platform']
+  tags: ['never', 'update_nginx', 'update_platform', 'update_discovery']
 - name: get hostname
   shell: hostname
   register: get_hostname_string
-  tags: ['never', 'update_nginx', 'update_platform']
+  tags: ['never', 'update_nginx', 'update_platform', 'update_discovery']
 - set_fact:
     hostname_fact: "{{get_hostname_string['stdout'][19:]}}"
-  tags: ['never', 'update_nginx', 'update_platform']
+  tags: ['never', 'update_nginx', 'update_platform', 'update_discovery']
 - name: updage nginx file
   shell: cp {{item.file_src}} {{item.file_dest}}
   with_items:
@@ -36,8 +36,14 @@
     - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/cms.auth.json", file_dest: "/edx/app/edxapp/cms.auth.json" }
   become_user: edxapp
   tags: ['never', 'update_platform']
+- name: update discovery file
+  shell: cp {{item.file_src}} {{item.file_dest}}
+  with_items:
+    - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/discovery.auth.json", file_dest: "/edx/app/discovery/discovery/discovery.auth.json" }
+  become_user: discovery
+  tags: ['never', 'update_discovery']
 - name: remove inventory repo folder
   file:
     path: "{{inventory_repo_folder}}"
     state: absent
-  tags: ['never', 'update_nginx', 'update_platform']
+  tags: ['never', 'update_nginx', 'update_platform', 'update_discovery']

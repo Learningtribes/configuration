@@ -254,6 +254,7 @@
     name: "{{ edx_django_service_name }}"
   when: not disable_edx_services
   become_user: "{{ supervisor_service_user }}"
+  ignore_errors: yes
   tags:
     - manage
     - manage:start

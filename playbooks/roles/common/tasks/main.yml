@@ -53,13 +53,13 @@
 
 
 # Ensure that we can install old software if need be.
-- name: Add edX PPA apt key
-  apt_key:
-    id: "{{ COMMON_EDX_PPA_KEY_ID }}"
-    keyserver: "{{ COMMON_EDX_PPA_KEY_SERVER }}"
-    state: "present"
-  when: >
-    ansible_distribution in common_debian_variants
+# - name: Add edX PPA apt key
+#   apt_key:
+#     id: "{{ COMMON_EDX_PPA_KEY_ID }}"
+#     keyserver: "{{ COMMON_EDX_PPA_KEY_SERVER }}"
+#     state: "present"
+#   when: >
+#     ansible_distribution in common_debian_variants
 
 - name: Add custom edX PPA
   # Ensure that we get the latest version of python 2.7

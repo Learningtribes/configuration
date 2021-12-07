@@ -3,8 +3,9 @@
   become: True
   gather_facts: True
   vars:
-    DISCOVERY_VERSION: 'open-release/hawthorn.master'
     NGINX_SET_X_FORWARDED_HEADERS: False
+    edx_django_service_has_static_assets: false
+    migrate_db: "no"
   roles:
     - role: aws
       when: COMMON_ENABLE_AWS_ROLE
@@ -12,4 +13,4 @@
       nginx_default_sites:
         - discovery
     - discovery
-    - lt_sql_discovery
+    - lt_discovery_others
