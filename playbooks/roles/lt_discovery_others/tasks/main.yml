@@ -44,10 +44,10 @@
     version: "{{inventory_repo_branch}}"
 
 - name: get dicovery configuration files
-  command: "cp /edx/app/discovery/discovery/discovery.auth.json {{inventory_repo_folder}}/configuration_files/{{client_name}}_tenant/discovery.auth.json"
+  command: "cp /edx/app/discovery/discovery/discovery.auth.json {{inventory_repo_folder}}/configuration_files/{{TENANT_NAME}}_tenant/discovery.auth.json"
 
 - name: git push code
-  shell: "git add -A; git commit -m 'add {{client_name}} discovery configuration files'; git push"
+  shell: "git add -A; git commit -m 'add {{TENANT_NAME}} discovery configuration files'; git push"
   args:
     chdir: "{{inventory_repo_folder}}"
 
