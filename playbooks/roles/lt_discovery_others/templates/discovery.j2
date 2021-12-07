@@ -1,0 +1,15 @@
+{
+    "DATABASES": {
+        "default": {
+          "ATOMIC_REQUESTS": true,
+          "CONN_MAX_AGE": 0,
+          "ENGINE": "django.db.backends.mysql",
+          "HOST": "{{MYSQL_HOST}}",
+          "NAME": "{{DISCOVERY_DEFAULT_DB_NAME}}",
+          "OPTIONS": {},
+          "PASSWORD": "{{EDXAPP_MYSQL_PASSWORD}}",
+          "PORT": "3306",
+          "USER": "{{EDXAPP_MYSQL_USER}}"
+        }
+    }
+}
