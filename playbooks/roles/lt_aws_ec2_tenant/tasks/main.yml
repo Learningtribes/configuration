@@ -113,7 +113,7 @@
             TargetGroupName: "{{elb_target_group_tenant_name}}"
         Certificates:
           - CertificateArn: "{{check_acm_result['certificates'][0]['certificate_arn']}}"
-        SslPolicy: ELBSecurityPolicy-2016-08
+        SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
     tags:
       Name: Platform ELB {{client_name}} 
       COST: "{{client_name}}" 
