@@ -8,10 +8,12 @@
     - roles/supervisor/defaults/main.yml
     - roles/edxapp/defaults/main.yml
     - roles/certs/defaults/main.yml
+    - roles/discovery/defaults/main.yml
   roles:
     - role: lt_edxapp
     - role: lt_theme
     - role: lt_certs
+    - role: lt_discovery
     - role: lt_xblock
     - role: lt_config_file
     - role: lt_restart_service
