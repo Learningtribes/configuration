@@ -53,3 +53,14 @@ spec:
   publish: false
   interval: 10
   subscriptions: []
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: restart_openedx_discovery
+  namespace: default
+spec:
+  command: /edx/bin/supervisorctl start discovery
+  publish: false
+  interval: 10
+  subscriptions: []

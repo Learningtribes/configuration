@@ -31,6 +31,31 @@
 #   shell: "mysql -u {{TENANT_MYSQL_USER}} -p{{TENANT_MYSQL_PASS}} -h {{TENANT_MYSQL_LOGIN_HOST}} -D {{DISCOVERY_DEFAULT_DB_NAME}} < /tmp/discovery.sql"
 #   become: yes
 
+- name: create discovery file for tenant
+  template:
+    src: discovery.j2
+    dest: /edx/app/discovery/discovery/discovery.auth.json
+    mode: 0644
+
+- name: download inventory repo
+  git: 
+    repo: "{{inventory_git_url}}"
+    dest: "{{inventory_repo_folder}}"
+    version: "{{inventory_repo_branch}}"
+
+- name: get dicovery configuration files
+  command: "cp /edx/app/discovery/discovery/discovery.auth.json {{inventory_repo_folder}}/configuration_files/{{TENANT_NAME}}_tenant/discovery.auth.json"
+
+- name: git push code
+  shell: "git add -A; git commit -m 'add {{TENANT_NAME}} discovery configuration files'; git push"
+  args:
+    chdir: "{{inventory_repo_folder}}"
+
+- name: remove inventory repo folder
+  file:
+    path: "{{inventory_repo_folder}}"
+    state: absent
+
 - name: run discovery migration
   shell: source /edx/app/discovery/discovery_env;/edx/app/discovery/venvs/discovery/bin/python3 manage.py migrate 
   args:

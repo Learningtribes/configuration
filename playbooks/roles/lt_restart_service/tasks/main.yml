@@ -49,3 +49,12 @@
   with_items: ['xqueue', 'xqueue_consumer']
   ignore_errors: yes
   tags: ['never', 'restart-all']
+
+- name: restart discovery
+  supervisorctl:
+    name: discovery
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  ignore_errors: yes
+  tags: ['never', 'restart-all']

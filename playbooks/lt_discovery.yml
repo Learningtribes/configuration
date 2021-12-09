@@ -6,6 +6,9 @@
     NGINX_SET_X_FORWARDED_HEADERS: False
     edx_django_service_has_static_assets: false
     migrate_db: "no"
+  vars_files:
+    - roles/lt_aws_initial/defaults/main.yml
+    - roles/lt_aws_initial/vars/main.yml
   roles:
     - role: aws
       when: COMMON_ENABLE_AWS_ROLE
