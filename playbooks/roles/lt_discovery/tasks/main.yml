@@ -5,6 +5,7 @@
     repo: "{{ DISCOVERY_REPOS }}"
     version: "{{ DISCOVERY_VERSION }}"
     accept_hostkey: yes
+    force: yes
   become_user: "{{ discovery_user }}"
   tags: ['never', 'deploy-discovery']
 
