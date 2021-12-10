@@ -15,6 +15,7 @@
     repo: "{{ DISCOVERY_REPOS }}"
     version: "{{ discovery_commitid }}"
     accept_hostkey: yes
+    force: yes
   become_user: "{{ discovery_user }}"
   tags: ['never', 'deploy-discovery-commitid']
 
@@ -24,5 +25,6 @@
     repo: "{{ DISCOVERY_REPOS }}"
     version: "{{ branch_name }}"
     accept_hostkey: yes
+    force: yes
   become_user: "{{ discovery_user }}"
   tags: ['never', 'stage-deploy-discovery']
