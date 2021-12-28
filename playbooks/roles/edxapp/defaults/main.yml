@@ -940,6 +940,16 @@ EDXAPP_ADVANCED_SECURITY_CONFIG:
 # extra application to platform
 EDXAPP_ADDL_INSTALLED_APPS: []
 #  - "edflex"
+
+# learning path connect to MongoDB
+EDXAPP_EDX_OBJECTS_MONGODB_SETTINGS:
+  programs: 
+    db: "{{ EDXAPP_MONGO_DB_NAME }}"
+    host: "{{ EDXAPP_MONGO_HOSTS }}"
+    port: "{{ EDXAPP_MONGO_PORT }}"
+    user: "{{ EDXAPP_MONGO_USER }}"
+    password: "{{ EDXAPP_MONGO_PASSWORD }}"
+
 #-------- Everything below this line is internal to the role ------------
 
 #Use YAML references (& and *) and hash merge <<: to factor out shared settings
@@ -1090,6 +1100,7 @@ edxapp_databases:
 edxapp_generic_auth_config:  &edxapp_generic_auth
   EVENT_TRACKING_SEGMENTIO_EMIT_WHITELIST: "{{ EDXAPP_EVENT_TRACKING_SEGMENTIO_EMIT_WHITELIST }}"
   ECOMMERCE_API_SIGNING_KEY: "{{ EDXAPP_ECOMMERCE_API_SIGNING_KEY }}"
+  EDX_OBJECTS_MONGODB_SETTINGS: "{{ EDXAPP_EDX_OBJECTS_MONGODB_SETTINGS }}"
   DEFAULT_FILE_STORAGE:  "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
   AWS_ACCESS_KEY_ID:  "{{ EDXAPP_AWS_ACCESS_KEY_ID }}"
   AWS_SECRET_ACCESS_KEY: "{{ EDXAPP_AWS_SECRET_ACCESS_KEY }}"
