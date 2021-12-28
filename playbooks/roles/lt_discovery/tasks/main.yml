@@ -2,26 +2,29 @@
 - name: checkout course-discovery repo into {{ discovery_code_dir }}
   git:
     dest: "{{ discovery_code_dir }}"
-    repo: "{{ DISCOVERY_REPOS }}"
+    repo: "{{ DISCOVERY_REPO }}"
     version: "{{ DISCOVERY_VERSION }}"
     accept_hostkey: yes
+    force: yes
   become_user: "{{ discovery_user }}"
   tags: ['never', 'deploy-discovery']
 
 - name: checkout {{discovery_commitid}} repo into {{ discovery_code_dir }}
   git:
     dest: "{{ discovery_code_dir }}"
-    repo: "{{ DISCOVERY_REPOS }}"
+    repo: "{{ DISCOVERY_REPO }}"
     version: "{{ discovery_commitid }}"
     accept_hostkey: yes
+    force: yes
   become_user: "{{ discovery_user }}"
   tags: ['never', 'deploy-discovery-commitid']
 
 - name: checkout course-discovery repo into {{ discovery_code_dir }}
   git:
     dest: "{{ discovery_code_dir }}"
-    repo: "{{ DISCOVERY_REPOS }}"
+    repo: "{{ DISCOVERY_REPO }}"
     version: "{{ branch_name }}"
     accept_hostkey: yes
+    force: yes
   become_user: "{{ discovery_user }}"
   tags: ['never', 'stage-deploy-discovery']
