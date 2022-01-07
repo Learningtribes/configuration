@@ -47,6 +47,10 @@
   with_items:
     - { file_src: "{{inventory_repo_folder}}/configuration_files/{{hostname_fact}}/workers.conf", file_dest: "/edx/app/supervisor/conf.available.d/workers.conf" }
   tags: ['never', 'update_celery_workers']
+- name: apply celery workers file
+  shell: /edx/bin/supervisorctl update
+  become: True
+  tags: ['never', 'update_celery_workers']
 - name: remove inventory repo folder
   file:
     path: "{{inventory_repo_folder}}"
