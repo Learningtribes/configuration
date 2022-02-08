@@ -20,7 +20,7 @@
     COMMON_OAUTH_BASE_URL: 'http://{{EDXAPP_HOST}}'
   roles:
     - role: swapfile
-      SWAPFILE_SIZE: 8GB
+      SWAPFILE_SIZE: 4GB
     - aws
     - role: nginx
     - role: ecommerce
