@@ -98,6 +98,9 @@ error_page {{ k }} {{ v }};
   # root /edx/var/nginx/server-static;
   # rewrite ^.*$ /maintenance.html;
 
+  # remove trailing newline
+  rewrite ^/(.*)\n$ /$1 permanent;
+
   # Prevent invalid display courseware in IE 10+ with high privacy settings
   add_header P3P '{{ NGINX_P3P_MESSAGE }}';
   add_header Origin-Trial As/2gPm8kxTwnLJi6sS8ZX2aCFUhSk4aUIaaLwjmKYC/yKdVcm55G2We3v08FMPcxFqgWAFOC1yLfYpnSoHmTQQAAAB7eyJvcmlnaW4iOiJodHRwczovL2xlYXJuaW5nLXRyaWJlcy5jb206NDQzIiwiZmVhdHVyZSI6IkFsbG93U3luY1hIUkluUGFnZURpc21pc3NhbCIsImV4cGlyeSI6MTU5OTczMTkzNywiaXNTdWJkb21haW4iOnRydWV9;
