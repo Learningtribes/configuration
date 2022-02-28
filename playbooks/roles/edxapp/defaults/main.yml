@@ -481,8 +481,8 @@ EDXAPP_INSTALL_PRIVATE_REQUIREMENTS: false
 #     version: 1.0.1
 #   - name: git+https://git.myproject.org/MyProject#egg=MyProject
 EDXAPP_EXTRA_REQUIREMENTS: 
-    - name: elastic-apm
-      version: 4.1.0
+    # - name: elastic-apm
+    #   version: 4.1.0
     - name: raven
       version: 6.8.0
 
