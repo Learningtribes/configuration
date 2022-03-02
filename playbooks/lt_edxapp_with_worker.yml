@@ -17,9 +17,9 @@
   serial: "{{ serial_count }}"
   roles:
    - role: lt_sentry
-   - role: lt_apm
+#   - role: lt_apm
    - role: swapfile
-     SWAPFILE_SIZE: 4GB
+     SWAPFILE_SIZE: 8GB
    - role: aws
      when: COMMON_ENABLE_AWS_ROLE
    - role: automated
