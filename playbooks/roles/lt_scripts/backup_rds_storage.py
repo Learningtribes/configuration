@@ -6,13 +6,10 @@ import pytz
 
 
 string_prod_db = 'platform-rds-cluster'
-#string_today_date = datetime.datetime.now().strftime('%Y%m%d')
 
 
 rds_eu_ie = boto3.client('rds', region_name='eu-west-1')
 rds_eu_ie_string = 'eu-west-1'
-#rds_eu_uk = boto3.client('rds', region_name='eu-west-2')
-#rds_eu_uk_rds_key = '1240d8b7-5f8e-42f0-abd4-30fbfd0f07ec'
 rds_eu_se = boto3.client('rds', region_name='eu-north-1')
 rds_eu_se_rds_key = 'e7f372e2-01a6-479b-9b6b-7b2dad74c199'
 
@@ -25,6 +22,16 @@ rds_cn_bj = boto3.client('rds', region_name='cn-north-1')
 rds_cn_bj_string = 'cn-north-1'
 rds_cn_nx = boto3.client('rds', region_name='cn-northwest-1')
 
+snapshot_tag = [
+    {'Key': 'cost-name', 'Value': 'GLOBAL-TRIBOO-SHARED-PRODUCTION-DB'},
+    {'Key': 'cost-center', 'Value': 'GLOBAL'},
+    {'Key': 'product', 'Value': 'TRIBOO'},
+    {'Key': 'client', 'Value': 'SHARED'},
+    {'Key': 'resource-type', 'Value': 'PRODUCTION'},
+    {'Key': 'resource-name', 'Value': 'DB'},
+    {'Key': 'db-type', 'Value': 'MYSQL'},
+]
+
 
 
 def copy_snapshot_job(region, dest_region, source_region_string, dest_region_rds_key, region_tag):
@@ -35,14 +42,24 @@ def copy_snapshot_job(region, dest_region, source_region_string, dest_region_rds
     if response_describe_snapshot['DBClusterSnapshots']:
         for i in response_describe_snapshot['DBClusterSnapshots']:
             if i['SnapshotCreateTime'] > (datetime.datetime.now() - datetime.timedelta(1)).replace(tzinfo=pytz.timezone('UTC')):
+                add_tags_on_automated_snapshot(region, i['DBClusterSnapshotArn'], region_tag)
+                copy_snapshot_tag = snapshot_tag[:]
+                copy_snapshot_tag.append({'Key': 'region', 'Value': region_tag})
                 response_copy_snapshot = dest_region.copy_db_cluster_snapshot(
                     SourceDBClusterSnapshotIdentifier=i['DBClusterSnapshotArn'],
                     TargetDBClusterSnapshotIdentifier=i['DBClusterSnapshotIdentifier'].replace(':', '-'),
                     SourceRegion=source_region_string,
                     KmsKeyId=dest_region_rds_key,
-                    Tags=[{'Key': 'Region', 'Value': region_tag}]
+                    Tags=copy_snapshot_tag
                     )
                 print response_copy_snapshot
+
+def add_tags_on_automated_snapshot(region, snapshot_string, region_tag):
+    region_snapshot_tag = snapshot_tag[:]
+    region_snapshot_tag.append({'Key': 'region', 'Value': region_tag})
+    response_tag_snapshot = region.add_tags_to_resource(ResourceName=snapshot_string, Tags=region_snapshot_tag)
+    print response_tag_snapshot
+
 
 def delete_remote_old_snapshot_job(region, keep_day=15):
     expire_date = (datetime.datetime.now() - datetime.timedelta(days=keep_day)).replace(tzinfo=pytz.timezone('UTC'))
