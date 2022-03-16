@@ -1,6 +1,5 @@
 import boto3
 import datetime
-import time
 import os
 
 current_day = datetime.date.today()
