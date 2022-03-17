@@ -22,19 +22,34 @@ rds_cn_bj = boto3.client('rds', region_name='cn-north-1')
 rds_cn_bj_string = 'cn-north-1'
 rds_cn_nx = boto3.client('rds', region_name='cn-northwest-1')
 
-snapshot_tag = [
-    {'Key': 'cost-name', 'Value': 'GLOBAL-TRIBOO-SHARED-PRODUCTION-DB'},
-    {'Key': 'cost-center', 'Value': 'GLOBAL'},
+snapshot_eu_tag = [
+    {'Key': 'cost-name', 'Value': 'GLOBAL_EME-TRIBOO-SHARED-PRODUCTION-DB_RDS'},
+    {'Key': 'cost-center', 'Value': 'GLOBAL_EME'},
     {'Key': 'product', 'Value': 'TRIBOO'},
     {'Key': 'client', 'Value': 'SHARED'},
     {'Key': 'resource-type', 'Value': 'PRODUCTION'},
-    {'Key': 'resource-name', 'Value': 'DB'},
+    {'Key': 'resource-name', 'Value': 'DB_RDS'},
     {'Key': 'db-type', 'Value': 'MYSQL'},
+    {'Key': 'region', 'Value': 'EU'}
+]
+
+snapshot_us_tag = [
+    {'Key': 'cost-name', 'Value': 'GLOBAL_US-TRIBOO-SHARED-PRODUCTION-DB_RDS'},
+    {'Key': 'cost-center', 'Value': 'GLOBAL_US'},
+    {'Key': 'product', 'Value': 'TRIBOO'},
+    {'Key': 'client', 'Value': 'SHARED'},
+    {'Key': 'resource-type', 'Value': 'PRODUCTION'},
+    {'Key': 'resource-name', 'Value': 'DB_RDS'},
+    {'Key': 'db-type', 'Value': 'MYSQL'},
+    {'Key': 'region', 'Value': 'US'}
 ]
 
 
-
 def copy_snapshot_job(region, dest_region, source_region_string, dest_region_rds_key, region_tag):
+    if region_tag == 'EU':
+        copy_snapshot_tag = snapshot_eu_tag
+    elif region_tag == 'US':
+        copy_snapshot_tag = snapshot_us_tag
     response_describe_snapshot = region.describe_db_cluster_snapshots(
         DBClusterIdentifier=string_prod_db,
         SnapshotType='automated'
@@ -43,8 +58,6 @@ def copy_snapshot_job(region, dest_region, source_region_string, dest_region_rds
         for i in response_describe_snapshot['DBClusterSnapshots']:
             if i['SnapshotCreateTime'] > (datetime.datetime.now() - datetime.timedelta(1)).replace(tzinfo=pytz.timezone('UTC')):
                 add_tags_on_automated_snapshot(region, i['DBClusterSnapshotArn'], region_tag)
-                copy_snapshot_tag = snapshot_tag[:]
-                copy_snapshot_tag.append({'Key': 'region', 'Value': region_tag})
                 response_copy_snapshot = dest_region.copy_db_cluster_snapshot(
                     SourceDBClusterSnapshotIdentifier=i['DBClusterSnapshotArn'],
                     TargetDBClusterSnapshotIdentifier=i['DBClusterSnapshotIdentifier'].replace(':', '-'),
@@ -55,8 +68,10 @@ def copy_snapshot_job(region, dest_region, source_region_string, dest_region_rds
                 print response_copy_snapshot
 
 def add_tags_on_automated_snapshot(region, snapshot_string, region_tag):
-    region_snapshot_tag = snapshot_tag[:]
-    region_snapshot_tag.append({'Key': 'region', 'Value': region_tag})
+    if region_tag == 'EU':
+        region_snapshot_tag = snapshot_eu_tag
+    elif region_tag == 'US':
+        region_snapshot_tag = snapshot_us_tag
     response_tag_snapshot = region.add_tags_to_resource(ResourceName=snapshot_string, Tags=region_snapshot_tag)
     print response_tag_snapshot
 
