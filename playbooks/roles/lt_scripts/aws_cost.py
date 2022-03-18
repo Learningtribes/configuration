@@ -21,8 +21,6 @@ client = boto3.client('ce', region_name='us-east-1')
 
 
 
-
-'''
 response_tag = client.get_tags(
     TimePeriod = {
         'Start': start_day,
@@ -39,7 +37,7 @@ for i in tag_cost_list:
                 'Start': start_day,
                 'End': end_day
                 },
-        Granularity = 'DAILY',
+        Granularity = 'MONTHLY',
         Metrics = ['BlendedCost'],
         Filter = {'Tags': {'Key': 'cost-name', 'Values': [i]}}
     )
@@ -47,10 +45,43 @@ for i in tag_cost_list:
     if i == '':
         print 'No Tagged: '+str(cost)
     else:
-        print str(i)+': '+str(cost)
-        break
-'''
+        i_list = i.split('-')
+        if '' in i_list:
+            pass
+        else:
+            print str(i)+': '+str(cost)
+            break
 
+
+def get_service_cost(service_name):
+    response_cost = client.get_cost_and_usage(
+        TimePeriod = {
+            'Start': start_day,
+            'End': end_day
+        },
+        Granularity = 'MONTHLY',
+        Metrics = ['BlendedCost'],
+        Filter = {'Dimensions': {'Key': 'SERVICE', 'Values': [service_name]}}
+    )
+    service_cost = response_cost['ResultsByTime'][0]['Total']['BlendedCost']['Amount']
+    return round(float(service_cost), 2)
+
+cost_explorer_cost = get_service_cost('AWS Cost Explorer')
+waf_cost = get_service_cost('AWS WAF')
+cloudtrail_cost = get_service_cost('AWS CloudTrail')
+cloudwatch_cost = get_service_cost('AmazonCloudWatch')
+kms_cost = get_service_cost('AWS Key Management Service')
+
+print cost_explorer_cost
+print waf_cost
+print cloudtrail_cost
+print cloudwatch_cost
+print kms_cost
+
+
+
+
+'''
 response_ce_cost = client.get_cost_and_usage(
     TimePeriod = {
         'Start': start_day,
@@ -124,5 +155,5 @@ kms_cost = response_kms_cost['ResultsByTime'][0]['Total']['BlendedCost']['Amount
 print kms_cost
 print float(kms_cost)
 print round(float(kms_cost), 2)
-
+'''
 
