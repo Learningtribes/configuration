@@ -296,6 +296,16 @@
     - install
     - install:app-requirements
 
+- name: fix edx-bootstrap issues
+  shell: /edx/app/edxapp/venvs/edxapp/bin/nodeenv /edx/app/edxapp/nodeenvs/edxapp --node 8.9.3 --force --with-npm --npm 6.13.6
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  environment: "{{ edxapp_environment }}"
+  become_user: "{{ edxapp_user }}"
+  tags:
+    - install
+    - install:app-requirements
+
 #install with the shell command instead of the ansible npm module so we don't accidentally re-write package.json
 - name: install node dependencies
   shell: "{{ edxapp_nodeenv_bin }}/npm install"
