@@ -306,7 +306,8 @@
   args:
     chdir: "{{ edxapp_code_dir }}"
   environment: "{{ edxapp_environment }}"
-  become_user: "{{ edxapp_user }}"
+  #become_user: "{{ edxapp_user }}"
+  become: yes
   tags:
     - install
     - install:app-requirements
