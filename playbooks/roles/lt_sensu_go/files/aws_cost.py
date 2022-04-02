@@ -27,7 +27,9 @@ last_month_last_day = this_month_first_day - datetime.timedelta(days=1)
 last_month_first_day = last_month_last_day.replace(day=1)
 start_day = last_month_first_day.strftime("%Y-%m-%d")
 end_day = this_month_first_day.strftime("%Y-%m-%d")
-date_day =last_month_last_day.strftime("%Y-%m-%d")
+month = last_month_last_day.month
+year = last_month_last_day.year
+date_day = "%s-%s" % (year, month)
 
 
 
@@ -86,7 +88,7 @@ for i in tag_cost_list:
         else:
             cost = round(float(cost), 2)
             cost = cost_add_tax(cost) 
-            insert_data(i, i_list[2], i_list[3], i_list[0], date_day, i_list[4], i_list[1], cost)
+            insert_data(('-').join(i.split('-')[0:4]), i_list[2], i_list[3], i_list[0], date_day, i_list[4], i_list[1], cost)
             break
 
 cost_explorer_cost = get_service_cost('AWS Cost Explorer')
@@ -101,10 +103,10 @@ cloudtrail_cost = cost_add_tax(cloudtrail_cost)
 cloudwatch_cost = cost_add_tax(cloudwatch_cost)
 kms_cost = cost_add_tax(kms_cost)
 
-insert_data('GLOBAL-TRIBOO-NO_CLIENT-BILLING-API', 'NO_CLIENT', 'BILLING', 'GLOBAL', date_day, 'API', 'TRIBOO', cost_explorer_cost)
-insert_data('GLOBAL_EME-TRIBOO_2-SHARED-PRODUCTION-ELB', 'SHARED', 'PRODUCTION', 'GLOBAL_EME', date_day, 'ELB', 'TRIBOO_2', waf_cost)
-insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL-CLOUDTRAIL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'CLOUDTRAIL', 'TRIBOO', cloudtrail_cost)
-insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL-CLOUDWATCH', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'CLOUDWATCH', 'TRIBOO', cloudwatch_cost)
-insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL-KMS', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'KMS', 'TRIBOO', kms_cost)
+insert_data('GLOBAL-TRIBOO-NO_CLIENT-BILLING', 'NO_CLIENT', 'BILLING', 'GLOBAL', date_day, 'API', 'TRIBOO', cost_explorer_cost)
+insert_data('GLOBAL_EME-TRIBOO_2-SHARED-PRODUCTION', 'SHARED', 'PRODUCTION', 'GLOBAL_EME', date_day, 'ELB', 'TRIBOO_2', waf_cost)
+insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'CLOUDTRAIL', 'TRIBOO', cloudtrail_cost)
+insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'CLOUDWATCH', 'TRIBOO', cloudwatch_cost)
+insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'KMS', 'TRIBOO', kms_cost)
 
 
