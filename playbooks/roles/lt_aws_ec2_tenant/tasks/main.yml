@@ -36,9 +36,13 @@
       'tag:Name': "{{ec2_instance_tenant_name}}"
     tags:
       Name: "{{ec2_instance_tenant_name}}"
-      COST: "{{client_name}}"
       BACKUP: support
-      Region: "{{tags_region_fact}}"
+      cost-name: "{{tag_cost_center}}-{{tag_product}}-{{tag_client}}-{{tag_resource_type}}-APP"
+      cost-center: "{{tag_cost_center}}"
+      product: "{{tag_product}}"
+      client: "{{tag_client}}"
+      resource-type: "{{tag_resource_type}}"
+      resource-name: APP
     termination_protection: yes
     ebs_optimized: yes
     vpc_subnet_id: "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
@@ -116,8 +120,12 @@
         SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
     tags:
       Name: Platform ELB {{client_name}} 
-      COST: "{{client_name}}" 
-      Region: "{{tags_region_fact}}"
+      cost-name: "{{tag_cost_center}}-{{tag_product}}-{{tag_client}}-{{tag_resource_type}}-ELB"
+      cost-center: "{{tag_cost_center}}"
+      product: "{{tag_product}}"
+      client: "{{tag_client}}"
+      resource-type: "{{tag_resource_type}}"
+      resource-name: ELB
   register: create_elb_result
   when: check_elb_result['elbs'][0] is not defined
   tags: ['skip-cn']
@@ -162,8 +170,12 @@
     region: "{{region}}"
     name: "{{s3_tenant_name}}"
     tags:
-      COST: "{{client_name}}"
-      Region: "{{tags_region_fact}}"
+      cost-name: "{{tag_cost_center}}-{{tag_product}}-{{tag_client}}-{{tag_resource_type}}-S3"
+      cost-center: "{{tag_cost_center}}"
+      product: "{{tag_product}}"
+      client: "{{tag_client}}"
+      resource-type: "{{tag_resource_type}}"
+      resource-name: S3
   when: s3_get_id_fact == false
   tags: ['skip-cn']
 - name: add default bucket CORS
@@ -211,8 +223,12 @@
     region: "{{region}}"
     name: "{{s3_public_tenant_name}}"
     tags:
-      COST: "{{client_name}}"
-      Region: "{{tags_region_fact}}"
+      cost-name: "{{tag_cost_center}}-{{tag_product}}-{{tag_client}}-{{tag_resource_type}}-S3"
+      cost-center: "{{tag_cost_center}}"
+      product: "{{tag_product}}"
+      client: "{{tag_client}}"
+      resource-type: "{{tag_resource_type}}"
+      resource-name: S3
   when: s3_get_public_id_fact == false
   tags: ['skip-cn']
 - set_fact:
@@ -239,8 +255,12 @@
     region: "{{region}}"
     name: "{{s3_video_tenant_name}}"
     tags:
-      COST: "{{client_name}}"
-      Region: "{{tags_region_fact}}"
+      cost-name: "{{tag_cost_center}}-{{tag_product}}-{{tag_client}}-{{tag_resource_type}}-S3"
+      cost-center: "{{tag_cost_center}}"
+      product: "{{tag_product}}"
+      client: "{{tag_client}}"
+      resource-type: "{{tag_resource_type}}"
+      resource-name: S3
   when: s3_get_video_id_fact == false
   tags: ['skip-cn']
 - name: add video bucket CORS
@@ -285,8 +305,12 @@
     region: "{{region}}"
     name: "{{s3_veda_tenant_name}}"
     tags:
-      COST: "{{client_name}}"
-      Region: "{{tags_region_fact}}"
+      cost-name: "{{tag_cost_center}}-{{tag_product}}-{{tag_client}}-{{tag_resource_type}}-S3"
+      cost-center: "{{tag_cost_center}}"
+      product: "{{tag_product}}"
+      client: "{{tag_client}}"
+      resource-type: "{{tag_resource_type}}"
+      resource-name: S3
   when: s3_get_veda_id_fact == false
   tags: ['skip-cn']
 - name: download inventory repo
