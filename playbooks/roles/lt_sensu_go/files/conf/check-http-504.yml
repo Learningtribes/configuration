@@ -1,0 +1,20 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_http_504
+  namespace: default
+  annotations:
+    fatigue_check/occurrences: '1'
+    fatigue_check/interval: '3600'
+    fatigue_check/allow_resolution: 'true'
+spec:
+  command: python /opt/scripts/check_http_504.py
+  handlers:
+  - email
+  - slack
+  interval: 60
+  timeout: 50
+  publish: true
+  subscriptions:
+  - entity:ELK
