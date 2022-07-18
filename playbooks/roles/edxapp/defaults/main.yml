@@ -608,31 +608,38 @@ EDXAPP_CELERY_WORKERS:
   - queue: low
     service_variant: cms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: True
   - queue: default
     service_variant: cms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: True
   - queue: high
     service_variant: cms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: True
   - queue: low
     service_variant: lms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: True
   - queue: default
     service_variant: lms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: True
   - queue: high
     service_variant: lms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: True
     pool: True
   - queue: high_mem
     service_variant: lms
     concurrency: 1
+    heartbeat_interval: 120
     monitor: False
     max_tasks_per_child: 1
 EDXAPP_RECALCULATE_GRADES_ROUTING_KEY: 'edx.lms.core.low'
