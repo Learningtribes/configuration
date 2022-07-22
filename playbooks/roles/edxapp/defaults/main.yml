@@ -1521,21 +1521,22 @@ cms_env_config:
 #  ELASTIC_APM: "{{ EDXAPP_CMS_ELASTIC_APM }}"
   COURSE_ADVANCED_MODULES:
     - annotatable
-    - videoalpha
-    - ilt
-    - icxblock
-    - openassessment
-    - word_cloud
-    - lbmdonexblock
-    - poll
-    - survey
-    - lti
     - drag-and-drop-v2
+    - externality
+    - icxblock
+    - ilt
+    - lbmdonexblock
     - library_content
-    - ubcpi
-    - personalitytest
-    - scormxblock
+    - lti
+    - openassessment
     - pdf
+    - personalitytest
+    - poll
+    - scormxblock
+    - survey
+    - ubcpi
+    - videoalpha
+    - word_cloud
 
 # install dir for the edx-platform repo
 edxapp_code_dir: "{{ edxapp_app_dir }}/edx-platform"
