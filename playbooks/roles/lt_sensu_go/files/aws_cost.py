@@ -110,3 +110,16 @@ insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_
 insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'KMS', 'TRIBOO', kms_cost)
 
 
+backup_intraflow_cost = client.get_cost_and_usage(
+    TimePeriod = {
+            'Start': start_day,
+            'End': end_day
+            },
+    Granularity = 'MONTHLY',
+    Metrics = ['BlendedCost'],
+    Filter = {'And': [{'Tags': {'Key': 'cost-name', 'MatchOptions': ['ABSENT']}}, {'Dimensions':{'Key': 'SERVICE', 'Values': ['EC2 - Other']}}] }
+)
+backup_intraflow_cost=backup_intraflow_cost['ResultsByTime'][0]['Total']['BlendedCost']['Amount']
+backup_intraflow_cost = round(float(backup_intraflow_cost), 2)
+backup_intraflow_cost = cost_add_tax(backup_intraflow_cost)
+insert_data('GLOBAL-TRIBOO-SHARED-INTRAFLOW', 'SHARED', 'INTRAFLOW', 'GLOBAL', date_day, 'BACKUP', 'TRIBOO', backup_intraflow_cost)

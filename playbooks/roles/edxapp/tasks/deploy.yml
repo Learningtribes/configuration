@@ -300,12 +300,12 @@
   shell: /edx/app/edxapp/venvs/edxapp/bin/nodeenv /edx/app/edxapp/nodeenvs/edxapp --node 8.9.3 --force --with-npm --npm 6.13.6
   become: yes
 
-- name: fix edx-bootstrap checksum
-  replace:
-    path: "/edx/app/edxapp/edx-platform/package-lock.json"
-    regexp: 'sha512-h1tQxrSfOJEf60oPhCHcPClO260N\+XnZX3Pnw6cKeYgWi5kiZT1ElqDerYpoV3Lj6xdhhDYeWHptgRPZnUCnxg=='
-    replace: 'sha512-ZVoGAqWo9NtPKoNRgOgiW+Qr83TyZ+CWiKFpTmqaG3fm0qBgysnYYRooh1pyaJPedgFw2ljGrAAHYpn94R3pfw=='
-  become_user: "{{ edxapp_user }}"
+# - name: fix edx-bootstrap checksum
+#   replace:
+#     path: "/edx/app/edxapp/edx-platform/package-lock.json"
+#     regexp: 'sha512-h1tQxrSfOJEf60oPhCHcPClO260N\+XnZX3Pnw6cKeYgWi5kiZT1ElqDerYpoV3Lj6xdhhDYeWHptgRPZnUCnxg=='
+#     replace: 'sha512-ZVoGAqWo9NtPKoNRgOgiW+Qr83TyZ+CWiKFpTmqaG3fm0qBgysnYYRooh1pyaJPedgFw2ljGrAAHYpn94R3pfw=='
+#   become_user: "{{ edxapp_user }}"
 
 #install with the shell command instead of the ansible npm module so we don't accidentally re-write package.json
 - name: install node dependencies
