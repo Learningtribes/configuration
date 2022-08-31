@@ -6,6 +6,8 @@ After=network.target
 ExecStart=/opt/sensu-go/bin/sensu-agent start --password 7u4dpCAH64hZ8bqyS4ZhJXVU
 User=root
 Group=root
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
