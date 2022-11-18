@@ -1,0 +1,16 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_heartbeat_api_metrics
+  namespace: default
+spec:
+  command: python /opt/scripts/check_heartbeat_api.py
+  interval: 60
+  timeout: 50
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - app
