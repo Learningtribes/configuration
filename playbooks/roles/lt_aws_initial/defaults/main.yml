@@ -8,7 +8,7 @@ platform_vpc_subnet_B_ip_block: 172.27.210.0/24
 platform_security_group_app_name: PLATFORM VPC APP Security Group
 platform_security_group_db_name: PLATFORM VPC DB Security Group
 platform_security_group_rds_name: PLATFORM VPC RDS Security Group
-default_instance_key_name: platform_key_3
+default_instance_key_name: platform_key_4
 region_instance_key_name: "{{region}}_{{default_instance_key_name}}.pem"
 local_folder_store_instance_keys: /opt/instanceskey
 s3_bucket_store_instance_keys: lt-instances-file
