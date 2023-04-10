@@ -81,3 +81,7 @@
   args:
     chdir: "/edx/app/edxapp/edx-platform"  
   become_user: edxapp
+- name: install ec2 instance connect package
+  apt:
+    name: ec2-instance-connect
+  become: yes

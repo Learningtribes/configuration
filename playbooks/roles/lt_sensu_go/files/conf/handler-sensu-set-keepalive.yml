@@ -8,4 +8,5 @@ spec:
   handlers:
   - email
   - slack
+  - slack_keepalive
   type: set

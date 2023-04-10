@@ -56,9 +56,16 @@
     path: "{{inventory_repo_folder}}"
     state: absent
 
+- name: fix migration confliction
+  shell:
+    executable: /bin/bash 
+    chdir: /edx/app/discovery/discovery
+    cmd: "source /edx/app/discovery/discovery_env && /edx/app/discovery/venvs/discovery/bin/python3 manage.py makemigrations --merge --noinput"
+  become_user: discovery
+
 - name: run discovery migration
   shell: source /edx/app/discovery/discovery_env;/edx/app/discovery/venvs/discovery/bin/python3 manage.py migrate 
   args:
     chdir: /edx/app/discovery/discovery
     executable: /bin/bash
-  become: discovery
+  become_user: discovery
