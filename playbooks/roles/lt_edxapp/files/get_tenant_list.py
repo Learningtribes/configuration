@@ -11,7 +11,12 @@ parser = SafeConfigParser(allow_no_value=True)
 parser.optionxform = str
 parser.read(hosts_file)
 
-for i in parser.items(region_setion):
+sort_items = parser.items(region_setion)
+def sort_alpha(e):
+    return e[0]
+sort_items.sort(key=sort_alpha)
+
+for i in sort_items:
     if 'stateful' not in i[0]:
         tenant_name = i[0]
         single_tenant_string = tenant_name
