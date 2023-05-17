@@ -2,7 +2,7 @@ import boto3
 import datetime
 import os
 import requests
-
+import time
 
 
 '''
@@ -41,6 +41,7 @@ def insert_data(name, client_name, type, country, month, service_name, product, 
     print response.content
 
 def get_service_cost(service_name):
+    time.sleep(0.2)
     response_cost = client.get_cost_and_usage(
         TimePeriod = {
             'Start': start_day,
@@ -69,6 +70,7 @@ response_tag = client.get_tags(
 tag_cost_list = response_tag['Tags']
 
 for i in tag_cost_list:
+    time.sleep(0.2)
     response_tag_cost = client.get_cost_and_usage(
         TimePeriod = {
                 'Start': start_day,
