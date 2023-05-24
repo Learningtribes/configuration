@@ -147,4 +147,10 @@ error_page {{ k }} {{ v }};
     expires {{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}s;
   }
 
+  location /xblock_resource/ {
+    proxy_set_header Host      {{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass       https://{{ EDXAPP_DJFS['bucket'] }}.s3.amazonaws.com{{ EDXAPP_DJFS['prefix'] }};
+  }
+
 }
