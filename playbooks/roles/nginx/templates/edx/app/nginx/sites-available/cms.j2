@@ -51,6 +51,9 @@ error_page {{ k }} {{ v }};
   # Site should only be accessed using HTTPS  
   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
 
+  # Enable CSP
+  add_header Content-Security-Policy "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https:";
+
   proxy_connect_timeout       300;
   proxy_send_timeout          300;
   proxy_read_timeout          300;

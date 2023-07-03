@@ -105,6 +105,9 @@ error_page {{ k }} {{ v }};
   # Site should only be accessed using HTTPS  
   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
 
+  # Enable CSP
+  add_header Content-Security-Policy "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https:";
+
   {% include "handle-tls-redirect-and-ip-disclosure.j2" %}
 
   access_log {{ nginx_log_dir }}/access.log {{ NGINX_LOG_FORMAT_NAME }};
