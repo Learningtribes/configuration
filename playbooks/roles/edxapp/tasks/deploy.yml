@@ -296,9 +296,9 @@
     - install
     - install:app-requirements
 
-- name: force npm version
-  shell: /edx/app/edxapp/venvs/edxapp/bin/nodeenv /edx/app/edxapp/nodeenvs/edxapp --node 8.9.3 --force --with-npm --npm 6.13.6
-  become: yes
+# - name: force npm version
+#   shell: /edx/app/edxapp/venvs/edxapp/bin/nodeenv /edx/app/edxapp/nodeenvs/edxapp --node 8.9.3 --force --with-npm --npm 6.13.6
+#   become: yes
 
 # - name: fix edx-bootstrap checksum
 #   replace:
