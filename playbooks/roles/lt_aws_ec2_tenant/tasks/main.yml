@@ -163,6 +163,7 @@
     bucket: "{{s3_tenant_name}}"
     mode: create
     permission: private
+  ignore_errors: yes
   register: create_s3_result
   when: s3_get_id_fact == false
 - name: add default bucket Tag
@@ -217,6 +218,7 @@
     bucket: "{{s3_public_tenant_name}}"
     mode: create
     permission: public-read
+  ignore_errors: yes
   when: s3_get_public_id_fact == false
 - name: add public bucket Tag
   s3_bucket:
@@ -249,6 +251,7 @@
     bucket: "{{s3_video_tenant_name}}"
     mode: create
     permission: private
+  ignore_errors: yes
   when: s3_get_video_id_fact == false
 - name: add video bucket Tag
   s3_bucket:
@@ -299,6 +302,7 @@
     bucket: "{{s3_veda_tenant_name}}"
     mode: create
     permission: private
+  ignore_errors: yes
   when: s3_get_veda_id_fact == false
 - name: add veda bucket Tag
   s3_bucket:
