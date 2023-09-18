@@ -86,8 +86,8 @@ def delete_remote_old_snapshot_job(region, keep_day=15):
                 print response_delete_snapshot
 
 
-copy_snapshot_job(rds_eu_ie, rds_eu_se, rds_eu_ie_string, rds_eu_se_rds_key, 'EU')
+#copy_snapshot_job(rds_eu_ie, rds_eu_se, rds_eu_ie_string, rds_eu_se_rds_key, 'EU')
 delete_remote_old_snapshot_job(rds_eu_se, 15)
 
-copy_snapshot_job(rds_us_east, rds_us_west, rds_us_east_string, rds_us_west_rds_key, 'US')
+#copy_snapshot_job(rds_us_east, rds_us_west, rds_us_east_string, rds_us_west_rds_key, 'US')
 delete_remote_old_snapshot_job(rds_us_west, 15)

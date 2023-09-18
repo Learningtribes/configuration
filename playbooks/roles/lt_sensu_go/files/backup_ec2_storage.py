@@ -93,10 +93,10 @@ def delete_remote_old_snapshot_job(region, keep_day=15):
 
 backup_volume_job(ec2_eu_ie)
 delete_local_old_snapshot_job(ec2_eu_ie, 15)
-copy_snapshot_job(ec2_eu_ie, ec2_eu_se, ec2_eu_ie_string)
+#copy_snapshot_job(ec2_eu_ie, ec2_eu_se, ec2_eu_ie_string)
 delete_remote_old_snapshot_job(ec2_eu_se, 15)
 
 backup_volume_job(ec2_us_east)
 delete_local_old_snapshot_job(ec2_us_east, 15)
-copy_snapshot_job(ec2_us_east, ec2_us_west, ec2_us_east_string)
+#copy_snapshot_job(ec2_us_east, ec2_us_west, ec2_us_east_string)
 delete_remote_old_snapshot_job(ec2_us_west, 15)
