@@ -58,7 +58,7 @@ def backup_volume_job(region):
                 snapshot_list.append(response_createsnapshot['SnapshotId'])
         check_snapshot_job(region, snapshot_list)
 
-def delete_local_old_snapshot_job(region, keep_day=15):
+def delete_local_old_snapshot_job(region, keep_day=10):
     response_snapshots = region.describe_snapshots(Filters=[{'Name': 'tag:backup-type', 'Values': ['hawthorn']}])
     if response_snapshots['Snapshots']:
         for snapshot in response_snapshots['Snapshots']:
@@ -81,7 +81,7 @@ def copy_snapshot_job(region, dest_region, source_region_string):
                 snapshot_list.append(response_copysnapshot['SnapshotId'])
         check_snapshot_job(dest_region, snapshot_list)
 
-def delete_remote_old_snapshot_job(region, keep_day=15):
+def delete_remote_old_snapshot_job(region, keep_day=10):
     response_snapshots = region.describe_snapshots(OwnerIds=['419890668373'])
     if response_snapshots['Snapshots']:
         for snapshot in response_snapshots['Snapshots']:
@@ -92,11 +92,11 @@ def delete_remote_old_snapshot_job(region, keep_day=15):
 
 
 backup_volume_job(ec2_eu_ie)
-delete_local_old_snapshot_job(ec2_eu_ie, 15)
+delete_local_old_snapshot_job(ec2_eu_ie, 10)
 #copy_snapshot_job(ec2_eu_ie, ec2_eu_se, ec2_eu_ie_string)
-delete_remote_old_snapshot_job(ec2_eu_se, 15)
+delete_remote_old_snapshot_job(ec2_eu_se, 10)
 
 backup_volume_job(ec2_us_east)
-delete_local_old_snapshot_job(ec2_us_east, 15)
+delete_local_old_snapshot_job(ec2_us_east, 10)
 #copy_snapshot_job(ec2_us_east, ec2_us_west, ec2_us_east_string)
-delete_remote_old_snapshot_job(ec2_us_west, 15)
+delete_remote_old_snapshot_job(ec2_us_west, 10)
