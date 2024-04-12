@@ -388,3 +388,55 @@
   tags:
     - manage
     - manage:start
+
+
+# upgrade version to 1.25.4
+- name: check nginx-1.25.4 folder
+  stat:
+    path: /usr/local/nginx-1.25.4
+  register: nginx_folder_statue
+- name: failed if folder exist
+  fail:
+    msg: folder nginx-1.25.4 exists
+  when: nginx_folder_statue.stat.exists and nginx_folder_statue.stat.isdir
+- name: create nginx-1.25.4 folder
+  file:
+    state: directory
+    path: /usr/local/nginx-1.25.4
+- name: download nginx-1.25.4 source code
+  get_url:
+    url: https://nginx.org/download/nginx-1.25.4.tar.gz
+    dest: /root/nginx-1.25.4.tar.gz
+- name: unarchive nginx file
+  unarchive:
+    src: /root/nginx-1.25.4.tar.gz
+    dest: /root
+    remote_src: yes
+- name: install nginx-1.25.4
+  block:
+    - name: compile nginx-1.25.4
+      shell: ./configure --prefix=/usr/local/nginx-1.25.4 --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log  --pid-path=/var/run/nginx.pid --lock-path=/var/lock/nginx.lock --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
+      args:
+        chdir: /root/nginx-1.25.4
+    - name: make nginx-1.25.4
+      shell: make
+      args:
+        chdir: /root/nginx-1.25.4
+    - name: make install nginx-1.25.4
+      shell: make install
+      args:
+        chdir: /root/nginx-1.25.4
+- name: test nginx configuration file
+  shell: /usr/local/nginx-1.25.4/sbin/nginx -t
+  register: test_nginx_config
+  failed_when: test_nginx_config.rc > 0
+- name: update nginx systemd file
+  replace:
+    path: /lib/systemd/system/nginx.service
+    regexp: '/usr/sbin/nginx'
+    replace: '/usr/local/nginx-1.25.4/sbin/nginx'
+- name: restart nginx service
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: nginx
