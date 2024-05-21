@@ -76,7 +76,7 @@ def add_tags_on_automated_snapshot(region, snapshot_string, region_tag):
     print response_tag_snapshot
 
 
-def delete_remote_old_snapshot_job(region, keep_day=15):
+def delete_remote_old_snapshot_job(region, keep_day=10):
     expire_date = (datetime.datetime.now() - datetime.timedelta(days=keep_day)).replace(tzinfo=pytz.timezone('UTC'))
     response_describe_snapshot = region.describe_db_cluster_snapshots(SnapshotType='manual')
     if response_describe_snapshot['DBClusterSnapshots']:
@@ -86,8 +86,8 @@ def delete_remote_old_snapshot_job(region, keep_day=15):
                 print response_delete_snapshot
 
 
-copy_snapshot_job(rds_eu_ie, rds_eu_se, rds_eu_ie_string, rds_eu_se_rds_key, 'EU')
-delete_remote_old_snapshot_job(rds_eu_se, 15)
+#copy_snapshot_job(rds_eu_ie, rds_eu_se, rds_eu_ie_string, rds_eu_se_rds_key, 'EU')
+delete_remote_old_snapshot_job(rds_eu_se, 10)
 
-copy_snapshot_job(rds_us_east, rds_us_west, rds_us_east_string, rds_us_west_rds_key, 'US')
-delete_remote_old_snapshot_job(rds_us_west, 15)
+#copy_snapshot_job(rds_us_east, rds_us_west, rds_us_east_string, rds_us_west_rds_key, 'US')
+delete_remote_old_snapshot_job(rds_us_west, 10)

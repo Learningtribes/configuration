@@ -246,7 +246,7 @@ setup.template.settings:
 
 
 output.logstash:
-  hosts: ["kibana.learning-tribes.com.cn:5044"]
+  hosts: ["kibana.learning-tribes.com:5044"]
   ssl.certificate_authorities: ["/opt/ssl/logstash/ca.pem"]
   ssl.certificate: "/opt/ssl/logstash/beat.crt"
   ssl.key: "/opt/ssl/logstash/beat.key"

@@ -102,6 +102,11 @@ error_page {{ k }} {{ v }};
   add_header P3P '{{ NGINX_P3P_MESSAGE }}';
   add_header Origin-Trial As/2gPm8kxTwnLJi6sS8ZX2aCFUhSk4aUIaaLwjmKYC/yKdVcm55G2We3v08FMPcxFqgWAFOC1yLfYpnSoHmTQQAAAB7eyJvcmlnaW4iOiJodHRwczovL2xlYXJuaW5nLXRyaWJlcy5jb206NDQzIiwiZmVhdHVyZSI6IkFsbG93U3luY1hIUkluUGFnZURpc21pc3NhbCIsImV4cGlyeSI6MTU5OTczMTkzNywiaXNTdWJkb21haW4iOnRydWV9;
 
+  # Site should only be accessed using HTTPS  
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+
+  # Enable CSP
+  add_header Content-Security-Policy "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https:";
 
   {% include "handle-tls-redirect-and-ip-disclosure.j2" %}
 
@@ -137,7 +142,7 @@ error_page {{ k }} {{ v }};
     {% if NGINX_SET_X_FORWARDED_HEADERS %}
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Forwarded-Port $server_port;
-    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-For $http_x_forwarded_for;
     {% else %}
     proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
     proxy_set_header X-Forwarded-Port $http_x_forwarded_port;

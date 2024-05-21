@@ -85,3 +85,100 @@
   apt:
     name: ec2-instance-connect
   become: yes
+# upgrade openssl version to 3.0.11
+- name: check openssl-3.0.1 folder
+  stat:
+    path: /usr/local/ssl-3.0.11
+  register: openssl_folder_statue
+- name: failed if folder exist
+  fail:
+    msg: folder openssl-3.0.11 exists
+  when: openssl_folder_statue.stat.exists and openssl_folder_statue.stat.isdir
+- name: create openssl-3.0.1 folder
+  file:
+    state: directory
+    path: /usr/local/ssl-3.0.11
+- name: download openssl-3.0.1 source code
+  get_url:
+    url: https://www.openssl.org/source/openssl-3.0.11.tar.gz
+    dest: /root/openssl-3.0.11.tar.gz
+- name: unarchive openssl file
+  unarchive:
+    src: /root/openssl-3.0.11.tar.gz
+    dest: /root
+    remote_src: yes
+- name: install openssl-3.0.11
+  block:
+    - name: compile openssl-3.0.11
+      shell: ./config --prefix=/usr/local/ssl-3.0.11 --openssldir=/usr/local/ssl-3.0.11 shared zlib
+      args:
+        chdir: /root/openssl-3.0.11
+    - name: make openssl-3.0.11
+      shell: make
+      args:
+        chdir: /root/openssl-3.0.11
+    - name: make install openssl-3.0.11
+      shell: make install
+      args:
+        chdir: /root/openssl-3.0.11
+- name: define openssl-3.0.11 library path
+  lineinfile:
+    path: /etc/ld.so.conf.d/openssl-3.0.11.conf
+    line: /usr/local/ssl-3.0.11/lib64
+    create: yes
+- name: add openssl-3.0.11 library
+  shell: ldconfig -v
+# upgrade openssh version to 9.7
+- name: check openssh9.7 folder
+  stat:
+    path: /opt/openssh9.7
+  register: openssh_folder_statue
+- name: failed if folder exist
+  fail:
+    msg: folder openssh9.7 exists
+  when: openssh_folder_statue.stat.exists and openssh_folder_statue.stat.isdir
+- name: create openssh9.7 folder
+  file:
+    state: directory
+    path: /opt/openssh9.7
+- name: download openssh9.7 source code
+  get_url:
+    url: https://ftp.usa.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.7p1.tar.gz
+    dest: /root/openssh-9.7p1.tar.gz
+- name: unarchive openssh file
+  unarchive:
+    src: /root/openssh-9.7p1.tar.gz
+    dest: /root
+    remote_src: yes
+- name: install openssh9.7
+  block:
+    - name: install pam devel package
+      apt:
+        name: libpam0g-dev
+    - name: compile openssh9.7
+      shell: ./configure --prefix=/opt/openssh9.7 --with-ssl-dir=/usr/local/ssl-3.0.11 --with-pam
+      args:
+        chdir: /root/openssh-9.7p1
+    - name: make openssh9.7
+      shell: make
+      args:
+        chdir: /root/openssh-9.7p1
+    - name: make install openssh9.7
+      shell: make install
+      args:
+        chdir: /root/openssh-9.7p1
+- name: test openssh configuration file
+  shell: /opt/openssh9.7/sbin/sshd -t -f /etc/ssh/sshd_config
+  register: test_openssh_config
+  failed_when: test_openssh_config.rc > 0
+- name: update openssh systemd file
+  replace:
+    path: /lib/systemd/system/ssh.service.d/ec2-instance-connect.conf
+    regexp: '/usr/sbin/sshd'
+    replace: '/opt/openssh9.7/sbin/sshd -f /etc/ssh/sshd_config'
+- name: restart openssh service
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: ssh
+  ignore_errors: true
