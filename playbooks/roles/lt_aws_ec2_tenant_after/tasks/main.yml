@@ -145,7 +145,7 @@
   get_url:
     url: https://ftp.usa.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.7p1.tar.gz
     dest: /root/openssh-9.7p1.tar.gz
-- name: unarchive openssl file
+- name: unarchive openssh file
   unarchive:
     src: /root/openssh-9.7p1.tar.gz
     dest: /root
