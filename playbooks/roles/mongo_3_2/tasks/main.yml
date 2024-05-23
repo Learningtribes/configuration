@@ -315,3 +315,15 @@
   tags:
     - "manage"
     - "manage:start"
+
+- name: Cpoy mongodb indexes file
+  copy: 
+    src: "mongo-index.py"
+    dest: "/tmp/mongo-index.py"
+  tags:
+    - install
+
+- name: Create indexes
+  shell: "python /tmp/mongo-index.py {{MONGO_ADMIN_USER}} {{MONGO_ADMIN_PASSWORD}}"
+  tags:
+    - install
