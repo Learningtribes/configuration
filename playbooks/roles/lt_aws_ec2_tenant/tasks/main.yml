@@ -197,6 +197,14 @@
         max_age_seconds: 3600
   when: s3_get_id_fact == false
   tags: ['skip-cn']
+- name: s3 lifecycle
+  s3_lifecycle:
+    name: "{{s3_tenant_name}}"
+    rule_id: delete analytics report
+    expiration_days: 40
+    prefix: analytics/
+    status: enabled
+    state: present
 # - debug:
 #     msg: "{{create_s3_result}}"
 #   when: s3_get_id_fact == false

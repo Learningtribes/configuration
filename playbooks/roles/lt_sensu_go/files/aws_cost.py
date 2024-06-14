@@ -125,3 +125,30 @@ backup_intraflow_cost=backup_intraflow_cost['ResultsByTime'][0]['Total']['Blende
 backup_intraflow_cost = round(float(backup_intraflow_cost), 2)
 backup_intraflow_cost = cost_add_tax(backup_intraflow_cost)
 insert_data('GLOBAL-TRIBOO-SHARED-INTRAFLOW', 'SHARED', 'INTRAFLOW', 'GLOBAL', date_day, 'BACKUP', 'TRIBOO', backup_intraflow_cost)
+
+
+public_ipv4_cost_dict = {}
+
+public_ipv4_cost = client.get_cost_and_usage(
+        TimePeriod = {
+                'Start': start_day,
+                'End': end_day
+                },
+        Granularity = 'MONTHLY',
+        Metrics = ['BlendedCost'],
+        Filter = {'And': [{'Tags': {'Key': 'cost-name', 'MatchOptions': ['ABSENT']}},{'Dimensions':{'Key': 'SERVICE', 'Values': ['Amazon Virtual Private Cloud']}}] },
+        GroupBy = [{'Type': 'DIMENSION', 'Key': 'USAGE_TYPE'}]
+)
+
+public_ipv4_cost = public_ipv4_cost['ResultsByTime'][0]['Groups']
+for i in public_ipv4_cost:
+    region = i['Keys'][0].split(':')[0]
+    if region in public_ipv4_cost_dict.keys():
+        public_ipv4_cost_dict[region] = float(public_ipv4_cost_dict[region]) + float(i['Metrics']['BlendedCost']['Amount'])
+    else:
+        public_ipv4_cost_dict[region] = float(i['Metrics']['BlendedCost']['Amount'])
+
+for x,y in public_ipv4_cost_dict.items():
+    x = x.split('-')[0]
+    y = cost_add_tax(y)
+    insert_data('GLOBAL-TRIBOO-NO_CLIENT-IPV4', 'NO_CLIENT', 'IPV4', 'GLOBAL', date_day, x, 'TRIBOO', y)
