@@ -106,7 +106,7 @@ cloudwatch_cost = cost_add_tax(cloudwatch_cost)
 kms_cost = cost_add_tax(kms_cost)
 
 insert_data('GLOBAL-TRIBOO-NO_CLIENT-BILLING', 'NO_CLIENT', 'BILLING', 'GLOBAL', date_day, 'API', 'TRIBOO', cost_explorer_cost)
-insert_data('GLOBAL_EME-TRIBOO_2-SHARED-PRODUCTION', 'SHARED', 'PRODUCTION', 'GLOBAL_EME', date_day, 'ELB', 'TRIBOO_2', waf_cost)
+#insert_data('GLOBAL_EME-TRIBOO_2-SHARED-PRODUCTION', 'SHARED', 'PRODUCTION', 'GLOBAL_EME', date_day, 'ELB', 'TRIBOO_2', waf_cost)
 insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'CLOUDTRAIL', 'TRIBOO', cloudtrail_cost)
 insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'CLOUDWATCH', 'TRIBOO', cloudwatch_cost)
 insert_data('GLOBAL-TRIBOO-NO_CLIENT-TOOL', 'NO_CLIENT', 'TOOL', 'GLOBAL', date_day, 'KMS', 'TRIBOO', kms_cost)
