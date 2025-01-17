@@ -408,6 +408,7 @@
     - "lms.sh"
     - "cms.sh"
     - "worker.sh"
+    - "api_extended_user_progress_report.sh"
   tags:
     - install
     - install:configuration
