@@ -232,6 +232,17 @@ filebeat.inputs:
   fields_under_root: true
 
 - type: log
+  paths:
+    - /edx/var/log/supervisor/api_extended_user_progress_report-stderr.log
+  fields:
+    logtype: api_user_progress_report
+    loglevel: error
+  fields_under_root: true
+  multiline.pattern: '^\d{4}-'
+  multiline.negate: true
+  multiline.match: after
+
+- type: log
   enabled: false
   paths:
     - /var/log/*.log
