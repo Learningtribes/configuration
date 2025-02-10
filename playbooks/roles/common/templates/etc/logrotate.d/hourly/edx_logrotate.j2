@@ -9,7 +9,10 @@
   missingok
   notifempty
   daily
-  rotate 180
+  rotate 1825
+  prerotate
+    /bin/chown syslog:adm /edx/var/log/*/edx.log* 
+  endscript
   postrotate
     /usr/bin/killall -HUP rsyslogd
   endscript
