@@ -93,3 +93,22 @@ spec:
   runtime_assets:
   - sensu-plugins-process-checks
   - ruby-runtime
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check_mongodb_ioping_metrics
+  namespace: default
+spec:
+  command: metrics-ioping.rb -d /edx/var/mongo/mongodb -n mongodb -c 4 -i 5
+  interval: 60
+  timeout: 30
+  publish: true
+  output_metric_format: graphite_plaintext
+  output_metric_handlers:
+  - graphite_instance
+  subscriptions:
+  - db
+  runtime_assets:
+  - sensu-plugins-io-checks
+  - ruby-runtime

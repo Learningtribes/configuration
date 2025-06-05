@@ -1,0 +1,35 @@
+---
+- name: create gunicorn configuration file
+  copy:
+    src: ../files/api_extended_user_progress_report_gunicorn.py
+    dest: /edx/app/edxapp/api_extended_user_progress_report_gunicorn.py
+    owner: edxapp
+    group: edxapp
+    mode: 0644
+
+- name: create gunicorn environment file
+  copy:
+    src: ../files/api_extended_user_progress_report.sh
+    dest: /edx/app/edxapp/api_extended_user_progress_report.sh
+    owner: edxapp
+    group: www-data
+    mode: 0655
+
+- name: create supervisor configuration file
+  copy:
+    src: ../files/api_extended_user_progress_report.conf
+    dest: /edx/app/supervisor/conf.available.d/api_extended_user_progress_report.conf
+    owner: supervisor
+    group: supervisor
+    mode: 0644
+
+- name: link supervisor configuration file
+  file:
+    src: /edx/app/supervisor/conf.available.d/api_extended_user_progress_report.conf
+    dest: /edx/app/supervisor/conf.d/api_extended_user_progress_report.conf
+    state: link
+    owner: supervisor
+    group: supervisor
+
+- name: update supervisor service
+  shell: /edx/bin/supervisorctl update
