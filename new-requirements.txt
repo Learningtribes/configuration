@@ -1,0 +1,9 @@
+#
+# Upgrade ansible
+#   let ansible connect to managed node(python2.7, python3.8&python3.12) 
+#   on control node:  
+#      python3.12 -m venv ~/new_ansible/
+#      source ~/new_ansible/bin/activate
+#      pip install -r new-requirements.txt 
+#
+ansible==9.13.0

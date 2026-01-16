@@ -60,6 +60,6 @@
     src: "xserver-sandbox.j2"
     dest: "/etc/apparmor.d/xserver-sandbox"
 
-- include: deploy.yml
+- import_tasks: deploy.yml
   tags:
     - deploy

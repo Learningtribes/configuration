@@ -75,7 +75,7 @@
     copy: no
   when: download_backup_s3.changed
 
-- include: restore_backup.yml
+- import_tasks: restore_backup.yml
   when: download_backup_s3.changed
 
 - name: remove the temp directory

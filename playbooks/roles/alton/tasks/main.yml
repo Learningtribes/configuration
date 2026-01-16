@@ -38,6 +38,6 @@
     - "{{ alton_app_dir }}"
     - "{{ alton_venvs_dir }}"
 
-- include: deploy.yml
+- import_tasks: deploy.yml
   tags: 
     - deploy

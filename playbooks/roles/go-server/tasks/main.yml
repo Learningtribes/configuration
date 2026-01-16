@@ -123,7 +123,7 @@
     - install
     - install:base
 
-- include: download_backup.yml
+- import_tasks: download_backup.yml
   when: GO_SERVER_BACKUP_S3_BUCKET and GO_SERVER_BACKUP_S3_OBJECT and GO_SERVER_RESTORE_BACKUP
 
 - name: generate lines for go-server password file for users
@@ -203,7 +203,7 @@
     - install
     - install:app-configuration
 
-- include: setup_regular_backup.yml
+- import_tasks: setup_regular_backup.yml
   when: GO_SERVER_BACKUP_S3_BUCKET and GO_SERVER_BACKUP_S3_OBJECT and GO_SERVER_CONFIGURE_BACKUPS
   tags:
     - setup_backups

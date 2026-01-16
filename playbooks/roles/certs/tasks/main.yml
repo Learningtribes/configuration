@@ -94,6 +94,6 @@
   become_user: "{{ common_web_user }}"
   when: certs_gpg_key.changed
 
-- include: deploy.yml
+- import_tasks: deploy.yml
   tags:
     - deploy

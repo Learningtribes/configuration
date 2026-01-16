@@ -5,21 +5,21 @@
 # - When platform_worker is set, the resulting instance can run edx-platform tests
 
 # All jenkins workers
-- include: packer.yml
-- include: system.yml
-- include: python.yml
+- import_tasks: packer.yml
+- import_tasks: system.yml
+- import_tasks: python.yml
 
 # only platform workers
-- include: python_platform_worker.yml
+- import_tasks: python_platform_worker.yml
   when: platform_worker is defined
 
 # only loadtest driver workers
-- include: loadtest_driver_worker.yml
+- import_tasks: loadtest_driver_worker.yml
   when: loadtest_driver_worker is defined
 
 # Run appropriate tests
-- include: test.yml
-- include: test_platform_worker.yml
+- import_tasks: test.yml
+- import_tasks: test_platform_worker.yml
   when: platform_worker is defined
-- include: test_android_worker.yml
+- import_tasks: test_android_worker.yml
   when: android_worker is defined

@@ -136,7 +136,7 @@
 - name: Enforce app-armor rules
   command: "aa-enforce {{ xserver_venv_sandbox_dir }}"
 
-- include: ec2.yml
+- import_tasks: ec2.yml
   when: COMMON_TAG_EC2_INSTANCE
   tags:
     - deploy
