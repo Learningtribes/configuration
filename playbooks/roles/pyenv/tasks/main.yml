@@ -1,0 +1,59 @@
+#
+# ansible-playbook -i ~/Projects/hawthorn_inventory/hosts.ini -l localvm -u ubuntu --private-key ~/Keys/localvm.key --extra-vars "user_use_pyenv=project_account pyenv_project_folder=project_folder pyenv_python_verions=3.8" ~/Projects/edx-new-configuration/playbooks/lt_new_pipeline_test.yml
+#
+# Who(user_use_pyenv) uses which python version(pyenv_python_verions) on what project(pyenv_project_folder)
+#
+---
+- name: Update apt-get
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install pyenv requirements packages
+  apt:
+    update_cache: no
+    pkg: "{{ item }}"
+  with_items: "{{ pyenv_packages }}"
+  become: yes
+
+- name: Patch the temp file permissions via ansible become an unprivileged user
+  apt:
+    pkg: acl
+  become: yes
+
+- name: Install pyenv
+  shell: curl -fsSL https://pyenv.run | bash
+  args:
+    chdir: ~/
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
+
+- name: Update user profile
+  blockinfile:
+    path: ~/.profile
+    block: "{{ pyenv_shell_environment }}"
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
+
+- name: Update user bashrc
+  blockinfile:
+    path: ~/.bashrc
+    block: "{{ pyenv_shell_environment }}"
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
+
+- name: Install python version
+  shell: source ~/.profile && pyenv install "{{ pyenv_python_verions }}"
+  args:
+    chdir: "{{ pyenv_project_folder }}"
+    executable: /bin/bash
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
+
+- name: Set local python version
+  shell: source ~/.profile && pyenv local "{{ pyenv_python_verions }}"
+  args:
+    chdir: "{{ pyenv_project_folder }}"
+    executable: /bin/bash
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
