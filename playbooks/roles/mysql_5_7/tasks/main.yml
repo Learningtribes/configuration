@@ -1,0 +1,60 @@
+#
+# MySQL5.7 had been removed since Ubuntu 20.04, we need to add MySQL 5.7 repository, then install it.
+#
+# https://medium.com/@doobie-droid/how-to-install-mysql-5-0-on-ubuntu-20-04-or-later-4d27de464eef
+#
+
+---
+- name: Install MySQL reposiotry
+  shell: export DEBIAN_FRONTEND=noninteractive && echo mysql-apt-config mysql-apt-config/unsupported-platform select 'ubuntu bionic' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/select-server select 'mysql-5.7' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/repo-codename select 'bionic' | debconf-set-selections && wget http://repo.mysql.com/mysql-apt-config_0.8.12-1_all.deb -O mysql-apt-config_0.8.12-1_all.deb && dpkg -i mysql-apt-config_0.8.12-1_all.deb
+  args:
+    chdir: ~/
+  become: yes
+
+- name: Add an apt key from a keyserver
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: B7B3B788A8D3785C
+  become: yes
+
+- name: Patch to install MySQL requirement packages for Ubuntu 24.04
+  shell: wget http://archive.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2_amd64.deb -O libtinfo5_6.3-2_amd64.deb && dpkg -i libtinfo5_6.3-2_amd64.deb && wget http://archive.ubuntu.com/ubuntu/pool/main/liba/libaio/libaio1_0.3.110-5_amd64.deb -O libaio1_0.3.110-5_amd64.deb && dpkg -i libaio1_0.3.110-5_amd64.deb
+  args:
+    chdir: ~/
+  become: yes
+
+- name: Update the packages list
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install MySQL packages
+  shell: export DEBIAN_FRONTEND=noninteractive && echo mysql-server mysql-server/root_password password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && echo mysql-server mysql-server/root_password_again password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && apt install -y mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
+  become: yes
+
+- name: Enable service MySQL
+  service:
+    name: mysql
+    enabled: yes
+  become: yes
+
+- name: Start service MySQL 
+  service:
+    name: mysql
+    state: started
+  become: yes
+
+- name: Run secure installation
+  shell: |
+    mysql -u root -p{{COMMON_MYSQL_ADMIN_PASS}} <<EOF
+      -- Remove anonymous users
+      DELETE FROM mysql.user WHERE User='';
+      -- Disallow remote root login (applies to 'root'@'%' if it exists)
+      DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+      -- Remove test database and access to it
+      DROP DATABASE IF EXISTS test;
+      DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+      -- Reload privilege tables now
+      FLUSH PRIVILEGES;
+  become: yes
+
