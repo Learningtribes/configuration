@@ -6,9 +6,11 @@
 
 ---
 - name: Install MySQL reposiotry
-  shell: export DEBIAN_FRONTEND=noninteractive && echo mysql-apt-config mysql-apt-config/unsupported-platform select 'ubuntu bionic' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/select-server select 'mysql-5.7' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/repo-codename select 'bionic' | debconf-set-selections && wget http://repo.mysql.com/mysql-apt-config_0.8.12-1_all.deb -O mysql-apt-config_0.8.12-1_all.deb && dpkg -i mysql-apt-config_0.8.12-1_all.deb
+  shell: echo mysql-apt-config mysql-apt-config/unsupported-platform select 'ubuntu bionic' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/select-server select 'mysql-5.7' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/repo-codename select 'bionic' | debconf-set-selections && wget http://repo.mysql.com/mysql-apt-config_0.8.12-1_all.deb -O mysql-apt-config_0.8.12-1_all.deb && dpkg -i mysql-apt-config_0.8.12-1_all.deb
   args:
     chdir: ~/
+  environment:
+    DEBIAN_FRONTEND: noninteractive
   become: yes
 
 - name: Add an apt key from a keyserver
@@ -29,19 +31,55 @@
   become: yes
 
 - name: Install MySQL packages
-  shell: export DEBIAN_FRONTEND=noninteractive && echo mysql-server mysql-server/root_password password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && echo mysql-server mysql-server/root_password_again password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && apt install -y mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
+  shell: echo mysql-server mysql-server/root_password password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && echo mysql-server mysql-server/root_password_again password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && apt install -y mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  become: yes
+
+- name: Ensure the LimitNOFILE value is select
+  lineinfile:
+    path: /lib/systemd/system/mysql.service
+    regexp: '^LimitNOFILE'
+    line: LimitNOFILE=1048576
+  become: yes
+
+- name: Ensure the LimitCORE value is select
+  lineinfile:
+    path: /lib/systemd/system/mysql.service
+    regexp: '^LimitCORE'
+    line: LimitCORE=infinity
+  become: yes
+
+- name: Ensure the LimitMEMLOCK value is select
+  lineinfile:
+    path: /lib/systemd/system/mysql.service
+    regexp: '^LimitMEMLOCK'
+    line: LimitMEMLOCK=infinity
+  become: yes
+
+- name: Update MySQL config file
+  blockinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    block: |
+      innodb_file_per_table=ON
+      default-storage-engine=innodb
+      character-set-server=utf8
+      collation-server=utf8_general_ci
+      sql_mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER"
+      open_files_limit=1048576
   become: yes
 
 - name: Enable service MySQL
-  service:
+  systemd:
     name: mysql
     enabled: yes
   become: yes
 
 - name: Start service MySQL 
-  service:
+  systemd:
     name: mysql
-    state: started
+    state: restarted
+    daemon_reload: yes
   become: yes
 
 - name: Run secure installation
@@ -57,4 +95,3 @@
       -- Reload privilege tables now
       FLUSH PRIVILEGES;
   become: yes
-
