@@ -108,6 +108,8 @@
     group: "{{ item.group | default('root') }}"
     mode: "0755"
   with_items: "{{ common_directories }}"
+  tags:
+    - "triboo_upgrade"
 
 - name: upload sudo config for key forwarding as root
   copy:

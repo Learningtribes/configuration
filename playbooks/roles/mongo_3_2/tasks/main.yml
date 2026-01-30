@@ -10,6 +10,7 @@
     - "hugepages"
     - "install"
     - "install:configuration"
+    - "triboo_upgrade"
 
 - name: Enable/start disable transparent huge pages service (http://docs.mongodb.org/manual/tutorial/transparent-huge-pages/)
   service:
@@ -20,6 +21,21 @@
     - "hugepages"
     - "manage"
     - "manage:start"
+    - "triboo_upgrade"
+
+- name: Install pymongo package for ansible module to use
+  apt:
+    update_cache: yes
+    pkg: python3-pymongo
+  tags:
+    - "triboo_upgrade"
+
+- name: Patch to install MongoDB requirement packages for Ubuntu 24.04
+  shell: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb -O libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb && dpkg -i libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb
+  args:
+    chdir: ~/
+  tags:
+    - "triboo_upgrade"
 
 - name: install python pymongo for mongo_user ansible module
   pip:
@@ -43,12 +59,29 @@
 
 - name: add the mongodb repo to the sources list
   apt_repository:
-    repo: "{{ MONGODB_REPO }}"
+    repo: "{{ TRIBOO_UPGRADE_MONGODB_REPO }}"
     state: present
+    update_cache: no
   tags:
     - "install"
     - "install:app-requirements"
     - "mongo_packages"
+    - "triboo_upgrade"
+
+- name: Patch to update the APT packages list, As the gpg key was expired for MongoDB 3.2
+  shell: apt-get --allow-insecure-repositories update
+  tags:
+    - "triboo_upgrade"
+
+- name: Install mongo server
+  apt:
+    pkg: "{{ item }}"
+    state: present
+    force: yes
+    update_cache: no
+  with_items: "{{ mongodb_debian_pkgs }}"
+  tags:
+    - "triboo_upgrade"
 
 - name: install mongo server and recommends
   apt:
@@ -77,6 +110,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: add serverStatus logging script
   template:
@@ -89,6 +123,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: add serverStatus logging script to cron
   cron:
@@ -100,6 +135,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 # This will error when run on a new replica set, so we ignore_errors
 # and connect anonymously next.
@@ -114,6 +150,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: Try checking the replica set with no user/pass in case this is a new box
   mongodb_rs_status:
@@ -125,6 +162,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 # We use these in the templates but also to control a whole bunch of logic
 - name: set facts that default to not initializing a replica set
@@ -137,6 +175,7 @@
     - "update_mongod_conf"
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 # If either auth or unauthed access comes back with a replica set, we
 # do not want to initialize one.  Since initialization requires a bunch
@@ -151,6 +190,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: warn about unconfigured replica sets
   debug: msg="You do not appear to have a Replica Set configured, deploying one for you"
@@ -158,6 +198,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: copy mongodb key file
   copy:
@@ -171,6 +212,7 @@
     - "manage"
     - "manage:db-replication"
     - "mongodb_key"
+    - "triboo_upgrade"
 
 # If skip_replica_set is true, this template will not contain a replica set stanza
 # because of the fact above.
@@ -186,6 +228,7 @@
     - "manage"
     - "manage:db-replication"
     - "update_mongod_conf"
+    - "triboo_upgrade"
 
 - name: install logrotate configuration
   template:
@@ -195,6 +238,7 @@
     - "install"
     - "install:app-configuration"
     - "logrotate"
+    - "triboo_upgrade"
 
 - name: restart mongo service if we changed our configuration
   service:
@@ -205,6 +249,7 @@
     - "manage"
     - "manage:start"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: wait for mongo server to start
   wait_for:
@@ -214,6 +259,7 @@
     - "manage"
     - "manage:start"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 # We only try passwordless superuser creation when
 # we're initializing the replica set and need to use
@@ -234,6 +280,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 # Now that the localhost exemption has been used to create the superuser, we need
 # to add replica set to our configuration.  This will never happen if we detected
@@ -245,6 +292,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: re-copy configuration template with replica set enabled
   template:
@@ -255,6 +303,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: restart mongo service
   service:
@@ -264,6 +313,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: wait for mongo server to start
   wait_for:
@@ -273,6 +323,7 @@
   tags:
     - "manage"
     - "manage:db-replication"
+    - "triboo_upgrade"
 
 - name: configure replica set
   mongodb_replica_set:
@@ -315,3 +366,12 @@
   tags:
     - "manage"
     - "manage:start"
+    - "triboo_upgrade"
+
+- name: remove the mongodb repo to the sources list
+  apt_repository:
+    repo: "{{ MONGODB_REPO }}"
+    state: absent
+    update_cache: yes
+  tags:
+    - "triboo_upgrade"
