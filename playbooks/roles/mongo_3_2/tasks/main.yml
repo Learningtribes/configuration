@@ -150,7 +150,6 @@
   tags:
     - "manage"
     - "manage:db-replication"
-    - "triboo_upgrade"
 
 - name: Try checking the replica set with no user/pass in case this is a new box
   mongodb_rs_status:
@@ -162,7 +161,6 @@
   tags:
     - "manage"
     - "manage:db-replication"
-    - "triboo_upgrade"
 
 # We use these in the templates but also to control a whole bunch of logic
 - name: set facts that default to not initializing a replica set
@@ -339,6 +337,26 @@
     - "manage:db-replication"
     - "manage:db-replication-configuration"
 
+- name: copy initialization replica set js file
+  copy:
+    src: "js/{{ item }}"
+    dest: "/tmp/{{ item }}"
+    mode: 0644
+  with_items:
+    - initiate.js
+    - change_rs_membername.js
+  when: mongo_configure_replica_set
+  tags:
+    - "triboo_upgrade"
+
+- name: initialze replica set
+  shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} /tmp/initiate.js && mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} /tmp/change_rs_membername.js
+  run_once: true
+  register: replset_status
+  when: mongo_configure_replica_set
+  tags:
+    - "triboo_upgrade"
+
 # During initial replica set configuration, it can take a few seconds to vote
 # a primary and for all members to reflect that status.  During that window,
 # use creation or other writes can fail.  The best wait/check seems to be repeatedly
@@ -359,8 +377,27 @@
     - "manage:db"
     - "manage:db-replication"
 
+- name: Ensure replicaset is stable before beginning
+  community.mongodb.mongodb_status:
+    login_user: "{{ MONGO_ADMIN_USER }}"
+    login_password: "{{ MONGO_ADMIN_PASSWORD }}"
+    auth_mechanism: SCRAM-SHA-1
+    poll: 3
+    interval: 10
+  register: rs
+  tags:
+    - "triboo_upgrade2"
+
+- name: Lookup PRIMARY replicaset member
+  set_fact:
+    primary: "{{ item.key.split('.')[0] }}"
+  loop: "{{ lookup('dict', rs.replicaset) }}"
+  when: "'PRIMARY' in item.value"
+  tags:
+    - "triboo_upgrade2"
+
 - name: ensure mongo starts at boot time
-  service:
+  systemd:
     name: mongod
     enabled: yes
   tags:
@@ -370,7 +407,7 @@
 
 - name: remove the mongodb repo to the sources list
   apt_repository:
-    repo: "{{ MONGODB_REPO }}"
+    repo: "{{ TRIBOO_UPGRADE_MONGODB_REPO }}"
     state: absent
     update_cache: yes
   tags:
