@@ -162,6 +162,24 @@
     - "manage"
     - "manage:db-replication"
 
+# Fix ansible 9.13 mongodb rs status module does not support for MongoDB 3.2
+- name: determine if there is a replica set already
+  shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} --quiet --eval "rs.status()" | grep "PRIMARY"
+  run_once: true
+  register: authed_replica_set_already_configured
+  ignore_errors: true
+  tags:
+    - "triboo_upgrade"
+
+- name: Try checking the replica set with no user/pass in case this is a new box
+  shell: mongo --quiet --eval "JSON.stringify(rs.status())" | grep "PRIMARY"
+  run_once: true
+  register: unauthed_replica_set_already_configured
+  when: authed_replica_set_already_configured.failed is defined
+  ignore_errors: true
+  tags:
+    - "triboo_upgrade"
+
 # We use these in the templates but also to control a whole bunch of logic
 - name: set facts that default to not initializing a replica set
   set_fact:
@@ -378,23 +396,12 @@
     - "manage:db-replication"
 
 - name: Ensure replicaset is stable before beginning
-  community.mongodb.mongodb_status:
-    login_user: "{{ MONGO_ADMIN_USER }}"
-    login_password: "{{ MONGO_ADMIN_PASSWORD }}"
-    auth_mechanism: SCRAM-SHA-1
-    poll: 3
-    interval: 10
-  register: rs
+  shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} --quiet --eval "JSON.stringify(rs.status())" | grep "PRIMARY"
+  retries: 5
+  delay: 2
+  run_once: true
   tags:
-    - "triboo_upgrade2"
-
-- name: Lookup PRIMARY replicaset member
-  set_fact:
-    primary: "{{ item.key.split('.')[0] }}"
-  loop: "{{ lookup('dict', rs.replicaset) }}"
-  when: "'PRIMARY' in item.value"
-  tags:
-    - "triboo_upgrade2"
+    - "triboo_upgrade"
 
 - name: ensure mongo starts at boot time
   systemd:
