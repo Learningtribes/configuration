@@ -41,6 +41,7 @@
     update_cache: yes
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: patch to add trust xenial repository key to install erlang
   apt_key:
@@ -51,6 +52,7 @@
   with_items: "{{ XENIAL_APT_KEY }}"
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: patch to add trust xenial repository to install erlang
   apt_repository:
@@ -59,6 +61,7 @@
     update_cache: yes
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 # If we don't set pipefail first, `||` will be looking at the exit code of the last command in the pipe
 - name: Check if rabbit is installed
@@ -97,6 +100,7 @@
   when: installed_version.stdout is defined and installed_version.stdout == "not installed"
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: Stop rabbit cluster
   service:
@@ -385,3 +389,4 @@
     update_cache: yes
   tags:
     - "triboo_upgrade_patch" 
+    - "never"

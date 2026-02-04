@@ -29,6 +29,7 @@
     pkg: python3-pymongo
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: Patch to install MongoDB requirement packages for Ubuntu 24.04
   shell: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb -O libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb && dpkg -i libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb
@@ -36,6 +37,7 @@
     chdir: ~/
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: install python pymongo for mongo_user ansible module
   pip:
@@ -72,15 +74,14 @@
     state: present
     update_cache: no
   tags:
-    - "install"
-    - "install:app-requirements"
-    - "mongo_packages"
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: Patch to update the APT packages list, As the gpg key was expired for MongoDB 3.2
   shell: apt-get --allow-insecure-repositories update
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: install mongo server and recommends
   apt:
@@ -94,7 +95,17 @@
     - "install"
     - "install:app-requirements"
     - "mongo_packages"
-    - "triboo_upgrade"
+
+- name: Patch to install mongo server and recommends
+  apt:
+    pkg: "{{ item }}"
+    state: present
+    force: yes
+    update_cache: no
+  with_items: "{{ mongodb_debian_pkgs }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: create mongo dirs
   file:
@@ -170,6 +181,7 @@
   ignore_errors: true
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: Patch to try checking the replica set with no user/pass in case this is a new box
   shell: mongo --quiet --eval "JSON.stringify(rs.status())" | grep "PRIMARY"
@@ -179,6 +191,7 @@
   ignore_errors: true
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 # We use these in the templates but also to control a whole bunch of logic
 - name: set facts that default to not initializing a replica set
@@ -366,6 +379,7 @@
   when: mongo_configure_replica_set
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: Patch to initialze replica set
   shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} /tmp/initiate.js && mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} /tmp/change_rs_membername.js
@@ -374,6 +388,7 @@
   when: mongo_configure_replica_set
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 # During initial replica set configuration, it can take a few seconds to vote
 # a primary and for all members to reflect that status.  During that window,
@@ -402,6 +417,7 @@
   run_once: true
   tags:
     - "triboo_upgrade_patch"
+    - "never"
 
 - name: ensure mongo starts at boot time
   systemd:
@@ -417,5 +433,8 @@
     repo: "{{ TRIBOO_UPGRADE_MONGODB_REPO }}"
     state: absent
     update_cache: yes
+  retries: 5
+  delay: 2
   tags:
     - "triboo_upgrade_patch"
+    - "never"

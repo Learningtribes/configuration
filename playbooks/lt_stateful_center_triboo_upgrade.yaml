@@ -1,0 +1,14 @@
+# Run playbook with tags "triboo_upgrade,triboo_upgrade_patch" to install MySQL 5.7, MongoDB 3.2.16 and RabbitMQ 3.6.9-1 on Ubuntu 24.04
+#
+#  ansible-playbook -i inventory/hosts.ini --tags "triboo_upgrade,triboo_upgrade_patch"  lt_stateful_center_triboo_upgrade.yml
+# 
+---
+- name: Configure DB instance(s)
+  hosts: all
+  become: True
+  gather_facts: True
+  roles:
+    - role: mysql_5_7
+    - role: mongo
+      MONGO_BIND_IP: 0.0.0.0
+    - role: rabbitmq
