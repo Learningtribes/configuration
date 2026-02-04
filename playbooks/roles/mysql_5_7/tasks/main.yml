@@ -11,51 +11,43 @@
     chdir: ~/
   environment:
     DEBIAN_FRONTEND: noninteractive
-  become: yes
 
 - name: Add an apt key from a keyserver
   apt_key:
     keyserver: keyserver.ubuntu.com
     id: B7B3B788A8D3785C
-  become: yes
 
 - name: Patch to install MySQL requirement packages for Ubuntu 24.04
   shell: wget http://archive.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2_amd64.deb -O libtinfo5_6.3-2_amd64.deb && dpkg -i libtinfo5_6.3-2_amd64.deb && wget http://archive.ubuntu.com/ubuntu/pool/main/liba/libaio/libaio1_0.3.110-5_amd64.deb -O libaio1_0.3.110-5_amd64.deb && dpkg -i libaio1_0.3.110-5_amd64.deb
   args:
     chdir: ~/
-  become: yes
 
 - name: Update the packages list
   apt:
     update_cache: yes
-  become: yes
 
 - name: Install MySQL packages
   shell: echo mysql-server mysql-server/root_password password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && echo mysql-server mysql-server/root_password_again password {{COMMON_MYSQL_ADMIN_PASS}} | debconf-set-selections && apt install -y mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
   environment:
     DEBIAN_FRONTEND: noninteractive
-  become: yes
 
 - name: Ensure the LimitNOFILE value is select
   lineinfile:
     path: /lib/systemd/system/mysql.service
     regexp: '^LimitNOFILE'
     line: LimitNOFILE=1048576
-  become: yes
 
 - name: Ensure the LimitCORE value is select
   lineinfile:
     path: /lib/systemd/system/mysql.service
     regexp: '^LimitCORE'
     line: LimitCORE=infinity
-  become: yes
 
 - name: Ensure the LimitMEMLOCK value is select
   lineinfile:
     path: /lib/systemd/system/mysql.service
     regexp: '^LimitMEMLOCK'
     line: LimitMEMLOCK=infinity
-  become: yes
 
 - name: Update MySQL config file
   blockinfile:
@@ -67,20 +59,17 @@
       collation-server=utf8_general_ci
       sql_mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER"
       open_files_limit=1048576
-  become: yes
 
 - name: Enable service MySQL
   systemd:
     name: mysql
     enabled: yes
-  become: yes
 
 - name: Start service MySQL 
   systemd:
     name: mysql
     state: restarted
     daemon_reload: yes
-  become: yes
 
 - name: Run secure installation
   shell: |
@@ -94,4 +83,3 @@
       DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
       -- Reload privilege tables now
       FLUSH PRIVILEGES;
-  become: yes
