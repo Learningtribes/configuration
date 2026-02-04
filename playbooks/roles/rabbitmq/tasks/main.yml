@@ -14,6 +14,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: trust rabbit's packagecloud repository
   apt_key:
@@ -22,6 +23,7 @@
   tags:
     - "install"
     - "install:app-requirements"
+    - "triboo_upgrade"
 
 - name: add rabbit's packagecloud repository
   apt_repository:
@@ -31,6 +33,32 @@
   tags:
     - "install"
     - "install:app-requirements"
+
+- name: patch to add rabbit's packagecloud repository
+  apt_repository:
+    repo: "{{ triboo_upgrade_rabbitmq_repo }}"
+    state: present
+    update_cache: yes
+  tags:
+    - "triboo_upgrade_patch"
+
+- name: patch to add trust xenial repository key to install erlang
+  apt_key:
+    id: "{{ item }}"
+    keyserver: "{{ XENIAL_APT_KEYSERVER }}"
+    state: present
+  retries: 3
+  with_items: "{{ XENIAL_APT_KEY }}"
+  tags:
+    - "triboo_upgrade_patch"
+
+- name: patch to add trust xenial repository to install erlang
+  apt_repository:
+    repo: "{{ triboo_upgrade_xenial_repo }}"
+    state: present
+    update_cache: yes
+  tags:
+    - "triboo_upgrade_patch"
 
 # If we don't set pipefail first, `||` will be looking at the exit code of the last command in the pipe
 - name: Check if rabbit is installed
@@ -43,6 +71,7 @@
   tags:
     - "install"
     - "install:app-requirements"
+    - "triboo_upgrade"
 
 - name: Warn if wrong rabbit version is installed
   debug: msg="Expected rabbitmq version {{ RABBITMQ_VERSION }}, found {{ installed_version.stdout }} - will not upgrade in place"
@@ -50,6 +79,7 @@
   tags:
     - "install"
     - "install:app-requirements"
+    - "triboo_upgrade"
 
 - name: Install rabbit package
   apt:
@@ -62,6 +92,12 @@
     - "install"
     - "install:app-requirements"
 
+- name: Install rabbit package
+  shell: "apt-get install -y -t xenial rabbitmq-server={{ RABBITMQ_VERSION }}"
+  when: installed_version.stdout is defined and installed_version.stdout == "not installed"
+  tags:
+    - "triboo_upgrade_patch"
+
 - name: Stop rabbit cluster
   service:
     name: rabbitmq-server
@@ -69,6 +105,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 # In case there are lingering processes, ignore errors
 # silently
@@ -77,6 +114,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Create rabbitmq edx directories
   file:
@@ -90,6 +128,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Add queue monitoring script
   template:
@@ -102,6 +141,7 @@
     - "install"
     - "install:app-configuration"
     - "monitoring"
+    - "triboo_upgrade"
 
 - name: Add RabbitMQ memory usage script
   template:
@@ -114,6 +154,7 @@
     - "install"
     - "install:app-configuration"
     - "monitoring"
+    - "triboo_upgrade"
 
 - name: Set up a cron job to run queue script
   cron:
@@ -123,6 +164,7 @@
     - "install"
     - "install:app-configuration"
     - "monitoring"
+    - "triboo_upgrade"
 
 - name: Set up a cron job to run the script
   cron:
@@ -132,6 +174,7 @@
     - "install"
     - "install:app-configuration"
     - "monitoring"
+    - "triboo_upgrade"
 
 - name: install logrotate configuration
   template:
@@ -141,6 +184,7 @@
     - "install"
     - "install:app-configuration"
     - "logrotate"
+    - "triboo_upgrade"
 
 # Defaulting to /var/lib/rabbitmq
 - name: Create cookie directory
@@ -153,6 +197,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Add rabbitmq erlang cookie
   template:
@@ -165,6 +210,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 # Defaulting to /etc/rabbitmq
 - name: Create rabbitmq config directory
@@ -177,6 +223,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Add rabbitmq environment configuration
   template:
@@ -188,6 +235,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Add rabbitmq cluster configuration
   template:
@@ -200,15 +248,18 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Install plugins
   rabbitmq_plugin:
     names: "{{ item }}"
     state: enabled
+    broker_state: offline
   with_items: "{{ rabbitmq_plugins }}"
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 # When rabbitmq starts up it creates a folder of metadata at '/var/lib/rabbitmq/mnesia'.
 # This folder should be deleted before clustering is setup because it retains data
@@ -221,14 +272,16 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Start rabbit nodes
-  service:
+  systemd:
     name: rabbitmq-server
     state: started
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Wait for rabbit to start
   wait_for:
@@ -237,6 +290,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Remove guest user
   rabbitmq_user:
@@ -247,6 +301,7 @@
     - maintenance
     - "manage"
     - "manage:app-users"
+    - "triboo_upgrade"
 
 - name: Add vhosts
   rabbitmq_vhost:
@@ -257,6 +312,7 @@
     - maintenance
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Add admin user
   rabbitmq_user:
@@ -272,6 +328,7 @@
     - maintenance
     - "manage"
     - "manage:app-users"
+    - "triboo_upgrade"
 
 - name: Make queues mirrored
   rabbitmq_policy:
@@ -289,6 +346,7 @@
     - maintenance
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 #
 # Depends upon the management plugin
@@ -300,6 +358,7 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Ensure rabbitmqadmin attributes
   file:
@@ -310,9 +369,19 @@
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
 
 - name: Set cluster name
   command: "/usr/sbin/rabbitmqctl set_cluster_name  {{ RABBITMQ_CLUSTER_NAME }}"
   tags:
     - "install"
     - "install:app-configuration"
+    - "triboo_upgrade"
+
+- name: patch to remove trust xenial repository
+  apt_repository:
+    repo: "{{ triboo_upgrade_xenial_repo }}"
+    state: absent
+    update_cache: yes
+  tags:
+    - "triboo_upgrade_patch" 

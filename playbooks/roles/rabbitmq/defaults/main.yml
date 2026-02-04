@@ -42,7 +42,13 @@ RABBITMQ_CLUSTER_NAME: "{{ COMMON_ENVIRONMENT }}-{{ COMMON_DEPLOYMENT }}-rabbit"
 rabbitmq_refresh: false
 
 rabbitmq_repo: "deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ {{ ansible_distribution_release }} main"
+triboo_upgrade_rabbitmq_repo: "deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ xenial main"
+triboo_upgrade_xenial_repo: "deb http://archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse"
 rabbitmq_repo_key: "https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey"
+XENIAL_APT_KEY:
+  - 40976EAF437D05B5
+  - 3B4FE6ACC0B21F32
+XENIAL_APT_KEYSERVER: keyserver.ubuntu.com
 
 rabbitmq_debian_pkgs:
   - "apt-transport-https"
