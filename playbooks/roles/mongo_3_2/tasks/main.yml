@@ -23,19 +23,19 @@
     - "manage:start"
     - "triboo_upgrade"
 
-- name: Install pymongo package for ansible module to use
+- name: Patch to install pymongo package let ansible's module to use on ansible 9.13 
   apt:
     update_cache: yes
     pkg: python3-pymongo
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 - name: Patch to install MongoDB requirement packages for Ubuntu 24.04
   shell: wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb -O libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb && dpkg -i libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb
   args:
     chdir: ~/
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 - name: install python pymongo for mongo_user ansible module
   pip:
@@ -59,6 +59,15 @@
 
 - name: add the mongodb repo to the sources list
   apt_repository:
+    repo: "{{ MONGODB_REPO }}"
+    state: present
+  tags:
+    - "install"
+    - "install:app-requirements"
+    - "mongo_packages"
+
+- name: Patch to add the mongodb repo to the sources list
+  apt_repository:
     repo: "{{ TRIBOO_UPGRADE_MONGODB_REPO }}"
     state: present
     update_cache: no
@@ -66,22 +75,12 @@
     - "install"
     - "install:app-requirements"
     - "mongo_packages"
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 - name: Patch to update the APT packages list, As the gpg key was expired for MongoDB 3.2
   shell: apt-get --allow-insecure-repositories update
   tags:
-    - "triboo_upgrade"
-
-- name: Install mongo server
-  apt:
-    pkg: "{{ item }}"
-    state: present
-    force: yes
-    update_cache: no
-  with_items: "{{ mongodb_debian_pkgs }}"
-  tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 - name: install mongo server and recommends
   apt:
@@ -95,6 +94,7 @@
     - "install"
     - "install:app-requirements"
     - "mongo_packages"
+    - "triboo_upgrade"
 
 - name: create mongo dirs
   file:
@@ -163,22 +163,22 @@
     - "manage:db-replication"
 
 # Fix ansible 9.13 mongodb rs status module does not support for MongoDB 3.2
-- name: determine if there is a replica set already
+- name: Patch to determine if there is a replica set already
   shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} --quiet --eval "rs.status()" | grep "PRIMARY"
   run_once: true
   register: authed_replica_set_already_configured
   ignore_errors: true
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
-- name: Try checking the replica set with no user/pass in case this is a new box
+- name: Patch to try checking the replica set with no user/pass in case this is a new box
   shell: mongo --quiet --eval "JSON.stringify(rs.status())" | grep "PRIMARY"
   run_once: true
   register: unauthed_replica_set_already_configured
   when: authed_replica_set_already_configured.failed is defined
   ignore_errors: true
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 # We use these in the templates but also to control a whole bunch of logic
 - name: set facts that default to not initializing a replica set
@@ -355,7 +355,7 @@
     - "manage:db-replication"
     - "manage:db-replication-configuration"
 
-- name: copy initialization replica set js file
+- name: Patch to copy initialization replica set js file
   copy:
     src: "js/{{ item }}"
     dest: "/tmp/{{ item }}"
@@ -365,15 +365,15 @@
     - change_rs_membername.js
   when: mongo_configure_replica_set
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
-- name: initialze replica set
+- name: Patch to initialze replica set
   shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} /tmp/initiate.js && mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} /tmp/change_rs_membername.js
   run_once: true
   register: replset_status
   when: mongo_configure_replica_set
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 # During initial replica set configuration, it can take a few seconds to vote
 # a primary and for all members to reflect that status.  During that window,
@@ -395,13 +395,13 @@
     - "manage:db"
     - "manage:db-replication"
 
-- name: Ensure replicaset is stable before beginning
+- name: Patch to ensure replicaset is stable before beginning
   shell: mongo -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} --quiet --eval "JSON.stringify(rs.status())" | grep "PRIMARY"
   retries: 5
   delay: 2
   run_once: true
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
 
 - name: ensure mongo starts at boot time
   systemd:
@@ -412,10 +412,10 @@
     - "manage:start"
     - "triboo_upgrade"
 
-- name: remove the mongodb repo to the sources list
+- name: Patch to remove the mongodb repo to the sources list
   apt_repository:
     repo: "{{ TRIBOO_UPGRADE_MONGODB_REPO }}"
     state: absent
     update_cache: yes
   tags:
-    - "triboo_upgrade"
+    - "triboo_upgrade_patch"
