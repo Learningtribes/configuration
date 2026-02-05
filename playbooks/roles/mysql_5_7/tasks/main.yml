@@ -18,6 +18,8 @@
   apt_key:
     keyserver: keyserver.ubuntu.com
     id: B7B3B788A8D3785C
+  retries: 5
+  delay: 2
   tags:
     - "triboo_upgrade"
 
@@ -31,6 +33,8 @@
 - name: Update the packages list
   apt:
     update_cache: yes
+  retries: 5
+  delay: 2
   tags:
     - "triboo_upgrade"
 
@@ -107,3 +111,11 @@
       FLUSH PRIVILEGES;
   tags:
     - "triboo_upgrade"
+
+- name: Patch to remove the mysql repo from the sources list
+  file:
+    path: /etc/apt/sources.list.d/mysql.list
+    state: absent
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"

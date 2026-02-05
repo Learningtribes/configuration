@@ -27,6 +27,8 @@
   apt:
     update_cache: yes
     pkg: python3-pymongo
+  retries: 5
+  delay: 30
   tags:
     - "triboo_upgrade_patch"
     - "never"
@@ -73,6 +75,8 @@
     repo: "{{ TRIBOO_UPGRADE_MONGODB_REPO }}"
     state: present
     update_cache: no
+  retries: 5
+  delay: 2
   tags:
     - "triboo_upgrade_patch"
     - "never"
@@ -102,6 +106,8 @@
     state: present
     force: yes
     update_cache: no
+  retries: 5
+  delay: 30
   with_items: "{{ mongodb_debian_pkgs }}"
   tags:
     - "triboo_upgrade_patch"
