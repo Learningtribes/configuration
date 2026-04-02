@@ -16,6 +16,21 @@
     - python-mysqldb
     - python-pymongo
 
+- name: Patch to install python3 requirements
+  apt:
+    name: "{{ item }}"
+    state: latest
+    install_recommends: no
+  with_items:
+    - python3-pymysql
+    - python3-pymongo
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+# This is for triboo_upgrade
+# Fix root password does not setup on MySQL
+# ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password_string';
 - name: create mysql databases
   mysql_db:
     login_host: "{{ TENANT_MYSQL_LOGIN_HOST }}"
@@ -26,6 +41,8 @@
     encoding: utf8
   when: item != None and item != ''
   with_items: "{{ TENANT_MYSQL_DATABASES }}"
+  tags:
+    - "triboo_upgrade"
 
 - name: create mysql user
   mysql_user:
@@ -38,7 +55,12 @@
     priv: "{{ item }}.*:ALL"
     append_privs: yes
   with_items: "{{ TENANT_MYSQL_DATABASES }}"
+  tags:
+    - "triboo_upgrade"
 
+# This is for triboo_upgrade
+# Fix ansible's community.mongodb version is latest, then does not support pymongo3.* and get error when execute it
+# Remove community.mongodb, then 'ansible-galaxy collection install community.mongodb:1.2.1' 
 - name: create mongodb user and databases
   mongodb_user:
     login_database: 'admin'
@@ -52,11 +74,15 @@
     state: present
   with_items: "{{ TENANT_MONGO_DATABASES }}"
   run_once: true
+  tags:
+    - "triboo_upgrade"
 
 - name: Add vhosts
   rabbitmq_vhost:
     name: "{{ TENANT_RMQ_VHOST }}"
     state: present
+  tags:
+    - "triboo_upgrade"
 
 - name: Extend permission for admin user
   rabbitmq_user:
@@ -68,6 +94,8 @@
     read_priv: .*
     write_priv: .*
     state: present
+  tags:
+    - "triboo_upgrade"
 
 
 - name: Add rmq user
@@ -81,4 +109,6 @@
         read_priv: .*
         write_priv: .*
     state: present
+  tags:
+    - "triboo_upgrade"
 
