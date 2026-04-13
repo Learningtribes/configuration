@@ -29,8 +29,14 @@
     - "never"
 
 # This is for triboo_upgrade
-# Fix root password does not setup on MySQL
+# Fix root uses auth_socket for AUTH on MySQL
 # ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password_string';
+- name: Patch to update mysql root
+  shell: |
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ TENANT_MYSQL_LOGIN_PASSWORD }}';"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 - name: create mysql databases
   mysql_db:
     login_host: "{{ TENANT_MYSQL_LOGIN_HOST }}"
