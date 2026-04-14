@@ -1,0 +1,66 @@
+---
+- hosts: airflow_tenant
+  become: True
+  gather_facts: False
+  tasks:
+    # upgrade openssl version to 3.0.11
+    - name: check openssl-3.0.1 folder
+      stat:
+        path: /usr/local/ssl-3.0.11
+      register: openssl_folder_statue
+    - name: failed if folder miss
+      fail:
+        msg: folder openssl-3.0.11 does not exist
+      when: openssl_folder_statue.stat.exists == False
+    # upgrade openssh version to 9.9
+    - name: check openssh10.0 folder
+      stat:
+        path: /opt/openssh10.0
+      register: openssh_folder_statue
+    - name: failed if folder exist
+      fail:
+        msg: folder openssh10.0 exists
+      when: openssh_folder_statue.stat.exists and openssh_folder_statue.stat.isdir
+    - name: create openssh10.0 folder
+      file:
+        state: directory
+        path: /opt/openssh10.0
+    - name: download openssh10.0 source code
+      get_url:
+        url: https://ftp.usa.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.0p1.tar.gz
+        dest: /root/openssh-10.0p1.tar.gz
+    - name: unarchive openssh file
+      unarchive:
+        src: /root/openssh-10.0p1.tar.gz
+        dest: /root
+        remote_src: yes
+    - name: install openssh10.0
+      block:
+        - name: compile openssh10.0
+          shell: ./configure --prefix=/opt/openssh10.0 --with-ssl-dir=/usr/local/ssl-3.0.11 --with-pam
+          args:
+            chdir: /root/openssh-10.0p1
+        - name: make openssh10.0
+          shell: make
+          args:
+            chdir: /root/openssh-10.0p1
+        - name: make install openssh10.0
+          shell: make install
+          args:
+            chdir: /root/openssh-10.0p1
+    - name: test openssh configuration file
+      shell: /opt/openssh10.0/sbin/sshd -t -f /etc/ssh/sshd_config
+      register: test_openssh_config
+      failed_when: test_openssh_config.rc > 0
+    - name: update openssh systemd file
+      replace:
+        path: /lib/systemd/system/ssh.service.d/ec2-instance-connect.conf
+        #path: /lib/systemd/system/ssh.service
+        regexp: 'openssh9.9p2'
+        replace: 'openssh10.0'
+    - name: restart openssh service
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: ssh
+      ignore_errors: true
