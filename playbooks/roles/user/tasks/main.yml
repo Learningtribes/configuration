@@ -77,7 +77,16 @@
     state: present
     update_cache: yes
   with_items: "{{ user_debian_pkgs }}"
-  when: ansible_distribution in common_debian_variants
+  when: ansible_distribution in common_debian_variants and ansible_distribution_version != "24.04"
+
+- name: Install debian packages user role needs
+  apt:
+    name: "{{ item }}"
+    install_recommends: yes
+    state: present
+    update_cache: yes
+  with_items: "{{ user_debian_pkgs_triboo_upgrade }}"
+  when: ansible_distribution in common_debian_variants and ansible_distribution_version == "24.04"
 
 - debug: 
     var: user_info
