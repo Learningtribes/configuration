@@ -1,0 +1,10 @@
+---
+#
+# ansible-playbook /inventory/hosts.ini -l database_stateful -u ubuntu --private-key file.key --vault-password-file password.file  -e @/inventory/group_vars/client_tenant/passwords.yml --tags "triboo_upgrade,triboo_upgrade_patch" tenant_setup_triboo_upgrade.yaml
+#
+- name: Configure instance(s)
+  hosts: all
+  become: True
+  gather_facts: True
+  roles:
+    - role: tenant_setup
