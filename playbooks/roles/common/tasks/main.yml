@@ -157,8 +157,6 @@
     extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
   with_items: "{{ common_pip_pkgs }}"
   when: ansible_distribution in common_debian_variants
-  tags:
-    - "triboo_upgrade"
 
 
 - name: update /etc/hosts
@@ -191,7 +189,7 @@
     src: "{{ item.src }}"
     owner: root
     group: root
-    mode: "{{ item.mode | default(0644) }}"
+    mode: "{{ item.mode | default('0644') }}"
   register: config_templates
   with_items:
     - { src: 'edx_rsyslog.j2', dest: '/etc/rsyslog.d/99-edx.conf' }
@@ -219,8 +217,6 @@
     owner: root
     group: root
     mode: "0755"
-  tags:
-    - "triboo_upgrade"
 
 # this script is executed by PAM on interactive login to calculate the
 # number of package updates available for the MOTD.  This slows down
@@ -238,8 +234,6 @@
   cron:
     name: "log-ntp-alerts"
     job: "{{ COMMON_BIN_DIR }}/log-ntp-alerts.sh >/dev/null 2>&1"
-  tags:
-    - "triboo_upgrade"
 
 - name: install logrotate configuration
   template:
@@ -249,4 +243,3 @@
     - "install"
     - "install:configuration"
     - "logrotate"
-    - "triboo_upgrade"

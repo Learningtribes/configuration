@@ -125,7 +125,6 @@ common_debian_pkgs:
 
 common_debian_pkgs_triboo_upgrade:
   - apt-transport-https
-  - ntp
   - acl
   - iotop
   - lynx
