@@ -7,24 +7,33 @@
   tags:
     - "install"
     - "install:configuration"
+    - "triboo_upgrade"
 
 # ubuntu
 - stat:
     path: "/usr/sbin/update-ca-certificates"
   register: update_ca_certificates
+  tags:
+    - "triboo_upgrade"
 
 - name: Update CA Certificates
   shell: /usr/sbin/update-ca-certificates
   when: update_ca_certificates is defined and update_ca_certificates.stat.exists == True
+  tags:
+    - "triboo_upgrade"
 
 # ec2-linux
 - stat:
     path: /usr/bin/update-ca-trust
   register: update_ca_trust
+  tags:
+    - "triboo_upgrade"
 
 - name: Update CA Trust
   shell: /usr/bin/update-ca-trust
   when: update_ca_trust is defined and update_ca_trust.stat.exists == True
+  tags:
+    - "triboo_upgrade"
 
 
 - name: Add common_users
@@ -35,6 +44,8 @@
   with_items:
     - "{{ common_web_user }}"
     - "{{ common_log_user }}"
+  tags:
+    - "triboo_upgrade"
 
 # Determine if machine is provisioned via vagrant
 # Some EC2-specific steps would need to be skipped
@@ -42,6 +53,8 @@
   stat:
     path: /home/vagrant
   register: vagrant_home_dir
+  tags:
+    - "triboo_upgrade"
 
 # Ensure that we get a current version of Git
 # GitHub requires version 1.7.10 or later
@@ -50,6 +63,8 @@
   apt_repository:
     repo: "{{ common_git_ppa }}"
   when: ansible_distribution in common_debian_variants
+  tags:
+    - "triboo_upgrade"
 
 
 # Ensure that we can install old software if need be.
@@ -79,6 +94,19 @@
     update_cache: yes
   with_items: "{{ common_debian_pkgs }}"
   when: ansible_distribution in common_debian_variants
+
+- name: Install role-independent useful system packages
+  # do this before log dir setup; rsyslog package guarantees syslog user present
+  apt:
+    name: "{{ item }}"
+    install_recommends: yes
+    state: present
+    update_cache: yes
+  with_items: "{{ common_debian_pkgs_triboo_upgrade }}"
+  when: ansible_distribution in common_debian_variants
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: Install role-independent useful system packages from custom PPA
   apt:
@@ -119,6 +147,8 @@
     owner: root
     group: root
     mode: "0440"
+  tags:
+    - "triboo_upgrade"
 
 - name: pip install virtualenv
   pip:
@@ -127,6 +157,8 @@
     extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
   with_items: "{{ common_pip_pkgs }}"
   when: ansible_distribution in common_debian_variants
+  tags:
+    - "triboo_upgrade"
 
 
 - name: update /etc/hosts
@@ -135,6 +167,8 @@
     dest: /etc/hosts
   when: COMMON_HOSTNAME|length > 0
   register: etc_hosts
+  tags:
+    - "triboo_upgrade"
 
 - name: update /etc/hostname
   template:
@@ -142,10 +176,14 @@
     dest: /etc/hostname
   when: COMMON_HOSTNAME|length > 0
   register: etc_hostname
+  tags:
+    - "triboo_upgrade"
 
 - name: run hostname
   shell: hostname -F /etc/hostname
   when: COMMON_HOSTNAME|length >0 and (etc_hosts.changed or etc_hostname.changed)
+  tags:
+    - "triboo_upgrade"
 
 - name: Copy the templates to their respestive destination
   template:
@@ -160,6 +198,8 @@
     - { src: 'etc/logrotate.d/hourly/edx_logrotate.j2', dest: '/etc/logrotate.d/hourly/edx-services' }
     - { src: 'etc/cron.hourly/logrotate.j2', dest: '/etc/cron.hourly/logrotate', mode: '0555' }
     - { src: 'etc/logrotate.d/hourly/edx_logrotate_tracking_log.j2', dest: '/etc/logrotate.d/hourly/tracking.log' }
+  tags:
+    - "triboo_upgrade"
 
   # TODO: restarts no matter which template has changed, need to examine
   # the results
@@ -169,6 +209,8 @@
     state: restarted
   become: True
   when: config_templates.changed
+  tags:
+    - "triboo_upgrade"
 
 - name: Add ntp alert script
   template:
@@ -177,6 +219,8 @@
     owner: root
     group: root
     mode: "0755"
+  tags:
+    - "triboo_upgrade"
 
 # this script is executed by PAM on interactive login to calculate the
 # number of package updates available for the MOTD.  This slows down
@@ -188,11 +232,14 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Set up a cron job to run the log-ntp-alerts script
   cron:
     name: "log-ntp-alerts"
     job: "{{ COMMON_BIN_DIR }}/log-ntp-alerts.sh >/dev/null 2>&1"
+  tags:
+    - "triboo_upgrade"
 
 - name: install logrotate configuration
   template:
@@ -202,3 +249,4 @@
     - "install"
     - "install:configuration"
     - "logrotate"
+    - "triboo_upgrade"

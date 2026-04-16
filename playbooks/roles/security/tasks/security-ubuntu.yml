@@ -6,12 +6,16 @@
     state: latest
     update_cache: yes
   with_items: "{{ security_debian_pkgs }}"
+  tags:
+    - "triboo_upgrade"
 
 
 - name: Update all system packages
   apt:
     upgrade: safe
   when: SAFE_UPGRADE_ON_ANSIBLE
+  tags:
+    - "triboo_upgrade"
 
 - name: Configure periodic unattended-upgrades
   template:
@@ -21,6 +25,8 @@
     group: root
     mode: "0644"
   when: SECURITY_UNATTENDED_UPGRADES
+  tags:
+    - "triboo_upgrade"
 
 - name: Disable unattended-upgrades if Xenial (16.04)
   command: "{{ item }}"
@@ -30,12 +36,16 @@
     - "systemctl disable apt-daily.timer"
     - "systemctl disable apt-daily-upgrade.timer"
   ignore_errors: true
+  tags:
+    - "triboo_upgrade"
 
 - name: Disable unattended-upgrades
   file:
     path: "/etc/apt/apt.conf.d/10periodic"
     state: absent
   when: not SECURITY_UNATTENDED_UPGRADES
+  tags:
+    - "triboo_upgrade"
 
 - name: Only unattended-upgrade from security repo
   template:
@@ -45,12 +55,16 @@
     group: root
     mode: "0644"
   when: SECURITY_UNATTENDED_UPGRADES and not SECURITY_UPDATE_ALL_PACKAGES
+  tags:
+    - "triboo_upgrade"
 
 - name: Disable security only updates on unattended-upgrades
   file:
     path: "/etc/apt/apt.conf.d/20unattended-upgrade"
     state: absent
   when: SECURITY_UPDATE_ALL_PACKAGES or not SECURITY_UNATTENDED_UPGRADES
+  tags:
+    - "triboo_upgrade"
 
 # We dry-run because unattended-upgrade is quiet, and only had -d (debug) not -v (verbose)
 - name: "Take security updates during ansible runs"
@@ -59,3 +73,5 @@
   with_items:
     - unattended-upgrade --dry-run
     - unattended-upgrade
+  tags:
+    - "triboo_upgrade"

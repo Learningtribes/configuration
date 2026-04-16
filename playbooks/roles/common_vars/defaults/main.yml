@@ -123,6 +123,19 @@ common_debian_pkgs:
   - python2.7-dev
   - libmysqlclient-dev
 
+common_debian_pkgs_triboo_upgrade:
+  - apt-transport-https
+  - ntp
+  - acl
+  - iotop
+  - lynx
+  - logrotate
+  - rsyslog
+  - git
+  - unzip
+  - python3-pip
+  - python3-dev
+
 # Packages that should be installed from our custom PPA, i.e. COMMON_EDX_PPA
 old_python_debian_pkgs:
   - "python2.7=2.7.10-0+{{ ansible_distribution_release }}1"

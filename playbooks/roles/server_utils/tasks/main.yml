@@ -25,10 +25,14 @@
   command: "apt-key list | grep {{ SERVER_UTILS_EDX_PPA_KEY_ID }}"
   register: ppa_key_status
   when: ansible_distribution in common_debian_variants
+  tags:
+    - "triboo_upgrade"
 
 - name: remove expired edx key
   command: "sudo apt-key adv --keyserver {{ SERVER_UTILS_EDX_PPA_KEY_SERVER }} --recv-keys {{ SERVER_UTILS_EDX_PPA_KEY_ID }}"
   when: ansible_distribution in common_debian_variants and 'expired' in ppa_key_status.stdout
+  tags:
+    - "triboo_upgrade"
 
 - name: Install ubuntu system packages
   apt:
@@ -39,11 +43,16 @@
   with_items: "{{ server_utils_debian_pkgs }}"
   when: ansible_distribution in common_debian_variants
   ignore_errors: true
+  tags:
+    - "triboo_upgrade"
 
-- name: Install ubuntu24 system packages
+- name: Patch to install ubuntu system packages
   apt:
     name: netcat-openbsd
     install_recommends: yes
     state: present 
     update_cache: yes
-  when: ansible_distribution in common_debian_variants and ansible_distribution_version == "24.04"
+  when: ansible_distribution in common_debian_variants
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
