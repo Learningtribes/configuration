@@ -8,3 +8,4 @@
   tags:
     - install
     - install:memcache
+    - "triboo_upgrade"

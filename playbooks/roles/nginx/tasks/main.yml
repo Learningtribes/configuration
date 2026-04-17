@@ -10,6 +10,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Restrict permissions of DH parameters file
   file:
@@ -20,6 +21,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Create nginx app and data dirs
   file:
@@ -39,6 +41,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Install needed packages
   apt:
@@ -50,6 +53,18 @@
     - install
     - install:system-requirements
 
+- name: Install needed packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  notify: restart nginx
+  with_items: "{{ nginx_debian_pkgs_triboo_upgrade }}"
+  tags:
+    - install
+    - install:system-requirements
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: Add apt key
   apt_key:
     url: "http://nginx.org/keys/nginx_signing.key"
@@ -58,6 +73,7 @@
   tags:
     - install
     - install:system-requirements
+    - "triboo_upgrade"
 
 - name: Add nginx repository
   apt_repository:
@@ -67,6 +83,7 @@
   tags:
     - install
     - install:system-requirements
+    - "triboo_upgrade"
 
 # REMOVE THIS AFTER LATEST NGINX HAS BEEN DEPLOYED EVERYWHERE
 # New package does not identify conflicts properly.
@@ -82,6 +99,7 @@
     - install
     - install:system-requirements
     - skip-nginx-steps
+    - "triboo_upgrade"
 
 - name: Install the nginx package
   apt:
@@ -93,6 +111,7 @@
     - install
     - install:system-requirements
     - skip-nginx-steps
+    - "triboo_upgrade"
 
 - name: Remove the default site
   file:
@@ -102,6 +121,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Define server configuration file and common nginx configuration
   template:
@@ -117,6 +137,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Create robot rules
   template:
@@ -130,6 +151,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Creating link for common nginx configuration
   file:
@@ -144,6 +166,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Copying nginx configs for {{ nginx_sites }}
   template:
@@ -158,6 +181,21 @@
     - install
     - install:configuration
 
+- name: Copying nginx configs for {{ nginx_sites }}
+  template:
+    src: "{{ nginx_template_dir }}/{{ item }}_triboo_upgrade.j2"
+    dest: "{{ nginx_sites_available_dir }}/{{ item }}"
+    owner: root
+    group: "{{ common_web_user }}"
+    mode: "0640"
+  with_items: "{{ nginx_sites }}"
+  notify: reload nginx
+  tags:
+    - install
+    - install:configuration
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: Creating nginx config links for {{ nginx_sites }}
   file:
     src: "{{ nginx_sites_available_dir }}/{{ item  }}"
@@ -171,6 +209,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Copying nginx extra configs
   template:
@@ -184,6 +223,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Creating links for nginx extra configs
   file:
@@ -197,6 +237,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Copying custom nginx config
   template:
@@ -210,6 +251,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Copying nginx redirect configs for {{ nginx_redirects }}
   template:
@@ -223,6 +265,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Creating nginx redirect links for {{ nginx_redirects }}
   file:
@@ -236,6 +279,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
   # These are static pages that can be used
   # for nginx rate limiting, 500 errors, etc.
@@ -252,6 +296,7 @@
     - install
     - install:configuration
     - skip-nginx-steps
+    - "triboo_upgrade"
 
 - name: Create LT maintenance page
   template:
@@ -264,6 +309,7 @@
     - install
     - install:configuration
     - skip-nginx-steps
+    - "triboo_upgrade"
 
 - name: Write out htpasswd file
   htpasswd:
@@ -276,6 +322,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Create nginx log file location (just in case)
   file:
@@ -286,6 +333,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # Check to see if the ssl cert/key exists before copying.
 # This extra check is done to prevent failures when
@@ -298,6 +346,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - local_action:
     module: stat
@@ -307,6 +356,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: copy ssl cert
   copy:
@@ -319,6 +369,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: copy ssl key
   copy:
@@ -332,6 +383,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # removing default link
 - name: Removing default nginx config and restart (enabled)
@@ -342,6 +394,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # Note that nginx logs to /var/log until it reads its configuration, so /etc/logrotate.d/nginx is still good
 
@@ -355,6 +408,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: Set up nginx error log rotation
   template:
@@ -366,6 +420,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # nginx is started during package installation, before any of the configuration files are in place.
 # The handler that reloads the configuration would be run only at the very end of the playbook, so
@@ -377,6 +432,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # If tasks that notify restart nginx don't change the state of the remote system
 # their corresponding notifications don't get run.  If nginx has been stopped for
@@ -388,6 +444,7 @@
   tags:
     - manage
     - manage:start
+    - "triboo_upgrade"
 
 
 # upgrade version to 1.25.4

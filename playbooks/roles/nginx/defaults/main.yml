@@ -106,6 +106,8 @@ nginx_htpasswd_file: "{{ nginx_app_dir }}/nginx.htpasswd"
 nginx_default_sites: []
 nginx_debian_pkgs:
   - python-passlib
+nginx_debian_pkgs_triboo_upgrade:
+  - python3-passlib
 
 NGINX_EDXAPP_ENABLE_S3_MAINTENANCE: False
 nginx_default_error_page: "/server/maintenance.html"
