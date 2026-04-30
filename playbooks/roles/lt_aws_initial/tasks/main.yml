@@ -362,92 +362,92 @@
 # - debug:
 #     msg: "{{acm_id_fact}}"
 #   when: check_acm_result['certificates'][0] is not defined
-- name: check AWS RDS cluster
-  shell: "aws --region {{region}} --output json rds describe-db-clusters --db-cluster-identifier '{{rds_cluster_name}}'"
-  # environment:
-  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  register: check_rds_cluster
-  ignore_errors: yes
-- set_fact:
-    rds_fact: "{{check_rds_cluster['stdout'] | from_json}}"
-  when: check_rds_cluster['failed'] == false
-- set_fact:
-    rds_endpoint_fact: "{{rds_fact['DBClusters'][0]['Endpoint']}}"
-  when: check_rds_cluster['failed'] == false
-# - debug:
-#     msg: "{{rds_fact}}"
+# - name: check AWS RDS cluster
+#   shell: "aws --region {{region}} --output json rds describe-db-clusters --db-cluster-identifier '{{rds_cluster_name}}'"
+#   # environment:
+#   #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+#   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+#   register: check_rds_cluster
+#   ignore_errors: yes
+# - set_fact:
+#     rds_fact: "{{check_rds_cluster['stdout'] | from_json}}"
 #   when: check_rds_cluster['failed'] == false
-- name: create AWS RDS subnet group
-  rds_subnet_group:
-    state: present
-    #aws_access_key: "{{aws_access_key}}"
-    #aws_secret_key: "{{aws_secret_key}}"
-    region: "{{region}}"
-    name: "{{rds_subnet_group_name}}"
-    description: Subnet Group for PLATFORM
-    subnets:
-      - "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
-      - "{{check_subnet_result['results'][1]['subnets'][0]['subnet_id']}}"
-  register: create_rds_sg_result
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-# - debug:
-#     msg: "{{create_rds_sg_result}}"
-#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']" 
-- name: create AWS RDS parameter-group
-  shell: "aws --region {{region}} --output json rds create-db-cluster-parameter-group --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --db-parameter-group-family '{{rds_parameter_group_family}}' --description 'PLATFROM PARAMETER GROUP'"
-  # environment:
-  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  register: create_parameter_group_result
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-# - debug:
-#     msg: "{{create_parameter_group_result}}"
+# - set_fact:
+#     rds_endpoint_fact: "{{rds_fact['DBClusters'][0]['Endpoint']}}"
+#   when: check_rds_cluster['failed'] == false
+# # - debug:
+# #     msg: "{{rds_fact}}"
+# #   when: check_rds_cluster['failed'] == false
+# - name: create AWS RDS subnet group
+#   rds_subnet_group:
+#     state: present
+#     #aws_access_key: "{{aws_access_key}}"
+#     #aws_secret_key: "{{aws_secret_key}}"
+#     region: "{{region}}"
+#     name: "{{rds_subnet_group_name}}"
+#     description: Subnet Group for PLATFORM
+#     subnets:
+#       - "{{check_subnet_result['results'][0]['subnets'][0]['subnet_id']}}"
+#       - "{{check_subnet_result['results'][1]['subnets'][0]['subnet_id']}}"
+#   register: create_rds_sg_result
 #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-- name: set parameters for RDS parameter-group
-  shell: "aws --region {{region}} --output json rds modify-db-cluster-parameter-group --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --parameters 'ParameterName={{item['parametername']}},ParameterValue={{item['parametervalue']}},ApplyMethod=immediate'"
-  with_items: "{{rds_parameters_group_items}}"
-  # environment:
-  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  register: set_parameter_group_result
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-# - debug:
-#     msg: "{{set_parameter_group_result}}"
+# # - debug:
+# #     msg: "{{create_rds_sg_result}}"
+# #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']" 
+# - name: create AWS RDS parameter-group
+#   shell: "aws --region {{region}} --output json rds create-db-cluster-parameter-group --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --db-parameter-group-family '{{rds_parameter_group_family}}' --description 'PLATFROM PARAMETER GROUP'"
+#   # environment:
+#   #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+#   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+#   register: create_parameter_group_result
 #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-- name: create AWS RDS cluster
-  shell: "aws --region {{region}} --output json rds create-db-cluster --db-cluster-identifier '{{rds_cluster_name}}' --engine '{{rds_engine}}' --engine-version '{{rds_engine_version}}' --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --db-subnet-group-name '{{rds_subnet_group_name}}' --vpc-security-group-ids '{{sg_id_fact}}' --master-username '{{rds_master_username}}' --master-user-password '{{rds_master_password}}' --storage-encrypted --backup-retention-period '{{rds_backup_retention_period}}' --deletion-protection"
-  # environment:
-  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  register: create_rds_cluster
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-# - debug:
-#     msg: "{{create_rds_cluster['stdout'] | from_json}}"
+# # - debug:
+# #     msg: "{{create_parameter_group_result}}"
+# #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - name: set parameters for RDS parameter-group
+#   shell: "aws --region {{region}} --output json rds modify-db-cluster-parameter-group --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --parameters 'ParameterName={{item['parametername']}},ParameterValue={{item['parametervalue']}},ApplyMethod=immediate'"
+#   with_items: "{{rds_parameters_group_items}}"
+#   # environment:
+#   #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+#   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+#   register: set_parameter_group_result
 #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-- set_fact:
-    rds_cluster_fact: "{{create_rds_cluster['stdout'] | from_json}}"
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-- set_fact:
-    rds_endpoint_fact: "{{rds_cluster_fact['DBCluster']['Endpoint']}}"
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"  
-- name: create AWS RDS instance
-  shell: "aws --region {{region}} --output json rds create-db-instance --db-cluster-identifier '{{rds_cluster_name}}' --db-instance-identifier '{{rds_db_instance_name}}' --db-instance-class '{{rds_db_instance_type}}' --engine '{{rds_engine}}' --availability-zone '{{check_subnet_result['results'][0]['subnets'][0]['availability_zone']}}' --no-publicly-accessible"
-  # environment:
-  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  register: create_rds_instance
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-# - debug:
-#     msg: "{{create_rds_instance['stdout'] | from_json}}"
+# # - debug:
+# #     msg: "{{set_parameter_group_result}}"
+# #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - name: create AWS RDS cluster
+#   shell: "aws --region {{region}} --output json rds create-db-cluster --db-cluster-identifier '{{rds_cluster_name}}' --engine '{{rds_engine}}' --engine-version '{{rds_engine_version}}' --db-cluster-parameter-group-name '{{rds_parameter_group_name}}' --db-subnet-group-name '{{rds_subnet_group_name}}' --vpc-security-group-ids '{{sg_id_fact}}' --master-username '{{rds_master_username}}' --master-user-password '{{rds_master_password}}' --storage-encrypted --backup-retention-period '{{rds_backup_retention_period}}' --deletion-protection"
+#   # environment:
+#   #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+#   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+#   register: create_rds_cluster
 #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-- name: create AWS RDS read-only instance
-  shell: "aws --region {{region}} --output json rds create-db-instance --db-cluster-identifier '{{rds_cluster_name}}' --db-instance-identifier '{{rds_db_read_only_instance_name}}' --db-instance-class '{{rds_db_instance_type}}' --engine '{{rds_engine}}' --availability-zone '{{check_subnet_result['results'][1]['subnets'][0]['availability_zone']}}' --no-publicly-accessible"
-  # environment:
-  #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-  #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  register: create_rds_ro_instance
-  when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
-# - debug:
-#     msg: "{{create_rds_ro_instance['stdout'] | from_json}}"
+# # - debug:
+# #     msg: "{{create_rds_cluster['stdout'] | from_json}}"
+# #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - set_fact:
+#     rds_cluster_fact: "{{create_rds_cluster['stdout'] | from_json}}"
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - set_fact:
+#     rds_endpoint_fact: "{{rds_cluster_fact['DBCluster']['Endpoint']}}"
 #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"  
+# - name: create AWS RDS instance
+#   shell: "aws --region {{region}} --output json rds create-db-instance --db-cluster-identifier '{{rds_cluster_name}}' --db-instance-identifier '{{rds_db_instance_name}}' --db-instance-class '{{rds_db_instance_type}}' --engine '{{rds_engine}}' --availability-zone '{{check_subnet_result['results'][0]['subnets'][0]['availability_zone']}}' --no-publicly-accessible"
+#   # environment:
+#   #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+#   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+#   register: create_rds_instance
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# # - debug:
+# #     msg: "{{create_rds_instance['stdout'] | from_json}}"
+# #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# - name: create AWS RDS read-only instance
+#   shell: "aws --region {{region}} --output json rds create-db-instance --db-cluster-identifier '{{rds_cluster_name}}' --db-instance-identifier '{{rds_db_read_only_instance_name}}' --db-instance-class '{{rds_db_instance_type}}' --engine '{{rds_engine}}' --availability-zone '{{check_subnet_result['results'][1]['subnets'][0]['availability_zone']}}' --no-publicly-accessible"
+#   # environment:
+#   #   AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
+#   #   AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
+#   register: create_rds_ro_instance
+#   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"
+# # - debug:
+# #     msg: "{{create_rds_ro_instance['stdout'] | from_json}}"
+# #   when: "'DBClusterNotFoundFault' in check_rds_cluster['stderr']"  
