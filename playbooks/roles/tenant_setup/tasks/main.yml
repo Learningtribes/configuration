@@ -65,19 +65,10 @@
     - "triboo_upgrade"
 
 # This is for triboo_upgrade
-# Fix ansible's community.mongodb version is latest, then does not support pymongo3.* and get error when execute it
-# Remove community.mongodb, then 'ansible-galaxy collection install community.mongodb:1.2.1' 
+# The current ansible's community.mongodb does not support pymongo3.* and get error when execute it
+# To use mongo shell to create
 - name: create mongodb user and databases
-  mongodb_user:
-    login_database: 'admin'
-    login_user: "{{ TENANT_MONGO_LOGIN_USER }}"
-    login_password: "{{ TENANT_MONGO_LOGIN_PASSWORD }}"
-    login_host: "{{ TENANT_MONGO_LOGIN_HOST }}"
-    database: "{{ item }}"
-    name: "{{ TENANT_MONGO_USER }}"
-    password: "{{ TENANT_MONGO_PASS }}"
-    roles: readWrite
-    state: present
+  shell: "mongo mongodb://{{ TENANT_MONGO_LOGIN_HOST }}:27017/{{ item }} -u {{ MONGO_ADMIN_USER }} --authenticationDatabase=admin -p {{ MONGO_ADMIN_PASSWORD }} --eval \"db.createUser({ user: '{{ TENANT_MONGO_USER }}', pwd: '{{ TENANT_MONGO_PASS }}', roles: [{ role: 'readWrite', db: '{{ item }}' }] })\""
   with_items: "{{ TENANT_MONGO_DATABASES }}"
   run_once: true
   tags:
