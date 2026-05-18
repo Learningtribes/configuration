@@ -8,3 +8,13 @@
   tags:
     - install
     - install:base
+
+- name: Patch to install system packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ edxapp_common_debian_pkgs_triboo_upgrade }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
