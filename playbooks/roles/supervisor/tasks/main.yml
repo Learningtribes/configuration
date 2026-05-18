@@ -61,6 +61,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Create supervisor and service user accessible directories
   file:
@@ -77,6 +78,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Create supervisor directories
   file:
@@ -90,6 +92,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Install supervisor in its venv
   pip:
@@ -103,17 +106,36 @@
     - install
     - install:base
 
+- name: Patch to install supervisor in its venv
+  apt:
+    update_cache: yes
+    pkg: python3.12-venv
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install supervisor in its venv
+  pip:
+    name: supervisor
+    virtualenv: "{{ supervisor_venv_dir }}"
+    virtualenv_command: python3 -m venv
+    state: present
+  become_user: "{{ supervisor_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: Install supervisor in its venv
   pip:
     name: "{{ item }}"
     virtualenv: "{{ supervisor_venv_dir }}"
     state: present
-    extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
   become_user: "{{ supervisor_user }}"
   with_items: "{{ supervisor_pip_pkgs }}"
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
   # 14.04
 - name: Create supervisor upstart job
@@ -139,6 +161,18 @@
     - install
     - install:base
 
+- name: Patch to create supervisor systemd job 
+  template:
+    src: "etc/init/supervisor-systemd.service.j2"
+    dest: "/etc/systemd/system/{{ supervisor_service }}.service"
+    owner: root
+    group: root
+  when: ansible_distribution_release == 'noble'
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+
 - name: Write the pre_suprevisor python script
   copy:
     src: pre_supervisor_checks.py
@@ -161,6 +195,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # this link is deprecated in favor of the shell wrapper
 - name: Remove a symlink for supervisortctl
@@ -197,6 +232,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
   # This command and the subsequent check in the when condition are related
   # to this bug: https://github.com/ansible/ansible-modules-core/issues/593
@@ -207,6 +243,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Enable supervisor to start on boot
   service:
@@ -216,6 +253,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Start supervisor
   service:
@@ -226,6 +264,7 @@
   tags:
     - manage
     - manage:start
+    - "triboo_upgrade"
 
   # calling update on supervisor too soon after it
   # starts will result in an errror.
@@ -237,6 +276,7 @@
   tags:
     - manage
     - manage:start
+    - "triboo_upgrade"
 
   # call supervisorctl update every time, this reloads
   # the supervisorctl config
@@ -252,3 +292,4 @@
   tags:
     - manage
     - manage:start
+    - "triboo_upgrade"
