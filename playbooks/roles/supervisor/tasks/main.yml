@@ -253,7 +253,15 @@
   tags:
     - install
     - install:base
-    - "triboo_upgrade"
+
+- name: Patch to enable supervisor to start on boot
+  service:
+    name: "{{ supervisor_service }}.service"
+    enabled: yes
+  when: ansible_distribution_release == 'noble' and docker_container.stdout != 'yes'
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: Start supervisor
   service:
