@@ -43,6 +43,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Add theme users to theme's group so that that have read/write access to themes directories
   user:
@@ -52,9 +53,11 @@
     append: yes
   with_items: "{{ theme_users }}"
   when: theme_users is defined
+  tags: "triboo_upgrade"
 
 - name: update .bashrc to set umask value
   lineinfile:
     dest: "{{ themes_home }}/.bashrc"
     line: "umask 002"
     state: present
+  tags: "triboo_upgrade"

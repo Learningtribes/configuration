@@ -35,6 +35,39 @@
     path: /usr/lib/lapack/liblapack.so.3
   when: not liblapack_file.stat.exists
 
+- name: Patch to code sandbox | Check which `libblas` to use
+  stat:
+    path: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3
+  register: libblas_file
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to code sandbox | Use libblas.so.3 in Ubuntu
+  alternatives:
+    name: libblas.so.3
+    path: /usr/lib/libblas/libblas.so.3
+  when: libblas_file.stat.exists
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to code sandbox | Check which `liblapac` to use
+  stat:
+    path: /usr/lib/lapack/liblapack.so.3
+  register: liblapack_file
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch code sandbox | Use liblapack.so.3 in Ubuntu
+  alternatives:
+    name: liblapack.so.3
+    path: /usr/lib/lapack/liblapack.so.3
+  when: liblapack_file.stat.exists
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: code sandbox | Create edxapp sandbox user
   user:
@@ -43,6 +76,7 @@
     home: "{{ edxapp_sandbox_venv_dir }}"
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"
 
 - name: code sandbox | Install apparmor utils system pkg
   apt:
@@ -50,6 +84,7 @@
     state: present
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"
 
 - name: code sandbox | write out apparmor code sandbox config
   template:
@@ -60,6 +95,7 @@
     group: root
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"
 
 - name: code sandbox | write out sandbox user sudoers config
   template:
@@ -71,6 +107,7 @@
     validate: 'visudo -c -f %s'
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"
 
 # we boostrap and enable the apparmor service here. In deploy.yml we disable, deploy, then re-enable
 # so we need to enable it in main.yml
@@ -80,13 +117,16 @@
     state: started
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"
 
 - name: code sandbox | (bootstrap) load code sandbox profile
   command: apparmor_parser -r /etc/apparmor.d/code.sandbox
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"
 
 - name: code sandbox | (bootstrap) put code sandbox into aa-enforce or aa-complain mode depending on EDXAPP_SANDBOX_ENFORCE
   command: /usr/sbin/{{ edxapp_aa_command }} /etc/apparmor.d/code.sandbox
   tags:
     - edxapp-sandbox
+    - "triboo_upgrade"

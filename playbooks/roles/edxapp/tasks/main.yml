@@ -11,6 +11,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: create edxapp user dirs
   file:
@@ -36,6 +37,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: write devstack script
   template:
@@ -48,6 +50,7 @@
   tags:
     - devstack
     - devstack:install
+    - "triboo_upgrade"
 
 - name: create edxapp log dir
   file:
@@ -58,6 +61,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Ensure the tracking folder exists
   file:
@@ -68,6 +72,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: Ensure the tracking.log file exists
   file:
@@ -79,6 +84,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: create web-writable edxapp data dirs
   file:
@@ -95,6 +101,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: link to analytics report dir
   shell: "ln -s {{ edxapp_analytics_report_dir }} {{ edxapp_media_dir }}/analytics-report"
@@ -111,6 +118,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: set up edxapp .npmrc
   template:
@@ -122,6 +130,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: create log directories for service variants
   file:
@@ -134,6 +143,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 # Set up the python sandbox execution environment
 - import_tasks: python_sandbox_env.yml

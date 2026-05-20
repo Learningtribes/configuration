@@ -2,12 +2,14 @@
 
 - name: Install unzip
   apt: pkg=unzip state=present
+  tags: "triboo_upgrade"
 
 - name: create the nltk data directory and subdirectories
   file: path={{ NLTK_DATA_DIR }}/{{ item.path|dirname }} state=directory
   with_items: "{{ NLTK_DATA }}"
   tags:
     - deploy
+    - "triboo_upgrade"
 
 - name: download nltk data
   get_url:
@@ -17,6 +19,7 @@
   register: nltk_download
   tags:
     - deploy
+    - "triboo_upgrade"
 
 - name: unarchive nltk data
   shell: "unzip {{ NLTK_DATA_DIR }}/{{ item.url|basename }}"
@@ -26,3 +29,13 @@
   when: nltk_download|changed
   tags:
     - deploy
+
+- name: Patch to unarchive nltk data
+  shell: "unzip {{ NLTK_DATA_DIR }}/{{ item.url|basename }}"
+  args:
+    chdir: "{{ NLTK_DATA_DIR }}/{{ item.path|dirname }}"
+  with_items: "{{ NLTK_DATA }}"
+  when: nltk_download.changed
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"

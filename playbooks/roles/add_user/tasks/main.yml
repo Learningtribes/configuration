@@ -26,6 +26,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 # Generating an ssh key so users can do a git
 # clone over ssh for public repositories without any
@@ -41,6 +42,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 # Assumes that the home directory has been created above.
 # In some cases(vagrant boxes) the home directory gets created
@@ -57,6 +59,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: create dirs for the user
   file:
@@ -69,3 +72,4 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"

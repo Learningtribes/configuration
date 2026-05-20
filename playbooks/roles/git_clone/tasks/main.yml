@@ -28,6 +28,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: Validate git protocol
   fail:
@@ -38,6 +39,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 
 - name: Install read-only ssh key
@@ -53,6 +55,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: Check that working tree is clean
   shell: test ! -e "{{ item }}" || git -C "{{ item }}" status --porcelain --untracked-files=no
@@ -61,12 +64,14 @@
   # rather than the full GIT_REPOS structures, which have data we don't want to log,
   # so we don't have to use no_log on this task.
   with_items: "{{ GIT_REPOS | map(attribute='DESTINATION') | list }}"
+  tags: "triboo_upgrade"
 
 - name: Require a clean working tree
   fail:
     msg: "There are modified files in {{ item.item }}: {{ item.stdout }}"
   when: item.stdout|length > 0
   with_items: "{{ dirty_files.results }}"
+  tags: "triboo_upgrade"
 
 - name: Checkout code over ssh
   git:
@@ -84,6 +89,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: Checkout code over https
   git:
@@ -99,6 +105,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: Remove read-only ssh key
   file:
@@ -110,12 +117,14 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: Run git clean after checking out code
   shell: cd {{ item.DESTINATION }} && git clean -xdf
-  become: true
   with_items: "{{ GIT_REPOS }}"
   no_log: "{{ GIT_CLONE_NO_LOGGING }}"
+  become_user: "{{ repo_owner }}"
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
