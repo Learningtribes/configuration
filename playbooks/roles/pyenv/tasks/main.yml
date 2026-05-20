@@ -42,13 +42,89 @@
   become: yes
   become_user: "{{ user_use_pyenv }}"
 
-- name: Install python version
+- name: Install python 3.*
   shell: source ~/.profile && pyenv install "{{ pyenv_python_verions }}"
   args:
     chdir: "{{ pyenv_project_folder }}"
     executable: /bin/bash
   become: yes
   become_user: "{{ user_use_pyenv }}"
+  when: pyenv_python_verions != "2.7"
+
+- name: Remove libssl-dev
+  apt:
+    pkg: libssl-dev
+    state: absent
+    autoremove: false
+  become: yes
+  when: pyenv_python_verions == "2.7"
+
+- name: Install legacy libssl-dev
+  shell: wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.0.2g-1ubuntu4.20_amd64.deb -O libssl-dev_1.0.2g-1ubuntu4.20_amd64.deb && dpkg -i libssl-dev_1.0.2g-1ubuntu4.20_amd64.deb
+  args:
+    chdir: ~/
+  become: yes
+  when: pyenv_python_verions == "2.7"
+
+- name: Download OpenSSL 1.0.2 package 
+  get_url:
+    url: https://github.com/openssl/openssl/releases/download/OpenSSL_1_0_2g/openssl-1.0.2g.tar.gz
+    dest: /opt/openssl-1.0.2g.tar.gz
+  become: yes
+  when: pyenv_python_verions == "2.7"
+
+- name: Unarchive OpenSSL 1.0.2 package
+  unarchive:
+    src: /opt/openssl-1.0.2g.tar.gz
+    dest: /opt
+    remote_src: yes
+  become: yes
+  when: pyenv_python_verions == "2.7"
+
+- name: Install OpenSSL 1.0.2
+  block:
+    - name: Create OpenSSL 1.0.2 folder 
+      file:
+        path: /opt/ssl-1.0.2
+        state: directory
+    - name: Compile OpenSSL 1.0.2
+      shell: ./config --prefix=/opt/ssl-1.0.2 --openssldir=/opt/ssl-1.0.2 shared zlib
+      args:
+        chdir: /opt/openssl-1.0.2g
+    - name: Make OpenSSL 1.0.2
+      shell: make depend
+      args:
+        chdir: /opt/openssl-1.0.2g
+    - name: Make install OpenSSL 1.0.2
+      shell: make install
+      args:
+        chdir: /opt/openssl-1.0.2g
+  become: yes
+  when: pyenv_python_verions == "2.7"
+
+- name: Test OpenSSL 1.0.2
+  shell: /opt/ssl-1.0.2/bin/openssl version
+  register: test_openssl
+  failed_when: test_openssl.rc > 0
+  become: yes
+  when: pyenv_python_verions == "2.7"
+
+- name: Install python 2.7
+  shell: source ~/.profile && CONFIGURE_OPTS="--with-openssl=/opt/ssl-1.0.2" pyenv install -v "{{ pyenv_python_verions }}"
+  args:
+    chdir: "{{ pyenv_project_folder }}"
+    executable: /bin/bash
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
+  when: pyenv_python_verions == "2.7"
+
+- name: Remove legacy libssl-dev
+  apt:
+    pkg: libssl-dev
+    state: absent
+    autoremove: false
+  become: yes
+  when: pyenv_python_verions == "2.7"
 
 - name: Set local python version
   shell: source ~/.profile && pyenv local "{{ pyenv_python_verions }}"
