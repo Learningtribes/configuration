@@ -21,12 +21,20 @@
     pkg: acl
   become: yes
 
+- name: Check pyenv folder
+  stat:
+    path: ~/.pyenv
+  become: yes
+  become_user: "{{ user_use_pyenv }}"
+  register: pyenv_folder
+
 - name: Install pyenv
   shell: curl -fsSL https://pyenv.run | bash
   args:
     chdir: ~/
   become: yes
   become_user: "{{ user_use_pyenv }}"
+  when: not pyenv_folder.stat.exists
 
 - name: Update user profile
   blockinfile:
@@ -34,6 +42,7 @@
     block: "{{ pyenv_shell_environment }}"
   become: yes
   become_user: "{{ user_use_pyenv }}"
+  when: not pyenv_folder.stat.exists
 
 - name: Update user bashrc
   blockinfile:
@@ -41,11 +50,11 @@
     block: "{{ pyenv_shell_environment }}"
   become: yes
   become_user: "{{ user_use_pyenv }}"
+  when: not pyenv_folder.stat.exists
 
 - name: Install python 3.*
   shell: source ~/.profile && pyenv install "{{ pyenv_python_verions }}"
   args:
-    chdir: "{{ pyenv_project_folder }}"
     executable: /bin/bash
   become: yes
   become_user: "{{ user_use_pyenv }}"
@@ -112,7 +121,6 @@
 - name: Install python 2.7
   shell: source ~/.profile && CONFIGURE_OPTS="--with-openssl=/opt/ssl-1.0.2" pyenv install -v "{{ pyenv_python_verions }}"
   args:
-    chdir: "{{ pyenv_project_folder }}"
     executable: /bin/bash
   become: yes
   become_user: "{{ user_use_pyenv }}"

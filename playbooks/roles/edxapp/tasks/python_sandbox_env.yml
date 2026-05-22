@@ -45,8 +45,8 @@
 
 - name: Patch to code sandbox | Use libblas.so.3 in Ubuntu
   alternatives:
-    name: libblas.so.3
-    path: /usr/lib/libblas/libblas.so.3
+    name: libblas.so.3-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3
   when: libblas_file.stat.exists
   tags:
     - "triboo_upgrade_patch"
@@ -54,7 +54,7 @@
 
 - name: Patch to code sandbox | Check which `liblapac` to use
   stat:
-    path: /usr/lib/lapack/liblapack.so.3
+    path: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3
   register: liblapack_file
   tags:
     - "triboo_upgrade_patch"
@@ -62,8 +62,8 @@
 
 - name: Patch code sandbox | Use liblapack.so.3 in Ubuntu
   alternatives:
-    name: liblapack.so.3
-    path: /usr/lib/lapack/liblapack.so.3
+    name: liblapack.so.3-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3
   when: liblapack_file.stat.exists
   tags:
     - "triboo_upgrade_patch"
@@ -95,7 +95,17 @@
     group: root
   tags:
     - edxapp-sandbox
-    - "triboo_upgrade"
+
+- name: Patch to code sandbox | write out apparmor code sandbox config
+  template:
+    src: code.sandbox.triboo.upgrade.j2
+    dest: /etc/apparmor.d/code.sandbox
+    mode: 0644
+    owner: root
+    group: root
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: code sandbox | write out sandbox user sudoers config
   template:

@@ -14,6 +14,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: install read-only ssh key
   copy:
@@ -26,6 +27,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: set git fetch.prune to ignore deleted remote refs
   shell: git config --global fetch.prune true
@@ -33,6 +35,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 # Do A Checkout
 - name: checkout edx-platform repo into {{ edxapp_code_dir }}
@@ -49,6 +52,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: git clean after checking out edx-platform
   shell: cd {{ edxapp_code_dir }} && git clean -xdf
@@ -56,6 +60,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 # edX supports two theme types, Comprehensive themes and the older
 # Stanford-style themes. They are mutually exclusive.
@@ -77,6 +82,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: Stat each requirements file with Github URLs to ensure it exists
   stat:
@@ -87,6 +93,7 @@
     - install
     - install:code
     - install:app-requirements
+    - "triboo_upgrade"
 
 # Substitute github mirror in all requirements files
 # This is run on every single deploy
@@ -100,6 +107,7 @@
     - install
     - install:code
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: Create the virtualenv to install the Python requirements
   command: "virtualenv {{ edxapp_venv_dir }}"
@@ -111,6 +119,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: Pin pip to a specific version.
   command: "{{ edxapp_venv_dir }}/bin/pip install pip=={{ common_pip_version }}"
@@ -121,11 +130,14 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: get system requirement content
   command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
   register: system_package_content
   ignore_errors: yes
+  tags:
+    - "triboo_upgrade"
 
 - name: install system requirement package
   apt:
@@ -135,6 +147,8 @@
   with_items: "{{ system_package_content['stdout_lines'] }}"
   become: yes
   ignore_errors: yes
+  tags:
+    - "triboo_upgrade"
 
 - name: Stat each Python requirements file to ensure it exists
   stat:
@@ -144,6 +158,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: upgrade pip version
   command: "{{ edxapp_venv_dir }}/bin/pip install pip==20.3.4"
@@ -152,12 +167,15 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: fix py2neo version
   lineinfile:
     path: "/edx/app/edxapp/edx-platform/requirements/edx/base.txt"
     regexp: '^.*py2neo==3.1.2.*'
     line: "-e git+https://github.com/technige/py2neo.git@py2neo-3.1.2#egg=py2neo"
+  tags:
+    - "triboo_upgrade"
 
 # - name: temp to fix file
 #   lineinfile:
@@ -180,6 +198,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 # Private requriements require a ssh key to install, use the same key as the private key for edx-platform
 # If EDXAPP_INSTALL_PRIVATE_REQUIREMENTS is set to true EDXAPP_USE_GIT_IDENTITY must also be true
@@ -199,6 +218,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: install python requirement third party package
   pip:
@@ -207,6 +227,8 @@
     virtualenv: /edx/app/edxapp/venvs/edxapp
   become_user: edxapp
   ignore_errors: yes
+  tags:
+    - "triboo_upgrade"
 
 - name: fix pyopenssl version
   pip:
@@ -216,6 +238,8 @@
       - cryptography==2.2.2
     virtualenv: /edx/app/edxapp/venvs/edxapp
   become_user: edxapp
+  tags:
+    - "triboo_upgrade"
 
 # - name: install edflex xblock package
 #   pip:
@@ -237,6 +261,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 # If using CAS and you have a function for mapping attributes, install
 # the module here.  The next few tasks set up the python code sandbox
@@ -251,6 +276,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 # Install the sandbox python modules into {{ edxapp_venv_dir }}
 - name: install sandbox requirements into regular venv
@@ -273,6 +299,7 @@
   tags:
     - install
     - install:system-requirements
+    - "triboo_upgrade"
 
 # Set the npm registry
 # This needs to be done as root since npm is weird about
@@ -285,6 +312,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 # Set the npm registry permissions
 - name: Set the npm registry permissions
@@ -295,10 +323,13 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: force npm version
   shell: /edx/app/edxapp/venvs/edxapp/bin/nodeenv /edx/app/edxapp/nodeenvs/edxapp --node 16.20.2 --force --with-npm --npm 9.9.3
   become: yes
+  tags:
+    - "triboo_upgrade"
 
 # - name: fix edx-bootstrap checksum
 #   replace:
@@ -317,6 +348,7 @@
   tags:
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 # The next few tasks set up the python code sandbox
 
@@ -329,6 +361,7 @@
     - edxapp-sandbox
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: code sandbox | fix pip version
   pip:
@@ -340,6 +373,7 @@
     - edxapp-sandbox
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: code sandbox | Install base sandbox requirements and create sandbox virtualenv
   pip:
@@ -354,6 +388,7 @@
     - edxapp-sandbox
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: code sandbox | Install base sandbox requirements matplotlib 
   pip:
@@ -368,6 +403,7 @@
     - edxapp-sandbox
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: code sandbox | put code sandbox into aa-enforce or aa-complain mode, depending on EDXAPP_SANDBOX_ENFORCE
   command: /usr/sbin/{{ edxapp_aa_command }} /etc/apparmor.d/code.sandbox
@@ -376,6 +412,7 @@
     - edxapp-sandbox
     - install
     - install:app-requirements
+    - "triboo_upgrade"
 
 - name: compiling all py files in the edx-platform repo
   shell: "{{ edxapp_venv_bin }}/python -m compileall -q -x '.git/.*|node_modules/.*' {{ edxapp_code_dir }}"
@@ -383,6 +420,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
   # alternative would be to give {{ common_web_user }} read access
   # to the virtualenv but that permission change will require
@@ -396,6 +434,7 @@
   tags:
     - install
     - install:code
+    - "triboo_upgrade"
 
 - name: "create service wrapper scripts - {{item}}"
   template:
@@ -412,6 +451,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # creates the supervisor jobs for the
 # service variants configured, runs
@@ -420,6 +460,7 @@
   tags:
     - service_variant_config
     - deploy
+    - "triboo_upgrade"
 
   # call supervisorctl update. this reloads
   # the supervisorctl config and restarts
@@ -434,6 +475,7 @@
   when: not disable_edx_services
   tags:
     - manage
+    - "triboo_upgrade"
 
 - name: ensure edxapp has started
   supervisorctl:
@@ -448,6 +490,7 @@
     - 'cms'
   tags:
     - manage
+    - "triboo_upgrade"
 
 - name: ensure edxapp_workers has started
   supervisorctl:
@@ -459,6 +502,7 @@
   become_user: "{{ supervisor_service_user }}"
   tags:
     - manage
+    - "triboo_upgrade"
 
 - name: create symlinks from the venv bin dir and repo dir
   file:
@@ -473,6 +517,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: remove read-only ssh key
   file:
@@ -483,6 +528,7 @@
     - install
     - install:configuration
     - install:code
+    - "triboo_upgrade"
 
 - import_tasks: tag_ec2.yml 
   tags: deploy
@@ -493,6 +539,8 @@
 
 - set_fact:
     edxapp_installed: true
+  tags:
+    - "triboo_upgrade"
 
 - name: restart edxapp
   supervisorctl:
@@ -507,6 +555,7 @@
     - 'cms'
   tags:
     - manage
+    - "triboo_upgrade"
 
 - name: restart edxapp_workers
   supervisorctl:
@@ -518,6 +567,7 @@
   become_user: "{{ common_web_user }}"
   tags:
     - manage
+    - "triboo_upgrade"
 
 - name: create service worker users
   shell: "{{ edxapp_venv_bin }}/python ./manage.py lms --settings={{ edxapp_settings }} --service-variant lms manage_user {{ item.username}} {{ item.email }} --unusable-password {% if item.is_staff %} --staff{% endif %}"
@@ -529,6 +579,7 @@
   tags:
     - manage
     - manage:db
+    - "triboo_upgrade"
 
 - name: reindex all courses
   shell: "{{ edxapp_venv_bin }}/python ./manage.py cms reindex_course --setup --settings={{ edxapp_settings }}"
@@ -539,6 +590,7 @@
   tags:
     - install
     - install:base
+    - "triboo_upgrade"
 
 - name: install cron job to run clearsessions
   cron:

@@ -19,7 +19,7 @@
     state: directory
     owner: "{{ edxapp_user }}"
     group: "{{ common_web_group }}"
-    mode: "{{ item.mode | default(0755) }}"
+    mode: "{{ item.mode | default('0755') }}"
   with_items:
     - { path: "{{ edxapp_app_dir }}" }
     # needed for the ansible 1.5 git module
@@ -118,7 +118,18 @@
   tags:
     - install
     - install:base
-    - "triboo_upgrade"
+
+- name: Patch to install system packages on which LMS and CMS rely
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_flattened:
+    - "{{ edxapp_debian_pkgs_default_triboo_upgrade }}"
+    - "{{ edxapp_debian_pkgs_extra }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: set up edxapp .npmrc
   template:

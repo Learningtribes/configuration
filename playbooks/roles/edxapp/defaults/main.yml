@@ -1626,6 +1626,18 @@ edxapp_debian_pkgs_default:
   - python-dev
   - libsqlite3-dev
 
+edxapp_debian_pkgs_default_triboo_upgrade:
+  - s3cmd
+  - pkg-config
+  - g++
+  - apparmor-utils
+  - curl
+  - nodejs
+  - libfreetype6-dev
+  - libffi-dev
+  - python3-dev
+  - libsqlite3-dev
+
 edxapp_debian_pkgs_extra: []
 
 # Deploy Specific Vars
