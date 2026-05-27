@@ -1032,6 +1032,38 @@ edxapp_environment_extra: {}
 
 edxapp_environment: "{{ edxapp_environment_default | combine(edxapp_environment_extra) }}"
 
+edxapp_environment_extra_triboo_upgrade:
+  CFLAGS: >
+    -D__XMLSEC_FUNCTION__=__func__ 
+    -DXMLSEC_NO_SIZE_T 
+    -DXMLSEC_OPENSSL3_ENGINES=1 
+    -DXMLSEC_NO_FTP=1 
+    -DXMLSEC_NO_MD5=1 
+    -DXMLSEC_NO_GOST=1 
+    -DXMLSEC_NO_GOST2012=1 
+    -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 
+    -I/usr/include/xmlsec1 
+    -DXMLSEC_CRYPTO_OPENSSL=1 
+    -I/usr/include/libxml2 
+    -DxmlSecOpenSSLTransformDsaSha1Id=xmlSecTransformDsaSha1Id 
+    -DxmlSecOpenSSLTransformHmacRipemd160Id=xmlSecTransformHmacRipemd160Id 
+    -DxmlSecOpenSSLTransformHmacSha1Id=xmlSecTransformHmacSha1Id 
+    -DxmlSecOpenSSLTransformHmacSha224Id=xmlSecTransformHmacSha224Id 
+    -DxmlSecOpenSSLTransformHmacSha256Id=xmlSecTransformHmacSha256Id 
+    -DxmlSecOpenSSLTransformHmacSha384Id=xmlSecTransformHmacSha384Id 
+    -DxmlSecOpenSSLTransformHmacSha512Id=xmlSecTransformHmacSha512Id 
+    -DxmlSecOpenSSLTransformRsaSha1Id=xmlSecTransformRsaSha1Id 
+    -DxmlSecOpenSSLTransformSha1Id=xmlSecTransformSha1Id 
+    -DxmlSecOpenSSLKeyDataHmacId=xmlSecKeyDataHmacId 
+    -DxmlSecOpenSSLTransformHmacMd5Id=0 
+    -DxmlSecOpenSSLTransformMd5Id=0 
+    -DxmlSecOpenSSLTransformRsaMd5Id=0
+    -Wno-error=incompatible-pointer-types 
+    -Wno-error=implicit-function-declaration
+  LDFLAGS: "-lxmlsec1-openssl -lxmlsec1 -lssl -lcrypto -lxslt -lxml2"
+
+edxapp_environment_triboo_upgrade: "{{ edxapp_environment | combine(edxapp_environment_extra_triboo_upgrade) }}"
+
 edxapp_generic_contentstore_config: &edxapp_generic_default_contentstore
   ENGINE:  'xmodule.contentstore.mongo.MongoContentStore'
   #

@@ -39,6 +39,21 @@
     - install:base
     - "triboo_upgrade"
 
+- name: Patch to create edxapp skel files
+  copy:
+    src: "/etc/skel/{{ item }}"
+    dest: "{{ edxapp_app_dir }}/{{ item }}"
+    mode: 0644
+    owner: "{{ edxapp_user }}"
+    group: "{{ edxapp_user }}"
+    remote_src: yes 
+  with_items:
+    - ".bashrc"
+    - ".profile"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: write devstack script
   template:
     src: "devstack.sh.j2"

@@ -109,6 +109,49 @@
     - install:app-requirements
     - "triboo_upgrade"
 
+- name: Patch to install Python version in edxapp
+  import_role:
+    name: pyenv
+  vars: 
+    user_use_pyenv: "{{ edxapp_user }}"
+    #pyenv_project_folder: "{{ edxapp_app_dir }}"
+    pyenv_python_verions: "2.7"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to fix PYENV_DIR issue in edxapp
+  lineinfile:
+    path: ~/.pyenv/bin/pyenv
+    search_string: 'PYENV_DIR="$PWD"'
+    line: '  PYENV_DIR="$HOME"'
+  become_user: "{{ edxapp_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to set local python version in edxapp
+  shell: "source ~/.profile && pyenv local {{ pyenv_python_verions }}"
+  args:
+    chdir: "{{ edxapp_app_dir }}"
+    executable: /bin/bash
+  vars:
+    pyenv_python_verions: "2.7"
+  become_user: "{{ edxapp_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install virtualenv in edxapp
+  shell: "source ~/.profile && python -m pip install virtualenv"
+  args:
+    chdir: "{{ edxapp_app_dir }}"
+    executable: /bin/bash
+  become_user: "{{ edxapp_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: Create the virtualenv to install the Python requirements
   command: "virtualenv {{ edxapp_venv_dir }}"
   args:
@@ -119,7 +162,18 @@
   tags:
     - install
     - install:app-requirements
-    - "triboo_upgrade"
+
+- name: Patch to create the virtualenv to install the Python requirements in edxapp
+  shell: "source ~/.profile && virtualenv {{ edxapp_venv_dir }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+    executable: /bin/bash
+    creates: "{{ edxapp_venv_dir }}/bin/pip"
+  become_user: "{{ edxapp_user }}"
+  environment: "{{ edxapp_environment }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: Pin pip to a specific version.
   command: "{{ edxapp_venv_dir }}/bin/pip install pip=={{ common_pip_version }}"
@@ -130,7 +184,6 @@
   tags:
     - install
     - install:app-requirements
-    - "triboo_upgrade"
 
 - name: get system requirement content
   command: "cat /edx/app/edxapp/edx-platform/requirements/system/ubuntu/third-party-apt.txt"
@@ -158,7 +211,15 @@
   tags:
     - install
     - install:app-requirements
-    - "triboo_upgrade"
+
+- name: Patch to stat each Python requirements file to ensure it exists
+  stat:
+    path: "{{ item }}"
+  with_items: "{{ edxapp_requirements_files + ([openstack_requirements_file] if EDXAPP_SETTINGS == 'openstack' else []) }}"
+  register: python_requirement_files
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 - name: upgrade pip version
   command: "{{ edxapp_venv_dir }}/bin/pip install pip==20.3.4"
@@ -183,6 +244,15 @@
 #     regexp: '^.*djangosaml2idp.*'
 #     line: "-e git+https://github.com/Learningtribes/djangosaml2idp.git@master#egg=djangosaml2idp"
 
+- name: Patch to remove mysql-python python library
+  lineinfile:
+    path: "{{ edxapp_code_dir }}/requirements/edx/base.txt"
+    state: absent
+    regexp: mysql-python
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
 # Install the python requirements into {{ edxapp_venv_dir }}
 - name: install python requirements
   # Need to use command rather than pip so that we can maintain the context of our current working directory; some
@@ -198,7 +268,18 @@
   tags:
     - install
     - install:app-requirements
-    - "triboo_upgrade"
+
+- name: Patch to install python requirements
+  command: "{{ edxapp_venv_dir }}/bin/pip install {{ COMMON_PIP_VERBOSITY }} -i {{ COMMON_PYPI_MIRROR_URL }} --exists-action w -r {{ item.item }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_user }}"
+  environment: "{{ edxapp_environment_triboo_upgrade }}"
+  when: item.stat.exists
+  with_items: "{{ python_requirement_files.results }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 # Private requriements require a ssh key to install, use the same key as the private key for edx-platform
 # If EDXAPP_INSTALL_PRIVATE_REQUIREMENTS is set to true EDXAPP_USE_GIT_IDENTITY must also be true
@@ -363,6 +444,60 @@
     - install:app-requirements
     - "triboo_upgrade"
 
+- name: Patch to install Python version in sandbox
+  import_role:
+    name: pyenv
+  vars: 
+    user_use_pyenv: "{{ edxapp_sandbox_user }}"
+    #pyenv_project_folder: "{{ edxapp_app_dir }}"
+    pyenv_python_verions: "2.7"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to fix PYENV_DIR issue in sandbox
+  lineinfile:
+    path: ~/.pyenv/bin/pyenv
+    search_string: 'PYENV_DIR="$PWD"'
+    line: '  PYENV_DIR="$HOME"'
+  become_user: "{{ edxapp_sandbox_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to set local python version in sandbox
+  shell: "source ~/.profile && pyenv local {{ pyenv_python_verions }}"
+  args:
+    chdir: "{{ edxapp_sandbox_venv_dir }}"
+    executable: /bin/bash
+  vars:
+    pyenv_python_verions: "2.7"
+  become_user: "{{ edxapp_sandbox_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install virtualenv in sandbox
+  shell: "source ~/.profile && python -m pip install virtualenv"
+  args:
+    chdir: "{{ edxapp_sandbox_venv_dir }}"
+    executable: /bin/bash
+  become_user: "{{ edxapp_sandbox_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to create the virtualenv to install the Python requirements in sandbox
+  shell: "source ~/.profile && virtualenv {{ edxapp_sandbox_venv_dir }}"
+  args:
+    chdir: 
+    executable: /bin/bash
+    creates: "{{ edxapp_sandbox_venv_dir }}/bin/pip"
+  become_user: "{{ edxapp_sandbox_user }}"
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: code sandbox | fix pip version
   pip:
     name: pip==20.0.2
@@ -415,7 +550,7 @@
     - "triboo_upgrade"
 
 - name: compiling all py files in the edx-platform repo
-  shell: "{{ edxapp_venv_bin }}/python -m compileall -q -x '.git/.*|node_modules/.*' {{ edxapp_code_dir }}"
+  shell: "{{ edxapp_venv_bin }}/python -m compileall -q -x '.git/.*|node_modules/.*|.claude/.*' {{ edxapp_code_dir }}"
   become_user: "{{ edxapp_user }}"
   tags:
     - install
@@ -447,10 +582,15 @@
     - "lms.sh"
     - "cms.sh"
     - "worker.sh"
-    - "api_extended_user_progress_report.sh"
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
+
+- name: exit playbook
+  fail:
+    msg: "EXIT"
+  tags:
     - "triboo_upgrade"
 
 # creates the supervisor jobs for the
@@ -460,7 +600,6 @@
   tags:
     - service_variant_config
     - deploy
-    - "triboo_upgrade"
 
   # call supervisorctl update. this reloads
   # the supervisorctl config and restarts

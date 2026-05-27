@@ -52,7 +52,7 @@
   become_user: "{{ user_use_pyenv }}"
   when: not pyenv_folder.stat.exists
 
-- name: Install python 3.*
+- name: Install python {{ pyenv_python_verions }}
   shell: source ~/.profile && pyenv install "{{ pyenv_python_verions }}"
   args:
     executable: /bin/bash
@@ -134,10 +134,18 @@
   become: yes
   when: pyenv_python_verions == "2.7"
 
-- name: Set local python version
-  shell: source ~/.profile && pyenv local "{{ pyenv_python_verions }}"
-  args:
-    chdir: "{{ pyenv_project_folder }}"
-    executable: /bin/bash
+- name: Reinstall pyenv requirements packages
+  apt:
+    update_cache: no
+    pkg: "{{ item }}"
+  with_items: "{{ pyenv_packages }}"
   become: yes
-  become_user: "{{ user_use_pyenv }}"
+  when: pyenv_python_verions == "2.7"
+
+# - name: Set local python version
+#   shell: source ~/.profile && pyenv local "{{ pyenv_python_verions }}"
+#   args:
+#     chdir: "{{ pyenv_project_folder }}"
+#     executable: /bin/bash
+#   become: yes
+#   become_user: "{{ user_use_pyenv }}"
