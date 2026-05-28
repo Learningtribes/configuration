@@ -6,7 +6,7 @@
 
 ---
 - name: Install MySQL reposiotry
-  shell: echo mysql-apt-config mysql-apt-config/unsupported-platform select 'ubuntu bionic' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/select-server select 'mysql-5.7' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/repo-codename select 'bionic' | debconf-set-selections && wget http://repo.mysql.com/mysql-apt-config_0.8.12-1_all.deb -O mysql-apt-config_0.8.12-1_all.deb && dpkg -i mysql-apt-config_0.8.12-1_all.deb
+  shell: echo mysql-apt-config mysql-apt-config/unsupported-platform select 'ubuntu xenial' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/select-server select 'mysql-5.7' | debconf-set-selections && echo mysql-apt-config mysql-apt-config/repo-codename select 'xenial' | debconf-set-selections && wget http://repo.mysql.com/mysql-apt-config_0.8.12-1_all.deb -O mysql-apt-config_0.8.12-1_all.deb && dpkg -i mysql-apt-config_0.8.12-1_all.deb
   args:
     chdir: ~/
   environment:
@@ -24,7 +24,7 @@
     - "triboo_upgrade"
 
 - name: Patch to install MySQL requirement packages for Ubuntu 24.04
-  shell: wget http://archive.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2_amd64.deb -O libtinfo5_6.3-2_amd64.deb && dpkg -i libtinfo5_6.3-2_amd64.deb && wget http://archive.ubuntu.com/ubuntu/pool/main/liba/libaio/libaio1_0.3.110-5_amd64.deb -O libaio1_0.3.110-5_amd64.deb && dpkg -i libaio1_0.3.110-5_amd64.deb
+  shell: wget https://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.0+20160213-1ubuntu1_amd64.deb -O libtinfo5_6.0+20160213-1ubuntu1_amd64.deb && dpkg -i libtinfo5_6.0+20160213-1ubuntu1_amd64.deb && wget https://archive.ubuntu.com/ubuntu/pool/main/liba/libaio/libaio1_0.3.110-2_amd64.deb -O libaio1_0.3.110-2_amd64.deb && dpkg -i libaio1_0.3.110-2_amd64.deb
   args:
     chdir: ~/
   tags:
