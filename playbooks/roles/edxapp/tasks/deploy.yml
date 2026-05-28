@@ -587,12 +587,6 @@
     - install:configuration
     - "triboo_upgrade"
 
-- name: exit playbook
-  fail:
-    msg: "EXIT"
-  tags:
-    - "triboo_upgrade"
-
 # creates the supervisor jobs for the
 # service variants configured, runs
 # gather_assets and db migrations

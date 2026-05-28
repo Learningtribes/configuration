@@ -16,6 +16,21 @@
     - install:app-configuration
     - edxapp_cfg # Old deprecated tag, will remove when possible
 
+- name: Patch to create application and auth config
+  template:
+    src: "{{ item[0] }}.{{ item[1] }}.json.triboo.upgrade.j2"
+    dest: "{{ edxapp_app_dir }}/{{ item[0] }}.{{ item[1] }}.json"
+    owner: "{{ edxapp_user }}"
+    group: "{{ common_web_group }}"
+    mode: 0640
+  become: true
+  with_nested:
+    - "{{ service_variants_enabled }}"
+    - [ 'env', 'auth' ]
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"    
+
 # write the supervisor scripts for the service variants
 - name: "writing {{ item }} supervisor script"
   template:
@@ -29,6 +44,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # write the supervisor script for celery workers
 - name: writing celery supervisor scripts
@@ -44,6 +60,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # clean out an old edxapp.conf file which we don't use now.
 # this can be deleted after we build things from scratch.
@@ -54,6 +71,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: add gunicorn configuration files
   template:
@@ -65,11 +83,14 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 # write the supervisor script for mongod and sshd
 # this should only be run when provisioning a jenkins-worker container
 - name: Set ignore_jenkins_worker_command when no tags present
   set_fact: ignore_jenkins_worker_command=true
+  tags:
+   - "triboo_upgrade"
 
 - name: writing mongod and sshd supervisor scripts
   template:
@@ -85,6 +106,7 @@
   when: 'ignore_jenkins_worker_command is not defined'
   tags:
     - jenkins-worker
+    - "triboo_upgrade"
 
 - name: "enable mongod and sshd supervisor script"
   file:
@@ -99,6 +121,7 @@
   when: 'ignore_jenkins_worker_command is not defined'
   tags:
     - jenkins-worker
+    - "triboo_upgrade"
 
 # Enable the supervisor jobs
 - name: "enable {{ item }} supervisor script"
@@ -113,6 +136,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: enable celery worker supervisor script
   file:
@@ -125,6 +149,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: create helper scripts for managing edxapp
   template:
@@ -138,6 +163,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: create script to compile and update assets
   template:
@@ -148,6 +174,7 @@
   tags:
     - install
     - install:configuration
+    - "triboo_upgrade"
 
 - name: fix migration confliction
   shell:
@@ -155,6 +182,8 @@
     chdir: /edx/app/edxapp/edx-platform
     cmd: "source /edx/app/edxapp/edxapp_env && python manage.py lms makemigrations --merge --noinput --settings aws"
   become_user: "{{ edxapp_user }}"
+  tags:
+    - "triboo_upgrade"
 
 # migrate when the migrate user is overridden in extra vars
 - name: migrate
@@ -167,6 +196,7 @@
   with_items: "{{ service_variants_enabled }}"
   tags:
     - migrate
+    - "triboo_upgrade"
 
 # There are problems with django collectstatic copying files.  It doesn't retain
 # last modified timestamps, but relies on those same timestamps to know if a new file
@@ -185,6 +215,7 @@
   tags:
     - gather_static_assets
     - assets
+    - "triboo_upgrade"
 
 # Gather assets using paver if possible
 - name: "gather static assets with paver"
@@ -193,4 +224,5 @@
   tags:
     - gather_static_assets
     - assets
+    - "triboo_upgrade"
 
