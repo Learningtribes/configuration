@@ -17,6 +17,8 @@ pyenv_packages:
   - libxmlsec1-dev 
   - libffi-dev 
   - liblzma-dev
+  - libgdbm-dev
+  - libgdbm-compat-dev
 
 pyenv_shell_environment: |
   export PYENV_ROOT="$HOME/.pyenv"
