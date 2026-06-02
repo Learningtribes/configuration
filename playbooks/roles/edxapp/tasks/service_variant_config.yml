@@ -176,6 +176,90 @@
     - install:configuration
     - "triboo_upgrade"
 
+- name: Patch to install legacy xmlsec1 system package
+  block:
+    - name: Remove xmlsec1 system package
+      apt: 
+        name: libxmlsec1-dev
+        state: absent
+    - name: Download legacy xmlsec1 source package
+      get_url:
+        url: https://www.aleksey.com/xmlsec/download/older-releases/xmlsec1-1.2.20.tar.gz
+        dest: /opt/xmlsec1-1.2.20.tar.gz
+    - name: Unarchive legacy xmlsec1 package
+      unarchive:
+        src: /opt/xmlsec1-1.2.20.tar.gz
+        dest: /opt
+        remote_src: yes 
+    - name: Create legacy xmlsec1 folder 
+      file:
+        path: /opt/xmlsec1-compat
+        state: directory
+    - name: Compile legacy xmlsec1 package
+      shell: ./configure --prefix=/opt/xmlsec1-compat --with-openssl=/opt/ssl-1.0.2 --disable-crypto-dl
+      args:
+        chdir: /opt/xmlsec1-1.2.20
+      environment:
+        LDFLAGS: -Wl,-rpath,/opt/ssl-1.0.2/lib
+    - name: Install legacy xmlsec1 package
+      shell: make && make install
+      args:
+        chdir: /opt/xmlsec1-1.2.20
+      ignore_errors: true      
+  become: yes
+  when: pyenv_python_version | float  == 2.7
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install dm.xmlsec.binding python library
+  shell: "export PATH=/opt/xmlsec1-compat/bin:$PATH && {{ edxapp_venv_dir }}/bin/pip install --no-binary=dm.xmlsec.binding --no-cache-dir dm.xmlsec.binding==1.3.3"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_user }}"
+  environment:
+    PKG_CONFIG_PATH: /opt/xmlsec1-compat/lib/pkgconfig
+    CFLAGS: -I/opt/ssl-1.0.2/include -I/opt/xmlsec1-compat/include/xmlsec1 -Wno-implicit-function-declaration -std=gnu89
+    LDFLAGS: -L/opt/ssl-1.0.2/lib -L/opt/xmlsec1-compat/lib -Wl,-rpath,/opt/ssl-1.0.2/lib:/opt/xmlsec1-compat/lib
+  when: pyenv_python_version | float  == 2.7
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install mysql-python python library
+  block:
+    - name: Install legacy libmysqlclient-dev and libmysqlclient20 system package
+      shell: wget https://archive.ubuntu.com/ubuntu/pool/main/m/mysql-5.7/libmysqlclient20_5.7.33-0ubuntu0.16.04.1_amd64.deb -O libmysqlclient20_5.7.33-0ubuntu0.16.04.1_amd64.deb && dpkg -i libmysqlclient20_5.7.33-0ubuntu0.16.04.1_amd64.deb && wget https://archive.ubuntu.com/ubuntu/pool/main/m/mysql-5.7/libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb -O libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb && dpkg -i libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb
+      args:
+        chdir: ~/
+      ignore_errors: true
+      become: yes
+    - name: Install mysql-python python library
+      shell: "{{ edxapp_venv_dir }}/bin/pip install --no-binary=MySQL-python --no-cache-dir MySQL-python==1.2.5"
+      args:
+        chdir: "{{ edxapp_code_dir }}"
+      become_user: "{{ edxapp_user }}"
+  when: pyenv_python_version | float  == 2.7
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install beautifulsoup4 python library
+  shell: "{{ edxapp_venv_dir }}/bin/pip install beautifulsoup4==4.9.3"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_user }}"
+  when: pyenv_python_version | float  == 2.7
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: exit playbook
+  fail:
+    msg: "EXIT"
+  tags:
+    - "triboo_upgrade"
+
 - name: fix migration confliction
   shell:
     executable: /bin/bash 

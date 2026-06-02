@@ -254,12 +254,12 @@
     - "triboo_upgrade_patch"
     - "never"
 
-- name: Patch to install legacy libmysqlclient-dev system package
-  shell: wget https://archive.ubuntu.com/ubuntu/pool/main/m/mysql-5.7/libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb -O libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb && dpkg -i libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb
-  args:
-    chdir: ~/
-  become: yes
-  ignore_errors: true
+- name: Patch to remove mysql-python python library
+  lineinfile:
+    path: "{{ edxapp_code_dir }}/requirements/edx/base.txt"
+    state: absent
+    regexp: mysql-python
+  when: pyenv_python_version | float  == 2.7 
   tags:
     - "triboo_upgrade_patch"
     - "never"
