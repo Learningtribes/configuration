@@ -115,7 +115,7 @@
   vars: 
     user_use_pyenv: "{{ edxapp_user }}"
     #pyenv_project_folder: "{{ edxapp_app_dir }}"
-    pyenv_python_verions: "2.7"
+    pyenv_python_verions: 2.7
   tags:
     - "triboo_upgrade_patch"
     - "never"
@@ -136,7 +136,7 @@
     chdir: "{{ edxapp_app_dir }}"
     executable: /bin/bash
   vars:
-    pyenv_python_verions: "2.7"
+    pyenv_python_verions: 2.7
   become_user: "{{ edxapp_user }}"
   tags:
     - "triboo_upgrade_patch"
@@ -244,11 +244,21 @@
 #     regexp: '^.*djangosaml2idp.*'
 #     line: "-e git+https://github.com/Learningtribes/djangosaml2idp.git@master#egg=djangosaml2idp"
 
-- name: Patch to remove mysql-python python library
+- name: Patch to remove dm.xmlsec.binding python library
   lineinfile:
     path: "{{ edxapp_code_dir }}/requirements/edx/base.txt"
     state: absent
-    regexp: mysql-python
+    regexp: 'dm.xmlsec.binding'
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to install legacy libmysqlclient-dev system package
+  shell: wget https://archive.ubuntu.com/ubuntu/pool/main/m/mysql-5.7/libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb -O libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb && dpkg -i libmysqlclient-dev_5.7.33-0ubuntu0.16.04.1_amd64.deb
+  args:
+    chdir: ~/
+  become: yes
+  ignore_errors: true
   tags:
     - "triboo_upgrade_patch"
     - "never"
@@ -268,18 +278,7 @@
   tags:
     - install
     - install:app-requirements
-
-- name: Patch to install python requirements
-  command: "{{ edxapp_venv_dir }}/bin/pip install {{ COMMON_PIP_VERBOSITY }} -i {{ COMMON_PYPI_MIRROR_URL }} --exists-action w -r {{ item.item }}"
-  args:
-    chdir: "{{ edxapp_code_dir }}"
-  become_user: "{{ edxapp_user }}"
-  environment: "{{ edxapp_environment_triboo_upgrade }}"
-  when: item.stat.exists
-  with_items: "{{ python_requirement_files.results }}"
-  tags:
-    - "triboo_upgrade_patch"
-    - "never"
+    - "triboo_upgrade"
 
 # Private requriements require a ssh key to install, use the same key as the private key for edx-platform
 # If EDXAPP_INSTALL_PRIVATE_REQUIREMENTS is set to true EDXAPP_USE_GIT_IDENTITY must also be true
@@ -450,7 +449,7 @@
   vars: 
     user_use_pyenv: "{{ edxapp_sandbox_user }}"
     #pyenv_project_folder: "{{ edxapp_app_dir }}"
-    pyenv_python_verions: "2.7"
+    pyenv_python_verions: 2.7
   tags:
     - "triboo_upgrade_patch"
     - "never"
@@ -471,7 +470,7 @@
     chdir: "{{ edxapp_sandbox_venv_dir }}"
     executable: /bin/bash
   vars:
-    pyenv_python_verions: "2.7"
+    pyenv_python_verions: 2.7
   become_user: "{{ edxapp_sandbox_user }}"
   tags:
     - "triboo_upgrade_patch"

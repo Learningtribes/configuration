@@ -181,7 +181,7 @@
     - install
     - install:configuration
 
-- name: Copying nginx configs for {{ nginx_sites }}
+- name: Patch to copying nginx configs for {{ nginx_sites }}
   template:
     src: "{{ nginx_template_dir }}/{{ item }}_triboo_upgrade.j2"
     dest: "{{ nginx_sites_available_dir }}/{{ item }}"
