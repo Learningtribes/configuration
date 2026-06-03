@@ -176,6 +176,16 @@
     - install:configuration
     - "triboo_upgrade"
 
+- name: Patch to check legacy xmlsec1 exist
+  shell: /opt/ssl-1.0.2/bin/openssl version
+  register: test_xmlsec1_exist
+  become: yes
+  ignore_errors: true
+  when: pyenv_python_version | float  == 2.7
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
 - name: Patch to install legacy xmlsec1 system package
   block:
     - name: Remove xmlsec1 system package
@@ -207,7 +217,7 @@
         chdir: /opt/xmlsec1-1.2.20
       ignore_errors: true      
   become: yes
-  when: pyenv_python_version | float  == 2.7
+  when: pyenv_python_version | float  == 2.7 and test_xmlsec1_exist.rc > 0
   tags:
     - "triboo_upgrade_patch"
     - "never"
@@ -254,12 +264,6 @@
     - "triboo_upgrade_patch"
     - "never"
 
-- name: exit playbook
-  fail:
-    msg: "EXIT"
-  tags:
-    - "triboo_upgrade"
-
 - name: fix migration confliction
   shell:
     executable: /bin/bash 
@@ -268,6 +272,15 @@
   become_user: "{{ edxapp_user }}"
   tags:
     - "triboo_upgrade"
+
+- name: Patch to fix DEFAULT_FILE_STORAGE issue
+  replace:
+    path: "/edx/app/edxapp/lms.auth.json"
+    regexp: 'storages.backends.s3boto.S3BotoStorage'
+    replace: 'django.core.files.storage.FileSystemStorage'
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 # migrate when the migrate user is overridden in extra vars
 - name: migrate
@@ -281,6 +294,25 @@
   tags:
     - migrate
     - "triboo_upgrade"
+
+- name: Patch to revert DEFAULT_FILE_STORAGE value
+  replace:
+    path: "/edx/app/edxapp/lms.auth.json"
+    regexp: 'django.core.files.storage.FileSystemStorage'
+    replace: 'storages.backends.s3boto.S3BotoStorage'
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
+
+- name: Patch to remove legacy libmysqlclient-dev system package
+  apt: 
+    name: libmysqlclient-dev
+    state: absent
+  become: yes
+  when: pyenv_python_version | float  == 2.7
+  tags:
+    - "triboo_upgrade_patch"
+    - "never"
 
 # There are problems with django collectstatic copying files.  It doesn't retain
 # last modified timestamps, but relies on those same timestamps to know if a new file

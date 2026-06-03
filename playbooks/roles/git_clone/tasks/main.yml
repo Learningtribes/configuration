@@ -64,6 +64,7 @@
   # rather than the full GIT_REPOS structures, which have data we don't want to log,
   # so we don't have to use no_log on this task.
   with_items: "{{ GIT_REPOS | map(attribute='DESTINATION') | list }}"
+  become_user: "{{ repo_owner }}"
   tags: "triboo_upgrade"
 
 - name: Require a clean working tree
