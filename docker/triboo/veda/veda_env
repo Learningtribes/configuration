@@ -1,0 +1,3 @@
+export VIDEO_PIPELINE_CFG="/edx/etc/veda.yml"
+export DJANGO_SETTINGS_MODULE="VEDA.settings.production"
+export PYTHONPATH="/edx/app/veda/veda"
