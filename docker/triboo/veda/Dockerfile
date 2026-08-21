@@ -7,7 +7,7 @@
 
 FROM python:2.7 AS builder
 ARG GITHUB_TOKEN
-RUN git clone https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/edx-video-pipeline.git /src
+RUN git clone -b hawthorn https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/edx-video-pipeline.git /src
 
 
 
@@ -32,8 +32,8 @@ RUN . "$NVM_DIR/nvm.sh" \
     && nvm install 10.24.1
 ENV PATH="/home/veda/.local/bin:/home/veda/.nvm/versions/node/v10.24.1/bin:$PATH"
 WORKDIR /edx/app/veda/veda
-RUN sed -i 's/MySQL-python==1.2.5/mysqlclient==1.4.6/g' requirements.txt
-RUN sed -i 's/LOGGING = get_logger_config(service_variant=CONFIG_DATA.get('SERVICE_VARIANT_NAME', DEFATULT_SERVICE_VARIANT_NAME))/LOGGING = get_logger_config(dev_env=True, service_variant=CONFIG_DATA.get('SERVICE_VARIANT_NAME', DEFATULT_SERVICE_VARIANT_NAME))/g' VEDA/settings/production.py
+RUN sed -i "s/MySQL-python==1.2.5/mysqlclient==1.4.6/g" requirements.txt
+RUN sed -i "s/LOGGING = get_logger_config(service_variant=CONFIG_DATA.get('SERVICE_VARIANT_NAME', DEFATULT_SERVICE_VARIANT_NAME))/LOGGING = get_logger_config(dev_env=True, service_variant=CONFIG_DATA.get('SERVICE_VARIANT_NAME', DEFATULT_SERVICE_VARIANT_NAME))/g" VEDA/settings/production.py
 RUN pip install -r requirements.txt
 EXPOSE 8555
 # As veda.yml config file is not stored in image, please mount it into container when using this image.

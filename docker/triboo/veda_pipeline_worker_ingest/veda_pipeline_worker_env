@@ -1,0 +1,5 @@
+export PYTHONPATH="/edx/app/veda_pipeline_worker/veda_pipeline_worker"
+export DJANGO_SETTINGS_MODULE="VEDA.settings.production"
+export AWS_SECRET_ACCESS_KEY="$(grep veda_secret_access_key /edx/etc/veda_pipeline_worker.yml |cut -d ' ' -f 2)"
+export VIDEO_PIPELINE_CFG="/edx/etc/veda_pipeline_worker.yml"
+export AWS_ACCESS_KEY_ID="$(grep veda_access_key_id /edx/etc/veda_pipeline_worker.yml |cut -d ' ' -f 2)"
