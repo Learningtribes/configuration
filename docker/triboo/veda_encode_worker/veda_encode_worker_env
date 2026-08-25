@@ -1,0 +1,4 @@
+export PYTHONPATH="/edx/app/veda_encode_worker/veda_encode_worker"
+export AWS_ACCESS_KEY_ID="$(grep veda_access_key_id /edx/etc/veda_encode_worker.yml |cut -d ' ' -f 2)"
+export AWS_SECRET_ACCESS_KEY="$(grep veda_secret_access_key /edx/etc/veda_encode_worker.yml |cut -d ' ' -f 2)"
+export VEDA_ENCODE_WORKER_CFG="/edx/etc/veda_encode_worker.yml"
