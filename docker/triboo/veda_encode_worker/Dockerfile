@@ -3,6 +3,7 @@
 FROM python:2.7 AS builder
 ARG GITHUB_TOKEN
 RUN git clone -b hawthorn https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/edx-video-worker.git /src
+RUN rm -rf /src/.git
 
 
 
