@@ -41,7 +41,7 @@ def insert_data(name, client_name, type, country, month, service_name, product, 
     print response.content
 
 def get_service_cost(service_name):
-    time.sleep(0.2)
+    time.sleep(0.5)
     response_cost = client.get_cost_and_usage(
         TimePeriod = {
             'Start': start_day,
@@ -70,7 +70,7 @@ response_tag = client.get_tags(
 tag_cost_list = response_tag['Tags']
 
 for i in tag_cost_list:
-    time.sleep(0.2)
+    time.sleep(0.5)
     response_tag_cost = client.get_cost_and_usage(
         TimePeriod = {
                 'Start': start_day,
@@ -91,7 +91,6 @@ for i in tag_cost_list:
             cost = round(float(cost), 2)
             cost = cost_add_tax(cost) 
             insert_data(('-').join(i.split('-')[0:4]), i_list[2], i_list[3], i_list[0], date_day, i_list[4], i_list[1], cost)
-            break
 
 cost_explorer_cost = get_service_cost('AWS Cost Explorer')
 waf_cost = get_service_cost('AWS WAF')

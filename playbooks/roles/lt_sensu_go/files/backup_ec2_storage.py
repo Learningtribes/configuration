@@ -2,19 +2,20 @@ import boto3
 import datetime
 import pytz
 import time
+from botocore.config import Config
+
+
+
 
 
 ec2_eu_ie = boto3.client('ec2', region_name='eu-west-1')
 ec2_eu_ie_string = 'eu-west-1'
-ec2_eu_se = boto3.client('ec2', region_name='eu-north-1')
+#ec2_eu_se = boto3.client('ec2', region_name='eu-north-1')
+
 
 ec2_us_east = boto3.client('ec2', region_name='us-east-1')
 ec2_us_east_string = 'us-east-1'
-ec2_us_west = boto3.client('ec2', region_name='us-west-2')
-
-ec2_cn_bj = boto3.client('ec2', region_name='cn-north-1')
-ec2_cn_bj_string = 'cn-north-1'
-ec2_cn_nx = boto3.client('ec2', region_name='cn-northwest-1')
+#ec2_us_west = boto3.client('ec2', region_name='us-west-2')
 
 
 def check_snapshot_job(region, check_snapshot_list, job_limit=0):
@@ -94,9 +95,9 @@ def delete_remote_old_snapshot_job(region, keep_day=10):
 backup_volume_job(ec2_eu_ie)
 delete_local_old_snapshot_job(ec2_eu_ie, 10)
 #copy_snapshot_job(ec2_eu_ie, ec2_eu_se, ec2_eu_ie_string)
-delete_remote_old_snapshot_job(ec2_eu_se, 10)
+#delete_remote_old_snapshot_job(ec2_eu_se, 10)
 
 backup_volume_job(ec2_us_east)
 delete_local_old_snapshot_job(ec2_us_east, 10)
 #copy_snapshot_job(ec2_us_east, ec2_us_west, ec2_us_east_string)
-delete_remote_old_snapshot_job(ec2_us_west, 10)
+#delete_remote_old_snapshot_job(ec2_us_west, 10)
