@@ -1,0 +1,4 @@
+export XQUEUE_CFG=/edx/etc/xqueue.yml
+export DJANGO_SETTINGS_MODULE=xqueue.production
+export PID=/var/tmp/xqueue.pid
+export LANG=en_US.UTF-8
