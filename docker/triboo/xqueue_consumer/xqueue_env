@@ -1,0 +1,2 @@
+export XQUEUE_CFG=/edx/etc/xqueue.yml
+export LANG=en_US.UTF-8
