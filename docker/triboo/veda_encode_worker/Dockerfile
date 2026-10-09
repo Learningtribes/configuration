@@ -1,6 +1,6 @@
 # When install v_videocompile command, the python:2.7 image get a issue about Linux distribution. Temporarily modify the file to resolve the issue.
 
-FROM python:2.7 AS builder
+FROM alpine/git:2.54.0 AS builder
 ARG GITHUB_TOKEN
 RUN git clone -b hawthorn https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/edx-video-worker.git /src
 RUN rm -rf /src/.git

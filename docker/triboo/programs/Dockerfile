@@ -4,7 +4,7 @@
 
 
 
-FROM python:3.5 AS builder
+FROM alpine/git:2.54.0 AS builder
 ARG GITHUB_TOKEN
 RUN git clone -b lt-master https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/course-discovery.git /src
 RUN rm -rf /src/.git
