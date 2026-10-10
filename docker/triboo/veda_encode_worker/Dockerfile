@@ -1,4 +1,8 @@
 # When install v_videocompile command, the python:2.7 image get a issue about Linux distribution. Temporarily modify the file to resolve the issue.
+#
+# As veda_encode_worker.yml config file is not stored in image, please mount it into container when using this image.
+#
+# docker run  --rm  --mount type=bind,src=/edx/etc/veda_encode_worker.yml,dst=/edx/etc/veda_encode_worker.yml,readonly -d -t --name veda_encode_worker veda_encode_worker:test
 
 FROM alpine/git:2.54.0 AS builder
 ARG GITHUB_TOKEN
@@ -10,7 +14,7 @@ RUN rm -rf /src/.git
 
 FROM python:2.7
 
-RUN useradd -m veda_encode_worker
+RUN useradd -G www-data -m veda_encode_worker
 RUN mkdir -p /edx/etc /edx/app/veda_encode_worker/veda_encode_worker /edx/var/veda_encode_worker/ENCODE_WORKDIR
 COPY veda_encode_worker_env /edx/app/veda_encode_worker/veda_encode_worker_env
 COPY veda_encode_worker-entrypoint.sh /usr/local/bin/entrypoint.sh

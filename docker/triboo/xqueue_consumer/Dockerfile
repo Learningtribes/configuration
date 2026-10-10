@@ -2,6 +2,10 @@
 #
 # As no syslogd in container, a issue raised by logging settings in the production environment. Temporarily modify the file to resolve the issue.
 # Ensure dev_env is True in the get_logger_config() 
+#
+# As xqueue.yml config file is not stored in image, please mount it into container when using this image.
+#
+# docker run  --rm --mount type=bind,src=/edx/etc/xqueue.yml,dst=/edx/etc/xqueue.yml,readonly -d -t --name xqueue_consumer xqueue_consumer:test
 
 
 
@@ -15,7 +19,7 @@ RUN rm -rf /src/.git
 
 FROM python:2.7
 
-RUN useradd -m xqueue_consumer
+RUN useradd -G www-data -m xqueue_consumer
 RUN mkdir -p /edx/app/xqueue/xqueue /edx/etc /var/log/xqueue /edx/var/logs/xqueue
 COPY xqueue_env /edx/app/xqueue/xqueue_env 
 COPY xqueue_consumer-entrypoint.sh /usr/local/bin/entrypoint.sh

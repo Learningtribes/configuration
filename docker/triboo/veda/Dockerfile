@@ -2,6 +2,10 @@
 #
 # As no syslogd in container, a issue raised by logging settings in the production environment. Temporarily modify the file to resolve the issue.
 # Ensure dev_env is True in the get_logger_config() 
+#
+# As veda.yml config file is not stored in image, please mount it into container when using this image.
+#
+# docker run  --rm --mount type=bind,src=/edx/etc/veda.yml,dst=/edx/etc/veda.yml,readonly -d -t --name veda veda:test
 
 
 
@@ -15,7 +19,7 @@ RUN rm -rf /src/.git
 
 FROM python:2.7
 
-RUN useradd -m veda
+RUN useradd -G www-data -m veda
 RUN mkdir -p /var/log/veda /edx/var/veda/staticfiles /edx/etc /edx/app/veda/veda /edx/var/veda/VEDA_WORKING
 COPY veda_env /edx/app/veda/veda_env
 COPY veda_gunicorn.py /edx/app/veda/veda_gunicorn.py
@@ -37,5 +41,4 @@ RUN sed -i "s/MySQL-python==1.2.5/mysqlclient==1.4.6/g" requirements.txt
 RUN sed -i "s/LOGGING = get_logger_config(service_variant=CONFIG_DATA.get('SERVICE_VARIANT_NAME', DEFATULT_SERVICE_VARIANT_NAME))/LOGGING = get_logger_config(dev_env=True, service_variant=CONFIG_DATA.get('SERVICE_VARIANT_NAME', DEFATULT_SERVICE_VARIANT_NAME))/g" VEDA/settings/production.py
 RUN pip install -r requirements.txt
 EXPOSE 8555
-# As veda.yml config file is not stored in image, please mount it into container when using this image.
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

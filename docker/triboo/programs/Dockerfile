@@ -1,6 +1,10 @@
 # When install cryptography and mysqlclient library, the python:3.5 image get issues. Temporarily modify the file to resolve the issue.
 #
 # As catalogs application gone. Temporarily modify the file to resolve the issue.
+#
+# As discovery.yml and discovery.auth.json config file are not stored in image, please mount them into container when using this image.
+#
+# docker run  --rm --mount type=bind,src=/edx/etc/discovery.yml,dst=/edx/etc/discovery.yml,readonly --mount type=bind,src=/edx/app/discovery/discovery/discovery.auth.json,dst=/edx/app/discovery/discovery/discovery.auth.json,readonly -d -t --name discovery discovery:test
 
 
 
@@ -14,7 +18,7 @@ RUN rm -rf /src/.git
 
 FROM python:3.5
 
-RUN useradd -m discovery
+RUN useradd -G www-data -m discovery
 RUN mkdir -p /edx/app/discovery/discovery /var/log/discovery /edx/etc /edx/var/discovery/media /edx/var/discovery/staticfiles
 COPY discovery_env /edx/app/discovery/discovery_env
 COPY discovery_gunicorn.py /edx/app/discovery/discovery_gunicorn.py

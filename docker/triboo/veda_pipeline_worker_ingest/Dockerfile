@@ -2,6 +2,10 @@
 #
 # As no syslogd in container, a issue raised by logging settings in the production environment. Temporarily modify the file to resolve the issue.
 # Ensure dev_env is True in the get_logger_config()
+#
+# As veda_pipeline_worker.yml config file is not stored in image, please mount it into container when using this image.
+#
+# docker run --rm --mount type=bind,src=/edx/etc/veda_pipeline_worker.yml,dst=/edx/etc/veda_pipeline_worker.yml,readonly -d -t --name veda_pipeline_worker_ingest veda_pipeline_worker_ingest:test
 
 
 
@@ -16,7 +20,7 @@ RUN rm -rf /src/.git
 
 FROM python:2.7
 
-RUN useradd -m veda_pipeline_worker_ingest
+RUN useradd -G www-data -m veda_pipeline_worker_ingest
 RUN mkdir -p /edx/etc /edx/app/veda_pipeline_worker/veda_pipeline_worker /edx/var/veda_pipeline_worker/INGEST_WORK_DIR
 COPY veda_pipeline_worker_env /edx/app/veda_pipeline_worker/veda_pipeline_worker_env
 COPY veda_pipeline_worker_ingest-entrypoint.sh /usr/local/bin/entrypoint.sh
