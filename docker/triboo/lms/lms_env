@@ -1,0 +1,4 @@
+export PORT="8000"
+export ADDRESS="127.0.0.1"
+export DJANGO_SETTINGS_MODULE="lms.envs.aws"
+export SERVICE_VARIANT="lms"
