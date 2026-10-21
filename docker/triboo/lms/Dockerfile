@@ -13,6 +13,9 @@
 #
 # As lms.env.json / lms.auth.json are not stored in image, please mount them into
 # container when using this image.
+#
+# docker run --rm -d -t --mount type=bind,src=/edx/app/edxapp/lms.env.json,dst=/edx/app/edxapp/lms.env.json,readonly --mount type=bind,src=/edx/app/edxapp/lms.auth.json,dst=/edx/app/edxapp/lms.auth.json,readonly --name lms lms:test
+
 
 FROM alpine/git:2.54.0 AS builder
 ARG GITHUB_TOKEN
