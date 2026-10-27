@@ -1,0 +1,101 @@
+services:
+  mysql:
+    image: mysql:5.7.33
+    restart: unless-stopped
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - project-db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mongodb:
+    image: mongo:3.2.6
+    restart: unless-stopped
+    ports:
+      - 27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - project-db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  rabbitmq:
+    image: rabbitmq:3.6-management
+    restart: unless-stopped
+    ports:
+      - 5672
+      - 15672
+    environment:
+      RABBITMQ_DEFAULT_USER: "root"
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - project-db
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  elasticsearch:
+    image: elasticsearch:1.5.2
+    restart: unless-stopped
+    ports:
+      - 9200
+    environment:
+      ES_JAVA_OPTS: -Xms128m -Xmx128m
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - project-db
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  memcached:
+    image: memcached:1.4
+    restart: unless-stopped
+    ports:
+      - 11211
+    command: ["memcached", "-m", "64"]
+    networks:
+      - project-db
+    healthcheck:
+      test: ["CMD-SHELL", "echo stats | nc -w 1 127.0.0.1 11211 | grep -q STAT"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mysql_data:
+  mongodb_data:
+  rabbitmq_data:
+  elasticsearch_data:
+
+networks:
+  project-db:
+    name: project-db
+    driver: bridge
