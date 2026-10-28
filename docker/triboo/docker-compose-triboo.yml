@@ -1,0 +1,203 @@
+#
+# certificate: replace "QUEUE_URL" in certs.env.json
+#
+# discovery: replace "ELASTICSEARCH_URL" in discovery.yml
+# 
+# veda_encode_worker: replace "lms_base_url" "val_api_url" "val_token_url" "val_transcript_create_url" "val_video_images_url" "val_video_transcript_status_url" "veda_api_url" "veda_auth_url" "veda_base_url" "veda_token_url" in veda_encode_worker.yml
+#
+# veda_pipeline_worker_ingest&veda_pipeline_worker_deliver: replace "lms_base_url" "val_api_url" "val_token_url" "val_transcript_create_url" "val_video_images_url" "val_video_transcript_status_url" "veda_api_url" "veda_auth_url" "veda_base_url" "veda_token_url" in veda_pipeline_worker.yml
+#
+# veda: replace "lms_base_url" "val_api_url" "val_token_url" "val_transcript_create_url" "val_video_images_url" "val_video_transcript_status_url" "veda_api_url" "veda_auth_url" "veda_base_url" "veda_token_url" in veda.yml
+#
+
+version: '2'
+services:
+  lms:
+    image: lms:test
+    ports: 
+      - "8000:8000"
+    container_name: lms
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  cms:
+    image: cms:test
+    ports:
+      - "8010:8010"
+    container_name: cms
+    volumes:
+      - "./config/cms.env.json:/edx/app/edxapp/cms.env.json:ro"
+      - "./config/cms.auth.json:/edx/app/edxapp/cms.auth.json:ro"
+    networks:
+      - triboo
+
+  forum:
+    image: forum:test
+    ports:
+      - "4567:4567"
+    container_name: forum
+    volumes:
+      - "./config/forum_sensitive_env:/edx/app/forum/forum_sensitive_env:ro"
+    networks:
+      - triboo
+
+  xqueue:
+    image: xqueue:test
+    ports:
+      - "8040:8040"
+    container_name: xqueue
+    volumes:
+      - "./config/xqueue.yml:/edx/etc/xqueue.yml:ro"
+    networks:
+      - triboo
+
+  xqueue_consumer:
+    image: xqueue_consumer:test
+    container_name: xqueue_consumer
+    volumes:
+      - "./config/xqueue.yml:/edx/etc/xqueue.yml:ro"
+    networks:
+      - triboo
+
+  certificate:
+    image: certificate:test
+    container_name: certificate
+    volumes:
+      - "./config/certs.env.json:/edx/app/certs/env.json:ro"
+      - "./config/certs.auth.json:/edx/app/certs/auth.json:ro"
+    networks:
+      - triboo
+
+  discovery:
+    image: discovery:test
+    container_name: discovery
+    ports:
+      - "8381:8381"
+    volumes:
+      - "./config/discovery.yml:/edx/etc/discovery.yml:ro"
+      - "./config/discovery.auth.json:/edx/app/discovery/discovery/discovery.auth.json:ro"
+    networks:
+      - triboo
+
+  veda:
+    image: veda:test
+    container_name: veda
+    ports:
+      - "8555:8555"
+    volumes:
+      - "./config/veda.yml:/edx/etc/veda.yml:ro"
+    networks:
+      - triboo
+
+  veda_pipeline_worker_ingest:
+    image: veda_pipeline_worker_ingest:test
+    container_name: veda_pipeline_worker_ingest
+    volumes:
+      - "./config/veda_pipeline_worker.yml:/edx/etc/veda_pipeline_worker.yml:ro"
+    networks:
+      - triboo
+
+  veda_pipeline_worker_deliver:
+    image: veda_pipeline_worker_deliver:test
+    container_name: veda_pipeline_worker_deliver
+    volumes:
+      - "./config/veda_pipeline_worker.yml:/edx/etc/veda_pipeline_worker.yml:ro"
+    networks:
+      - triboo
+
+  veda_encode_worker:
+    image: veda_encode_worker:test
+    container_name: veda_encode_worker
+    volumes:
+      - "./config/veda_encode_worker.yml:/edx/etc/veda_encode_worker.yml:ro"
+    networks:
+      - triboo
+
+  celery_worker_lms_low:
+    image: celery_worker_lms_low:test
+    container_name: celery_worker_lms_low
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_lms_default:
+    image: celery_worker_lms_default:test
+    container_name: celery_worker_lms_default
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_lms_high:
+    image: celery_worker_lms_high:test
+    container_name: celery_worker_lms_high
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_lms_high_mem:
+    image: celery_worker_lms_high_mem:test
+    container_name: celery_worker_lms_high_mem
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_lms_grade:
+    image: celery_worker_lms_grade:test
+    container_name: celery_worker_lms_grade
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_lms_progress:
+    image: celery_worker_lms_progress:test
+    container_name: celery_worker_lms_progress
+    volumes:
+      - "./config/lms.env.json:/edx/app/edxapp/lms.env.json:ro"
+      - "./config/lms.auth.json:/edx/app/edxapp/lms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_cms_low:
+    image: celery_worker_cms_low:test
+    container_name: celery_worker_cms_low
+    volumes:
+      - "./config/cms.env.json:/edx/app/edxapp/cms.env.json:ro"
+      - "./config/cms.auth.json:/edx/app/edxapp/cms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_cms_default:
+    image: celery_worker_cms_default:test
+    container_name: celery_worker_cms_default
+    volumes:
+      - "./config/cms.env.json:/edx/app/edxapp/cms.env.json:ro"
+      - "./config/cms.auth.json:/edx/app/edxapp/cms.auth.json:ro"
+    networks:
+      - triboo
+
+  celery_worker_cms_high:
+    image: celery_worker_cms_high:test
+    container_name: celery_worker_cms_high
+    volumes:
+      - "./config/cms.env.json:/edx/app/edxapp/cms.env.json:ro"
+      - "./config/cms.auth.json:/edx/app/edxapp/cms.auth.json:ro"
+    networks:
+      - triboo
+
+networks:
+  triboo:
+    driver: bridge
+
