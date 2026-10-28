@@ -1,4 +1,4 @@
 export PORT="8010"
-export ADDRESS="127.0.0.1"
+export ADDRESS="0.0.0.0"
 export DJANGO_SETTINGS_MODULE="cms.envs.aws"
 export SERVICE_VARIANT="cms"

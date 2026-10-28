@@ -2,7 +2,7 @@ import multiprocessing
 
 preload_app = False
 timeout = 300
-bind = "127.0.0.1:8010"
+bind = "0.0.0.0:8010"
 pythonpath = "/edx/app/edxapp/edx-platform"
 
 workers = (multiprocessing.cpu_count()-1) * 1
