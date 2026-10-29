@@ -21,7 +21,7 @@ FROM alpine/git:2.54.0 AS builder
 ARG GITHUB_TOKEN
 RUN git clone -b master https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/platform.git /platform
 RUN rm -rf /platform/.git
-RUN git clone -b master https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/triboo-theme.git /theme
+RUN git clone -b hawthorn https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/triboo-theme.git /theme
 RUN rm -rf /theme/.git
 
 
@@ -81,6 +81,7 @@ RUN pip install -e git+https://github.com/oppia/xblock.git@9f6b95b7eb7dbabb96b77
 RUN pip install xblock-problem-builder==3.1.3 ubcpi-xblock==0.6.4 pyOpenSSL==19.1.0 cffi==1.11.5 cryptography==2.2.2 raven==6.8.0 beautifulsoup4==4.6.0 fs==2.4.16 django-cookies-samesite==0.9.0
 RUN npm install
 RUN python -m compileall -q -x '.claude/.*|node_modules/.*' /edx/app/edxapp/edx-platform
+RUN python scripts/trans.py --all --settings=asset
 RUN paver update_assets lms --settings=asset
 EXPOSE 8000
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
