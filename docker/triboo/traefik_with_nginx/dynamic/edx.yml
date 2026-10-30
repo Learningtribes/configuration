@@ -45,7 +45,7 @@ http:
     s3-host:
       headers:
         customRequestHeaders:
-          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+          Host: "public.s3.amazonaws.com"
 
     favicon-rewrite:
       replacePathRegex:
@@ -119,7 +119,7 @@ http:
     lms-svg-content-type:
       headers:
         customRequestHeaders:
-          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+          Host: "public.s3.amazonaws.com"
         customResponseHeaders:
           Content-Type: "image/svg+xml"
 
@@ -273,7 +273,7 @@ http:
     s3:
       loadBalancer:
         servers:
-          - url: "https://lt-learning-apac-myacademy-public.s3.amazonaws.com"
+          - url: "https://public.s3.amazonaws.com"
         passHostHeader: false
         serversTransport: s3-transport
 

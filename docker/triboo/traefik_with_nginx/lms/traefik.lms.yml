@@ -62,13 +62,13 @@ http:
     lms-s3-host:
       headers:
         customRequestHeaders:
-          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+          Host: "public.s3.amazonaws.com"
 
     # Force Content-Type for /xblock/*.svg
     lms-svg-content-type:
       headers:
         customRequestHeaders:
-          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+          Host: "public.s3.amazonaws.com"
         customResponseHeaders:
           Content-Type: "image/svg+xml"
 
@@ -157,7 +157,7 @@ http:
     lms-s3:
       loadBalancer:
         servers:
-          - url: "https://lt-learning-apac-myacademy-public.s3.amazonaws.com"
+          - url: "https://public.s3.amazonaws.com"
         passHostHeader: false
         serversTransport: lms-s3-transport
 
