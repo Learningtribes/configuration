@@ -1,0 +1,42 @@
+# Traefik dynamic config migrated from nginx.xqueue (Open edX XQueue)
+# Compatible with Traefik v3.x
+#
+# nginx listened on :18040 as default_server (no server_name). Bind routers to
+# the `xqueue` entrypoint on that port.
+#
+# Static Traefik config snippet:
+#   entryPoints:
+#     xqueue:
+#       address: ":18040"
+#   providers:
+#     file:
+#       filename: /etc/traefik/dynamic/traefik.xqueue.yml
+#       watch: true
+
+http:
+  serversTransports:
+    xqueue-timeout:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+        idleConnTimeout: "90s"
+
+  services:
+    # nginx upstream xqueue_app_server → 127.0.0.1:8040
+    # In Docker use host.docker.internal; on host network use http://127.0.0.1:8040
+    xqueue-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8040"
+        passHostHeader: true
+        serversTransport: xqueue-timeout
+
+  routers:
+    # Catch-all → xqueue app (includes /xqueue/status/; the “no basic auth”
+    # location collapses here when basic auth is unused).
+    # nginx server_tokens off — Traefik does not add a Server version by default.
+    xqueue-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [xqueue]
+      service: xqueue-backend
+      priority: 1

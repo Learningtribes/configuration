@@ -1,0 +1,26 @@
+# Traefik static configuration — single instance for all Open edX frontends
+# EntryPoints mirror the original nginx listen ports.
+
+api:
+  dashboard: true
+  insecure: true
+
+log:
+  level: INFO
+
+entryPoints:
+  web:        # LMS (:80, Host apac-myacademy*|preview*) + CMS (Host studio*)
+    address: ":80"
+  programs:   # Course Discovery (was :18381 default_server)
+    address: ":18381"
+  forum:      # Forums / cs_comments_service (was :18080)
+    address: ":18080"
+  veda:       # VEDA (was :18555)
+    address: ":18555"
+  xqueue:     # XQueue (was :18040)
+    address: ":18040"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic/edx.yml
+    watch: true

@@ -1,0 +1,47 @@
+# Traefik dynamic config migrated from nginx.forum (Open edX Forums / cs_comments_service)
+# Compatible with Traefik v3.x
+#
+# nginx listened on :18080 as default_server (no server_name). Bind routers to
+# the `forum` entrypoint on that port.
+#
+# Static Traefik config snippet:
+#   entryPoints:
+#     forum:
+#       address: ":18080"
+#   providers:
+#     file:
+#       filename: /etc/traefik/dynamic/traefik.forum.yml
+#       watch: true
+
+http:
+  middlewares:
+    # nginx client_max_body_size 1M
+    forum-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 1048576
+
+  serversTransports:
+    forum-timeout:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+        idleConnTimeout: "5s"  # nginx keepalive_timeout 5
+
+  services:
+    # nginx upstream forum_app_server → 127.0.0.1:4567
+    # In Docker use host.docker.internal; on host network use http://127.0.0.1:4567
+    forum-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:4567"
+        passHostHeader: true
+        serversTransport: forum-timeout
+
+  routers:
+    # Catch-all → forum app (nginx try_files always fell through; no root/static)
+    forum-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [forum]
+      middlewares: [forum-bodylimit]
+      service: forum-backend
+      priority: 1

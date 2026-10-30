@@ -1,0 +1,639 @@
+# Combined Traefik dynamic config for all Open edX frontends.
+# Compatible with Traefik v3.x
+#
+# EntryPoints (see ../traefik.yml):
+#   web      :80     — LMS (Host apac-myacademy*|preview*) + CMS (Host studio*)
+#   programs :18381  — Course Discovery
+#   forum    :18080  — Forums
+#   veda     :18555  — VEDA
+#   xqueue   :18040  — XQueue
+#
+# Static files → single `edx-files` nginx sidecar (../files.nginx.conf).
+
+http:
+  # =========================================================================
+  # Middlewares
+  # =========================================================================
+  middlewares:
+    # --- shared -------------------------------------------------------------
+    cache-long:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000"
+
+    cache-short:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=0, must-revalidate"
+
+    font-cors:
+      headers:
+        accessControlAllowOriginListRegex:
+          - ".*"
+        addVaryHeader: true
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000"
+
+    to-404:
+      replacePath:
+        path: "/__traefik/404"
+
+    to-403:
+      replacePath:
+        path: "/__traefik/403"
+
+    s3-host:
+      headers:
+        customRequestHeaders:
+          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+
+    favicon-rewrite:
+      replacePathRegex:
+        regex: "^.*/favicon\\.ico$"
+        replacement: "/static/images/favicon.ico"
+
+    # Discovery/VEDA path namespacing for the shared file sidecar
+    discovery-static-ns:
+      replacePathRegex:
+        regex: "^/static/(.*)"
+        replacement: "/discovery/static/$1"
+
+    discovery-media-ns:
+      replacePathRegex:
+        regex: "^/media/(.*)"
+        replacement: "/discovery/media/$1"
+
+    veda-static-ns:
+      replacePathRegex:
+        regex: "^/static/(.*)"
+        replacement: "/veda/static/$1"
+
+    veda-media-ns:
+      replacePathRegex:
+        regex: "^/media/(.*)"
+        replacement: "/veda/media/$1"
+
+    # nginx map default "null" (no allowlisted origins in templates)
+    discovery-static-cors:
+      headers:
+        customResponseHeaders:
+          Access-Control-Allow-Origin: "null"
+          Vary: "Accept-Encoding,Origin"
+
+    veda-static-cors:
+      headers:
+        customResponseHeaders:
+          Access-Control-Allow-Origin: "null"
+          Vary: "Accept-Encoding,Origin"
+
+    # --- LMS ----------------------------------------------------------------
+    lms-common:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        customResponseHeaders:
+          P3P: 'CP="Open edX does not have a P3P policy."'
+          Origin-Trial: "As/2gPm8kxTwnLJi6sS8ZX2aCFUhSk4aUIaaLwjmKYC/yKdVcm55G2We3v08FMPcxFqgWAFOC1yLfYpnSoHmTQQAAAB7eyJvcmlnaW4iOiJodHRwczovL2xlYXJuaW5nLXRyaWJlcy5jb206NDQzIiwiZmVhdHVyZSI6IkFsbG93U3luY1hIUkluUGFnZURpc21pc3NhbCIsImV4cGlyeSI6MTU5OTczMTkzNywiaXNTdWJkb21haW4iOnRydWV9"
+          Content-Security-Policy: "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https: blob:; media-src * data: https: blob:"
+          Server: ""
+
+    lms-login-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        customResponseHeaders:
+          X-Frame-Options: "SAMEORIGIN"
+          P3P: 'CP="Open edX does not have a P3P policy."'
+          Origin-Trial: "As/2gPm8kxTwnLJi6sS8ZX2aCFUhSk4aUIaaLwjmKYC/yKdVcm55G2We3v08FMPcxFqgWAFOC1yLfYpnSoHmTQQAAAB7eyJvcmlnaW4iOiJodHRwczovL2xlYXJuaW5nLXRyaWJlcy5jb206NDQzIiwiZmVhdHVyZSI6IkFsbG93U3luY1hIUkluUGFnZURpc21pc3NhbCIsImV4cGlyeSI6MTU5OTczMTkzNywiaXNTdWJkb21haW4iOnRydWV9"
+          Content-Security-Policy: "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https: blob:; media-src * data: https: blob:"
+          Server: ""
+
+    lms-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 4194304
+
+    lms-profile-image-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 1049576
+
+    lms-svg-content-type:
+      headers:
+        customRequestHeaders:
+          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+        customResponseHeaders:
+          Content-Type: "image/svg+xml"
+
+    lms-errors-maintenance:
+      errors:
+        status: ["500", "502", "504"]
+        service: edx-files
+        query: "/server/maintenance.html"
+
+    lms-app-chain:
+      chain:
+        middlewares: [lms-common, lms-bodylimit, lms-errors-maintenance]
+
+    lms-login-chain:
+      chain:
+        middlewares: [lms-login-headers, lms-bodylimit, lms-errors-maintenance]
+
+    lms-profile-upload-chain:
+      chain:
+        middlewares: [lms-common, lms-profile-image-bodylimit, lms-errors-maintenance]
+
+    # --- CMS ----------------------------------------------------------------
+    cms-common:
+      headers:
+        customResponseHeaders:
+          P3P: 'CP="Open edX does not have a P3P policy."'
+          Content-Security-Policy: "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https: blob:; media-src * data: https: blob:"
+          Server: ""
+
+    cms-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 2147483648
+
+    cms-xblock-resource-rewrite:
+      replacePathRegex:
+        regex: "^/xblock_resource/(.*)"
+        replacement: "/xblock/$1"
+
+    cms-errors-maintenance:
+      errors:
+        status: ["500", "502", "504"]
+        service: edx-files
+        query: "/server/maintenance.html"
+
+    cms-app-chain:
+      chain:
+        middlewares: [cms-common, cms-bodylimit, cms-errors-maintenance]
+
+    cms-xblock-resource-chain:
+      chain:
+        middlewares: [cms-xblock-resource-rewrite, s3-host]
+
+    # --- Forum --------------------------------------------------------------
+    forum-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 1048576
+
+    # --- Discovery / VEDA file chains ---------------------------------------
+    discovery-static-chain:
+      chain:
+        middlewares: [discovery-static-ns, discovery-static-cors]
+
+    discovery-media-chain:
+      chain:
+        middlewares: [discovery-media-ns]
+
+    veda-static-chain:
+      chain:
+        middlewares: [veda-static-ns, veda-static-cors]
+
+    veda-media-chain:
+      chain:
+        middlewares: [veda-media-ns]
+
+  # =========================================================================
+  # Servers transports
+  # =========================================================================
+  serversTransports:
+    lms-long-timeout:
+      forwardingTimeouts:
+        dialTimeout: "300s"
+        responseHeaderTimeout: "300s"
+        idleConnTimeout: "300s"
+    cms-long-timeout:
+      forwardingTimeouts:
+        dialTimeout: "1800s"
+        responseHeaderTimeout: "1800s"
+        idleConnTimeout: "1800s"
+    s3-transport:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+    default-timeout:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+        idleConnTimeout: "90s"
+    forum-timeout:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+        idleConnTimeout: "5s"
+
+  # =========================================================================
+  # Services
+  # =========================================================================
+  services:
+    # Backends (host.docker.internal → host network; use 127.0.0.1 if Traefik is on host)
+    lms-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8000"
+        passHostHeader: true
+        serversTransport: lms-long-timeout
+
+    cms-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8010"
+        passHostHeader: true
+        serversTransport: cms-long-timeout
+
+    programs-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8381"
+        passHostHeader: true
+        serversTransport: default-timeout
+
+    forum-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:4567"
+        passHostHeader: true
+        serversTransport: forum-timeout
+
+    veda-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8555"
+        passHostHeader: true
+        serversTransport: default-timeout
+
+    xqueue-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8040"
+        passHostHeader: true
+        serversTransport: default-timeout
+
+    s3:
+      loadBalancer:
+        servers:
+          - url: "https://lt-learning-apac-myacademy-public.s3.amazonaws.com"
+        passHostHeader: false
+        serversTransport: s3-transport
+
+    # Single file sidecar
+    edx-files:
+      loadBalancer:
+        servers:
+          - url: "http://edx-files:80"
+        passHostHeader: true
+
+  # =========================================================================
+  # Routers — LMS (entrypoint web, Host apac-myacademy*|preview*)
+  # =========================================================================
+  routers:
+    lms-python-lib-zip:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`(?i)python_lib\\.zip`)
+      entryPoints: [web]
+      middlewares: [lms-common, to-404]
+      service: edx-files
+      priority: 1000
+
+    lms-static-templates-deny:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/static/templates/`)
+      entryPoints: [web]
+      middlewares: [to-404]
+      service: edx-files
+      priority: 950
+
+    lms-static-sensitive-deny:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/.*(\\.xml|\\.json|README\\.TXT)$`)
+      entryPoints: [web]
+      middlewares: [to-403]
+      service: edx-files
+      priority: 940
+
+    lms-favicon:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^.*/favicon\\.ico$`)
+      entryPoints: [web]
+      middlewares: [favicon-rewrite, cache-long]
+      service: edx-files
+      priority: 900
+
+    lms-scorm-s3:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/media/profile-images/scorm/`)
+      entryPoints: [web]
+      middlewares: [s3-host]
+      service: s3
+      priority: 850
+
+    lms-xblock-resources:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/xblock/resources/`)
+      entryPoints: [web]
+      service: edx-files
+      priority: 845
+
+    lms-xblock-svg:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/xblock/.*\\.svg$`)
+      entryPoints: [web]
+      middlewares: [lms-svg-content-type]
+      service: s3
+      priority: 840
+
+    lms-xblock-s3:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/xblock/`)
+      entryPoints: [web]
+      middlewares: [s3-host]
+      service: s3
+      priority: 820
+
+    lms-media-local:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/media/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 800
+
+    lms-analytics-report:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/analytics-report/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 800
+
+    lms-downloads:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/downloads/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 800
+
+    lms-server-static:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/server/`)
+      entryPoints: [web]
+      service: edx-files
+      priority: 800
+
+    lms-static-triboo-analytics:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/js/triboo_analytics/.*\\.[0-9a-f]{12}\\.json$`)
+      entryPoints: [web]
+      service: edx-files
+      priority: 790
+
+    lms-static-fonts:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\.(eot|otf|ttf|woff|woff2)$`)
+      entryPoints: [web]
+      middlewares: [font-cors]
+      service: edx-files
+      priority: 780
+
+    lms-static-hashed:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\..+`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 770
+
+    lms-static-studio-hashed:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/[0-9a-f]{7}/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 760
+
+    lms-static:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/static/`)
+      entryPoints: [web]
+      middlewares: [cache-short]
+      service: edx-files
+      priority: 750
+
+    lms-profile-images-upload:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/api/profile_images/[^/]+/[^/]+/upload$`)
+      entryPoints: [web]
+      middlewares: [lms-profile-upload-chain]
+      service: lms-backend
+      priority: 700
+
+    # GAP: nginx 403 on /login?next=*favicon.ico* needs a query plugin or app check
+    lms-login:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/login`)
+      entryPoints: [web]
+      middlewares: [lms-login-chain]
+      service: lms-backend
+      priority: 600
+
+    lms-app:
+      rule: HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)
+      entryPoints: [web]
+      middlewares: [lms-app-chain]
+      service: lms-backend
+      priority: 1
+
+    # =========================================================================
+    # Routers — CMS (entrypoint web, Host studio*)
+    # =========================================================================
+    cms-python-lib-zip:
+      rule: HostRegexp(`^studio.*`) && PathRegexp(`(?i)python_lib\\.zip`)
+      entryPoints: [web]
+      middlewares: [cms-common, to-404]
+      service: edx-files
+      priority: 1000
+
+    cms-static-templates-deny:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/static/templates/`)
+      entryPoints: [web]
+      middlewares: [to-404]
+      service: edx-files
+      priority: 950
+
+    cms-static-sensitive-deny:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/.*(\\.xml|\\.json|README\\.TXT)$`)
+      entryPoints: [web]
+      middlewares: [to-403]
+      service: edx-files
+      priority: 940
+
+    cms-favicon:
+      rule: HostRegexp(`^studio.*`) && PathRegexp(`^.*/favicon\\.ico$`)
+      entryPoints: [web]
+      middlewares: [favicon-rewrite, cache-long]
+      service: edx-files
+      priority: 900
+
+    cms-xblock-resource-s3:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/xblock_resource/`)
+      entryPoints: [web]
+      middlewares: [cms-xblock-resource-chain]
+      service: s3
+      priority: 850
+
+    cms-media-local:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/media/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 800
+
+    cms-server-static:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/server/`)
+      entryPoints: [web]
+      service: edx-files
+      priority: 800
+
+    cms-analytics-report:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/analytics-report/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 800
+
+    cms-static-triboo-analytics:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/js/triboo_analytics/.*\\.[0-9a-f]{12}\\.json$`)
+      entryPoints: [web]
+      service: edx-files
+      priority: 790
+
+    cms-static-fonts:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\.(eot|otf|ttf|woff|woff2)$`)
+      entryPoints: [web]
+      middlewares: [font-cors]
+      service: edx-files
+      priority: 780
+
+    cms-static-hashed:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\..+`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 770
+
+    cms-static-studio-hashed:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/[0-9a-f]{7}/`)
+      entryPoints: [web]
+      middlewares: [cache-long]
+      service: edx-files
+      priority: 760
+
+    cms-static:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/static/`)
+      entryPoints: [web]
+      middlewares: [cache-short]
+      service: edx-files
+      priority: 750
+
+    cms-app:
+      rule: HostRegexp(`^studio.*`)
+      entryPoints: [web]
+      middlewares: [cms-app-chain]
+      service: cms-backend
+      priority: 1
+
+    # =========================================================================
+    # Routers — Course Discovery (entrypoint programs :18381)
+    # =========================================================================
+    programs-static:
+      rule: PathPrefix(`/static/`)
+      entryPoints: [programs]
+      middlewares: [discovery-static-chain]
+      service: edx-files
+      priority: 100
+
+    programs-media:
+      rule: PathPrefix(`/media/`)
+      entryPoints: [programs]
+      middlewares: [discovery-media-chain]
+      service: edx-files
+      priority: 100
+
+    programs-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [programs]
+      service: programs-backend
+      priority: 1
+
+    # =========================================================================
+    # Routers — Forum (entrypoint forum :18080)
+    # =========================================================================
+    forum-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [forum]
+      middlewares: [forum-bodylimit]
+      service: forum-backend
+      priority: 1
+
+    # =========================================================================
+    # Routers — VEDA (entrypoint veda :18555)
+    # =========================================================================
+    veda-static:
+      rule: PathPrefix(`/static/`)
+      entryPoints: [veda]
+      middlewares: [veda-static-chain]
+      service: edx-files
+      priority: 100
+
+    veda-media:
+      rule: PathPrefix(`/media/`)
+      entryPoints: [veda]
+      middlewares: [veda-media-chain]
+      service: edx-files
+      priority: 100
+
+    veda-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [veda]
+      service: veda-backend
+      priority: 1
+
+    # =========================================================================
+    # Routers — XQueue (entrypoint xqueue :18040)
+    # =========================================================================
+    xqueue-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [xqueue]
+      service: xqueue-backend
+      priority: 1

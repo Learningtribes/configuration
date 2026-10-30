@@ -1,0 +1,73 @@
+# Traefik dynamic config migrated from nginx.veda (Open edX VEDA)
+# Compatible with Traefik v3.x
+#
+# nginx listened on :18555 as default_server (no server_name). Bind routers to
+# the `veda` entrypoint on that port.
+#
+# Traefik does not serve files from disk. /static and /media are routed to the
+# `veda-files` sidecar. See docker-compose.veda-traefik.yml.
+#
+# Static Traefik config snippet:
+#   entryPoints:
+#     veda:
+#       address: ":18555"
+#   providers:
+#     file:
+#       filename: /etc/traefik/dynamic/traefik.veda.yml
+#       watch: true
+
+http:
+  middlewares:
+    # nginx map $http_origin $cors_origin { default "null"; } — no allowlisted
+    # origins in this template, so ACAO is always the literal string "null".
+    veda-static-cors:
+      headers:
+        customResponseHeaders:
+          Access-Control-Allow-Origin: "null"
+          Vary: "Accept-Encoding,Origin"
+
+  serversTransports:
+    veda-timeout:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+        idleConnTimeout: "90s"
+
+  services:
+    # nginx upstream veda_app_server → 127.0.0.1:8555
+    # In Docker use host.docker.internal; on host network use http://127.0.0.1:8555
+    veda-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8555"
+        passHostHeader: true
+        serversTransport: veda-timeout
+
+    veda-files:
+      loadBalancer:
+        servers:
+          - url: "http://veda-files:80"
+        passHostHeader: true
+
+  routers:
+    # /static/ → /edx/var/veda/staticfiles/ + CORS headers
+    veda-static:
+      rule: PathPrefix(`/static/`)
+      entryPoints: [veda]
+      middlewares: [veda-static-cors]
+      service: veda-files
+      priority: 100
+
+    # /media/ → /edx/var/veda/media/
+    veda-media:
+      rule: PathPrefix(`/media/`)
+      entryPoints: [veda]
+      service: veda-files
+      priority: 100
+
+    # / and /api/ → veda app
+    veda-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [veda]
+      service: veda-backend
+      priority: 1

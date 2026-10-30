@@ -1,0 +1,29 @@
+# Reference compose for Traefik + Course Discovery (programs) + file sidecar.
+# Adjust volume mounts to match your Open edX host paths.
+
+services:
+  traefik:
+    image: traefik:v3.2
+    command:
+      - --entrypoints.programs.address=:18381
+      - --providers.file.filename=/etc/traefik/dynamic/traefik.programs.yml
+      - --providers.file.watch=true
+      - --api.dashboard=true
+      - --log.level=INFO
+    ports:
+      - "18381:18381"
+      - "8080:8080"
+    volumes:
+      - ./traefik.programs.yml:/etc/traefik/dynamic/traefik.programs.yml:ro
+    depends_on:
+      - programs-files
+    extra_hosts:
+      # So Traefik can reach Discovery on the host (nginx upstream 127.0.0.1:8381)
+      - "host.docker.internal:host-gateway"
+
+  programs-files:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./programs-files.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /edx/var/discovery/staticfiles:/edx/var/discovery/staticfiles:ro
+      - /edx/var/discovery/media:/edx/var/discovery/media:ro

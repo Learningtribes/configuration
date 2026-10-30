@@ -1,0 +1,20 @@
+# Reference compose for Traefik + Forums (cs_comments_service).
+# No file sidecar — nginx only reverse-proxied to the app.
+
+services:
+  traefik:
+    image: traefik:v3.2
+    command:
+      - --entrypoints.forum.address=:18080
+      - --providers.file.filename=/etc/traefik/dynamic/traefik.forum.yml
+      - --providers.file.watch=true
+      - --api.dashboard=true
+      - --log.level=INFO
+    ports:
+      - "18080:18080"
+      - "8080:8080"
+    volumes:
+      - ./traefik.forum.yml:/etc/traefik/dynamic/traefik.forum.yml:ro
+    extra_hosts:
+      # So Traefik can reach Forums on the host (nginx upstream 127.0.0.1:4567)
+      - "host.docker.internal:host-gateway"

@@ -1,0 +1,259 @@
+# Traefik dynamic config migrated from nginx.cms (Open edX CMS / Studio)
+# Compatible with Traefik v3.x (HostRegexp uses Go regexp syntax).
+# For Traefik v2, replace HostRegexp(`^studio.*`) with
+#   HostRegexp(`{host:studio.*}`)
+#
+# Traefik does not serve files from disk. Local paths that nginx served via
+# try_files are routed to the `cms-files` service (sidecar). See
+# docker-compose.cms-traefik.yml for a reference layout.
+#
+# Static Traefik config snippet:
+#   entryPoints:
+#     web:
+#       address: ":80"
+#   providers:
+#     file:
+#       filename: /etc/traefik/dynamic/traefik.cms.yml
+#       watch: true
+
+http:
+  middlewares:
+    # nginx add_header P3P + CSP; X-Forwarded-Proto from $scheme (Traefik sets this)
+    cms-common:
+      headers:
+        customResponseHeaders:
+          P3P: 'CP="Open edX does not have a P3P policy."'
+          Content-Security-Policy: "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https: blob:; media-src * data: https: blob:"
+          Server: ""
+          # Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+
+    # nginx client_max_body_size 2048M (course asset uploads)
+    cms-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 2147483648
+
+    # Favicon rewrite → /static/images/favicon.ico
+    cms-favicon-rewrite:
+      replacePathRegex:
+        regex: "^.*/favicon\\.ico$"
+        replacement: "/static/images/favicon.ico"
+
+    # /xblock_resource/ → S3 /xblock/ (nginx proxy_pass .../xblock/)
+    cms-xblock-resource-rewrite:
+      replacePathRegex:
+        regex: "^/xblock_resource/(.*)"
+        replacement: "/xblock/$1"
+
+    cms-s3-host:
+      headers:
+        customRequestHeaders:
+          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+
+    cms-cache-long:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000"
+
+    cms-cache-short:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=0, must-revalidate"
+
+    # Webfont CORS (nginx Access-Control-Allow-Origin $http_origin)
+    cms-font-cors:
+      headers:
+        accessControlAllowOriginListRegex:
+          - ".*"
+        addVaryHeader: true
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000"
+
+    # 500/502/504 → /server/maintenance.html
+    cms-errors-maintenance:
+      errors:
+        status:
+          - "500"
+          - "502"
+          - "504"
+        service: cms-files
+        query: "/server/maintenance.html"
+
+    cms-to-404:
+      replacePath:
+        path: "/__traefik/404"
+    cms-to-403:
+      replacePath:
+        path: "/__traefik/403"
+
+    cms-app-chain:
+      chain:
+        middlewares:
+          - cms-common
+          - cms-bodylimit
+          - cms-errors-maintenance
+
+    cms-xblock-resource-chain:
+      chain:
+        middlewares:
+          - cms-xblock-resource-rewrite
+          - cms-s3-host
+
+  serversTransports:
+    # nginx proxy_*_timeout 1800
+    cms-long-timeout:
+      forwardingTimeouts:
+        dialTimeout: "1800s"
+        responseHeaderTimeout: "1800s"
+        idleConnTimeout: "1800s"
+    cms-s3-transport:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+
+  services:
+    # nginx upstream cms-backend → 127.0.0.1:8010
+    # In Docker use host.docker.internal; on host network use http://127.0.0.1:8010
+    cms-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8010"
+        passHostHeader: true
+        serversTransport: cms-long-timeout
+
+    cms-s3:
+      loadBalancer:
+        servers:
+          - url: "https://lt-learning-apac-myacademy-public.s3.amazonaws.com"
+        passHostHeader: false
+        serversTransport: cms-s3-transport
+
+    cms-files:
+      loadBalancer:
+        servers:
+          - url: "http://cms-files:80"
+        passHostHeader: true
+
+  routers:
+    # Host: nginx server_name ~^studio.*;
+
+    # python_lib.zip → 404 (nginx internal)
+    cms-python-lib-zip:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`(?i)python_lib\\.zip`)
+      entryPoints: [web]
+      middlewares: [cms-common, cms-to-404]
+      service: cms-files
+      priority: 1000
+
+    # /static/templates/ → 404
+    cms-static-templates-deny:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/static/templates/`)
+      entryPoints: [web]
+      middlewares: [cms-to-404]
+      service: cms-files
+      priority: 950
+
+    # /static/*.(xml|json) and README.TXT → 403
+    cms-static-sensitive-deny:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/.*(\\.xml|\\.json|README\\.TXT)$`)
+      entryPoints: [web]
+      middlewares: [cms-to-403]
+      service: cms-files
+      priority: 940
+
+    # Favicon rewrite
+    cms-favicon:
+      rule: HostRegexp(`^studio.*`) && PathRegexp(`^.*/favicon\\.ico$`)
+      entryPoints: [web]
+      middlewares: [cms-favicon-rewrite, cms-cache-long]
+      service: cms-files
+      priority: 900
+
+    # /xblock_resource/ → S3 /xblock/
+    cms-xblock-resource-s3:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/xblock_resource/`)
+      entryPoints: [web]
+      middlewares: [cms-xblock-resource-chain]
+      service: cms-s3
+      priority: 850
+
+    # Local media
+    cms-media-local:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/media/`)
+      entryPoints: [web]
+      middlewares: [cms-cache-long]
+      service: cms-files
+      priority: 800
+
+    cms-server-static:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/server/`)
+      entryPoints: [web]
+      service: cms-files
+      priority: 800
+
+    # Needed as media try_files fallback target
+    cms-analytics-report:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/analytics-report/`)
+      entryPoints: [web]
+      middlewares: [cms-cache-long]
+      service: cms-files
+      priority: 800
+
+    # /static/js/triboo_analytics/*.<12-hex>.json
+    cms-static-triboo-analytics:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/js/triboo_analytics/.*\\.[0-9a-f]{12}\\.json$`)
+      entryPoints: [web]
+      service: cms-files
+      priority: 790
+
+    # Hashed webfonts
+    cms-static-fonts:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\.(eot|otf|ttf|woff|woff2)$`)
+      entryPoints: [web]
+      middlewares: [cms-font-cors]
+      service: cms-files
+      priority: 780
+
+    # django-pipeline hashed assets
+    cms-static-hashed:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\..+`)
+      entryPoints: [web]
+      middlewares: [cms-cache-long]
+      service: cms-files
+      priority: 770
+
+    # Studio hashed prefix /static/[0-9a-f]{7}/...
+    cms-static-studio-hashed:
+      rule: >-
+        HostRegexp(`^studio.*`) &&
+        PathRegexp(`^/static/[0-9a-f]{7}/`)
+      entryPoints: [web]
+      middlewares: [cms-cache-long]
+      service: cms-files
+      priority: 760
+
+    # Remaining /static/
+    cms-static:
+      rule: HostRegexp(`^studio.*`) && PathPrefix(`/static/`)
+      entryPoints: [web]
+      middlewares: [cms-cache-short]
+      service: cms-files
+      priority: 750
+
+    # Catch-all → CMS (/, /api, /heartbeat, /github_service_hook, …)
+    # The “no basic auth” locations collapse here when basic auth is unused.
+    cms-app:
+      rule: HostRegexp(`^studio.*`)
+      entryPoints: [web]
+      middlewares: [cms-app-chain]
+      service: cms-backend
+      priority: 1

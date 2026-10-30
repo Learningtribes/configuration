@@ -1,0 +1,73 @@
+# Traefik dynamic config migrated from nginx.programs (Open edX Course Discovery)
+# Compatible with Traefik v3.x
+#
+# nginx listened on :18381 as default_server (no server_name). Bind routers to
+# the `programs` entrypoint on that port.
+#
+# Traefik does not serve files from disk. /static and /media are routed to the
+# `programs-files` sidecar. See docker-compose.programs-traefik.yml.
+#
+# Static Traefik config snippet:
+#   entryPoints:
+#     programs:
+#       address: ":18381"
+#   providers:
+#     file:
+#       filename: /etc/traefik/dynamic/traefik.programs.yml
+#       watch: true
+
+http:
+  middlewares:
+    # nginx map $http_origin $cors_origin { default "null"; } — no allowlisted
+    # origins in this template, so ACAO is always the literal string "null".
+    programs-static-cors:
+      headers:
+        customResponseHeaders:
+          Access-Control-Allow-Origin: "null"
+          Vary: "Accept-Encoding,Origin"
+
+  serversTransports:
+    programs-timeout:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+        idleConnTimeout: "90s"
+
+  services:
+    # nginx upstream discovery_app_server → 127.0.0.1:8381
+    # In Docker use host.docker.internal; on host network use http://127.0.0.1:8381
+    programs-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8381"
+        passHostHeader: true
+        serversTransport: programs-timeout
+
+    programs-files:
+      loadBalancer:
+        servers:
+          - url: "http://programs-files:80"
+        passHostHeader: true
+
+  routers:
+    # /static/ → /edx/var/discovery/staticfiles/ + CORS headers
+    programs-static:
+      rule: PathPrefix(`/static/`)
+      entryPoints: [programs]
+      middlewares: [programs-static-cors]
+      service: programs-files
+      priority: 100
+
+    # /media/ → /edx/var/discovery/media/
+    programs-media:
+      rule: PathPrefix(`/media/`)
+      entryPoints: [programs]
+      service: programs-files
+      priority: 100
+
+    # / and /api/ → discovery app (nginx /api location was redundant with /)
+    programs-app:
+      rule: PathPrefix(`/`)
+      entryPoints: [programs]
+      service: programs-backend
+      priority: 1

@@ -1,0 +1,20 @@
+# Reference compose for Traefik + XQueue.
+# No file sidecar — nginx only reverse-proxied to the app.
+
+services:
+  traefik:
+    image: traefik:v3.2
+    command:
+      - --entrypoints.xqueue.address=:18040
+      - --providers.file.filename=/etc/traefik/dynamic/traefik.xqueue.yml
+      - --providers.file.watch=true
+      - --api.dashboard=true
+      - --log.level=INFO
+    ports:
+      - "18040:18040"
+      - "8080:8080"
+    volumes:
+      - ./traefik.xqueue.yml:/etc/traefik/dynamic/traefik.xqueue.yml:ro
+    extra_hosts:
+      # So Traefik can reach XQueue on the host (nginx upstream 127.0.0.1:8040)
+      - "host.docker.internal:host-gateway"

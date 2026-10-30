@@ -1,0 +1,50 @@
+# Single Traefik instance + one nginx file sidecar for all Open edX frontends.
+#
+# Ports:
+#   80     — LMS (Host apac-myacademy*|preview*) + CMS (Host studio*)
+#   18381  — Course Discovery
+#   18080  — Forums
+#   18555  — VEDA
+#   18040  — XQueue
+#   8080   — Traefik dashboard
+#
+# Backends are reached on the Docker host via host.docker.internal:
+#   LMS 8000 | CMS 8010 | Discovery 8381 | Forum 4567 | VEDA 8555 | XQueue 8040
+
+services:
+  traefik:
+    image: traefik:v3.2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "18381:18381"
+      - "18080:18080"
+      - "18555:18555"
+      - "18040:18040"
+      - "8080:8080"
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+    depends_on:
+      - edx-files
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  edx-files:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./files.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # LMS / CMS
+      - /edx/var/edxapp/media:/edx/var/edxapp/media:ro
+      - /edx/var/edxapp/staticfiles:/edx/var/edxapp/staticfiles:ro
+      - /edx/var/edxapp/course_static:/edx/var/edxapp/course_static:ro
+      - /edx/var/certs/www-data/downloads:/edx/var/certs/www-data/downloads:ro
+      - /edx/var/nginx/server-static:/edx/var/nginx/server-static:ro
+      - /tmp/edx-s3/analytics:/tmp/edx-s3/analytics:ro
+      # Course Discovery
+      - /edx/var/discovery/staticfiles:/edx/var/discovery/staticfiles:ro
+      - /edx/var/discovery/media:/edx/var/discovery/media:ro
+      # VEDA
+      - /edx/var/veda/staticfiles:/edx/var/veda/staticfiles:ro
+      - /edx/var/veda/media:/edx/var/veda/media:ro

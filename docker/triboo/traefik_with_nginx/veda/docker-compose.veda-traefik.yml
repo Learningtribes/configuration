@@ -1,0 +1,29 @@
+# Reference compose for Traefik + VEDA + file sidecar.
+# Adjust volume mounts to match your Open edX host paths.
+
+services:
+  traefik:
+    image: traefik:v3.2
+    command:
+      - --entrypoints.veda.address=:18555
+      - --providers.file.filename=/etc/traefik/dynamic/traefik.veda.yml
+      - --providers.file.watch=true
+      - --api.dashboard=true
+      - --log.level=INFO
+    ports:
+      - "18555:18555"
+      - "8080:8080"
+    volumes:
+      - ./traefik.veda.yml:/etc/traefik/dynamic/traefik.veda.yml:ro
+    depends_on:
+      - veda-files
+    extra_hosts:
+      # So Traefik can reach VEDA on the host (nginx upstream 127.0.0.1:8555)
+      - "host.docker.internal:host-gateway"
+
+  veda-files:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./veda-files.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /edx/var/veda/staticfiles:/edx/var/veda/staticfiles:ro
+      - /edx/var/veda/media:/edx/var/veda/media:ro

@@ -1,0 +1,370 @@
+# Traefik dynamic config migrated from nginx.lms (Open edX LMS)
+# Compatible with Traefik v3.x (HostRegexp uses Go regexp syntax).
+# For Traefik v2, replace HostRegexp(`^apac-myacademy.*`) with
+#   HostRegexp(`{host:apac-myacademy.*}`) etc.
+#
+# Traefik does not serve files from disk. Local paths that nginx served via
+# try_files are routed to the `lms-files` service (sidecar). See
+# docker-compose.lms-traefik.yml for a reference layout.
+#
+# Static Traefik config snippet:
+#   entryPoints:
+#     web:
+#       address: ":80"
+#   providers:
+#     file:
+#       filename: /etc/traefik/dynamic/traefik.lms.yml
+#       watch: true
+
+http:
+  middlewares:
+    # --- Response / request headers (nginx add_header + proxy_set_header) ---
+    lms-common:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        customResponseHeaders:
+          P3P: 'CP="Open edX does not have a P3P policy."'
+          Origin-Trial: "As/2gPm8kxTwnLJi6sS8ZX2aCFUhSk4aUIaaLwjmKYC/yKdVcm55G2We3v08FMPcxFqgWAFOC1yLfYpnSoHmTQQAAAB7eyJvcmlnaW4iOiJodHRwczovL2xlYXJuaW5nLXRyaWJlcy5jb206NDQzIiwiZmVhdHVyZSI6IkFsbG93U3luY1hIUkluUGFnZURpc21pc3NhbCIsImV4cGlyeSI6MTU5OTczMTkzNywiaXNTdWJkb21haW4iOnRydWV9"
+          Content-Security-Policy: "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https: blob:; media-src * data: https: blob:"
+          Server: ""
+          # Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+
+    # /login: force X-Frame-Options SAMEORIGIN (nginx proxy_hide_header + add_header)
+    lms-login-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        customResponseHeaders:
+          X-Frame-Options: "SAMEORIGIN"
+          P3P: 'CP="Open edX does not have a P3P policy."'
+          Origin-Trial: "As/2gPm8kxTwnLJi6sS8ZX2aCFUhSk4aUIaaLwjmKYC/yKdVcm55G2We3v08FMPcxFqgWAFOC1yLfYpnSoHmTQQAAAB7eyJvcmlnaW4iOiJodHRwczovL2xlYXJuaW5nLXRyaWJlcy5jb206NDQzIiwiZmVhdHVyZSI6IkFsbG93U3luY1hIUkluUGFnZURpc21pc3NhbCIsImV4cGlyeSI6MTU5OTczMTkzNywiaXNTdWJkb21haW4iOnRydWV9"
+          Content-Security-Policy: "default-src * blob: https: 'unsafe-inline' 'unsafe-eval'; font-src * data: https:; img-src * data: https: blob:; media-src * data: https: blob:"
+          Server: ""
+
+    # nginx client_max_body_size 4M
+    lms-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 4194304
+
+    # nginx client_max_body_size 1049576 (profile image upload)
+    lms-profile-image-bodylimit:
+      buffering:
+        maxRequestBodyBytes: 1049576
+
+    # Favicon rewrite → /static/images/favicon.ico
+    lms-favicon-rewrite:
+      replacePathRegex:
+        regex: "^.*/favicon\\.ico$"
+        replacement: "/static/images/favicon.ico"
+
+    # S3 Host header for SCORM / xblock proxying
+    lms-s3-host:
+      headers:
+        customRequestHeaders:
+          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+
+    # Force Content-Type for /xblock/*.svg
+    lms-svg-content-type:
+      headers:
+        customRequestHeaders:
+          Host: "lt-learning-apac-myacademy-public.s3.amazonaws.com"
+        customResponseHeaders:
+          Content-Type: "image/svg+xml"
+
+    lms-cache-long:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000"
+
+    lms-cache-short:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=0, must-revalidate"
+
+    # Webfont CORS (nginx Access-Control-Allow-Origin $http_origin)
+    lms-font-cors:
+      headers:
+        accessControlAllowOriginListRegex:
+          - ".*"
+        addVaryHeader: true
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000"
+
+    # 500/502/504 → /server/maintenance.html (served by lms-files)
+    lms-errors-maintenance:
+      errors:
+        status:
+          - "500"
+          - "502"
+          - "504"
+        service: lms-files
+        query: "/server/maintenance.html"
+
+    # Rewrite deny targets to paths the file sidecar answers with 404/403
+    lms-to-404:
+      replacePath:
+        path: "/__traefik/404"
+    lms-to-403:
+      replacePath:
+        path: "/__traefik/403"
+
+    lms-app-chain:
+      chain:
+        middlewares:
+          - lms-common
+          - lms-bodylimit
+          - lms-errors-maintenance
+
+    lms-login-chain:
+      chain:
+        middlewares:
+          - lms-login-headers
+          - lms-bodylimit
+          - lms-errors-maintenance
+
+    lms-profile-upload-chain:
+      chain:
+        middlewares:
+          - lms-common
+          - lms-profile-image-bodylimit
+          - lms-errors-maintenance
+
+  serversTransports:
+    # nginx proxy_connect/send/read_timeout 300
+    lms-long-timeout:
+      forwardingTimeouts:
+        dialTimeout: "300s"
+        responseHeaderTimeout: "300s"
+        idleConnTimeout: "300s"
+    lms-s3-transport:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "60s"
+
+  services:
+    # nginx upstream lms-backend → 127.0.0.1:8000
+    # In Docker use host.docker.internal (see compose extra_hosts); on the host
+    # network use http://127.0.0.1:8000 instead.
+    lms-backend:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8000"
+        passHostHeader: true
+        serversTransport: lms-long-timeout
+
+    # S3 public bucket
+    lms-s3:
+      loadBalancer:
+        servers:
+          - url: "https://lt-learning-apac-myacademy-public.s3.amazonaws.com"
+        passHostHeader: false
+        serversTransport: lms-s3-transport
+
+    # File sidecar for former nginx try_files roots (see compose file)
+    lms-files:
+      loadBalancer:
+        servers:
+          - url: "http://lms-files:80"
+        passHostHeader: true
+
+  routers:
+    # Higher priority wins. Host matches nginx:
+    #   server_name ~^apac-myacademy.* ~^preview.*;
+
+    # python_lib.zip → 404 (nginx internal)
+    lms-python-lib-zip:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`(?i)python_lib\\.zip`)
+      entryPoints: [web]
+      middlewares: [lms-common, lms-to-404]
+      service: lms-files
+      priority: 1000
+
+    # /static/templates/ → 404
+    lms-static-templates-deny:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/static/templates/`)
+      entryPoints: [web]
+      middlewares: [lms-to-404]
+      service: lms-files
+      priority: 950
+
+    # /static/*.(xml|json) and README.TXT → 403
+    lms-static-sensitive-deny:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/.*(\\.xml|\\.json|README\\.TXT)$`)
+      entryPoints: [web]
+      middlewares: [lms-to-403]
+      service: lms-files
+      priority: 940
+
+    # Favicon rewrite
+    lms-favicon:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^.*/favicon\\.ico$`)
+      entryPoints: [web]
+      middlewares: [lms-favicon-rewrite, lms-cache-long]
+      service: lms-files
+      priority: 900
+
+    # /media/profile-images/scorm/ → S3
+    lms-scorm-s3:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/media/profile-images/scorm/`)
+      entryPoints: [web]
+      middlewares: [lms-s3-host]
+      service: lms-s3
+      priority: 850
+
+    # /xblock/resources/ → local files (must beat /xblock/ S3)
+    lms-xblock-resources:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/xblock/resources/`)
+      entryPoints: [web]
+      service: lms-files
+      priority: 845
+
+    # /xblock/*.svg → S3 + Content-Type image/svg+xml
+    lms-xblock-svg:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/xblock/.*\\.svg$`)
+      entryPoints: [web]
+      middlewares: [lms-svg-content-type]
+      service: lms-s3
+      priority: 840
+
+    # /xblock/ → S3
+    lms-xblock-s3:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/xblock/`)
+      entryPoints: [web]
+      middlewares: [lms-s3-host]
+      service: lms-s3
+      priority: 820
+
+    # Local media / reports / downloads / server-static
+    lms-media-local:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/media/`)
+      entryPoints: [web]
+      middlewares: [lms-cache-long]
+      service: lms-files
+      priority: 800
+
+    lms-analytics-report:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/analytics-report/`)
+      entryPoints: [web]
+      middlewares: [lms-cache-long]
+      service: lms-files
+      priority: 800
+
+    lms-downloads:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/downloads/`)
+      entryPoints: [web]
+      middlewares: [lms-cache-long]
+      service: lms-files
+      priority: 800
+
+    lms-server-static:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/server/`)
+      entryPoints: [web]
+      service: lms-files
+      priority: 800
+
+    # /static/js/triboo_analytics/*.<12-hex>.json
+    lms-static-triboo-analytics:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/js/triboo_analytics/.*\\.[0-9a-f]{12}\\.json$`)
+      entryPoints: [web]
+      service: lms-files
+      priority: 790
+
+    # Hashed webfonts
+    lms-static-fonts:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\.(eot|otf|ttf|woff|woff2)$`)
+      entryPoints: [web]
+      middlewares: [lms-font-cors]
+      service: lms-files
+      priority: 780
+
+    # django-pipeline hashed assets
+    lms-static-hashed:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/.*\\.[0-9a-f]{12}\\..+`)
+      entryPoints: [web]
+      middlewares: [lms-cache-long]
+      service: lms-files
+      priority: 770
+
+    # Studio hashed prefix
+    lms-static-studio-hashed:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/static/[0-9a-f]{7}/`)
+      entryPoints: [web]
+      middlewares: [lms-cache-long]
+      service: lms-files
+      priority: 760
+
+    # Remaining /static/
+    lms-static:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/static/`)
+      entryPoints: [web]
+      middlewares: [lms-cache-short]
+      service: lms-files
+      priority: 750
+
+    # Profile image upload — 1MB body limit
+    lms-profile-images-upload:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathRegexp(`^/api/profile_images/[^/]+/[^/]+/upload$`)
+      entryPoints: [web]
+      middlewares: [lms-profile-upload-chain]
+      service: lms-backend
+      priority: 700
+
+    # /login — SAMEORIGIN
+    # GAP: nginx returned 403 when ?next= matched favicon.ico.
+    # Traefik cannot match query strings without a plugin; keep that check
+    # in the LMS app or add a query-guard plugin if still required.
+    lms-login:
+      rule: >-
+        (HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)) &&
+        PathPrefix(`/login`)
+      entryPoints: [web]
+      middlewares: [lms-login-chain]
+      service: lms-backend
+      priority: 600
+
+    # Catch-all → LMS (/, /api, /oauth2, /auth, /heartbeat, /courses, …)
+    # The many nginx “no basic auth” locations all proxied to the same upstream
+    # and collapse to this single router when basic auth is not used.
+    lms-app:
+      rule: HostRegexp(`^apac-myacademy.*`) || HostRegexp(`^preview.*`)
+      entryPoints: [web]
+      middlewares: [lms-app-chain]
+      service: lms-backend
+      priority: 1
