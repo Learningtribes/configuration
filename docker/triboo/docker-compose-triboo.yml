@@ -34,16 +34,6 @@ services:
     networks:
       - triboo
 
-  forum:
-    image: forum:test
-    ports:
-      - "4567:4567"
-    container_name: forum
-    volumes:
-      - "./config/forum_sensitive_env:/edx/app/forum/forum_sensitive_env:ro"
-    networks:
-      - triboo
-
   xqueue:
     image: xqueue:test
     ports:

@@ -13,8 +13,6 @@ entryPoints:
     address: ":80"
   programs:   # Course Discovery (was :18381 default_server)
     address: ":18381"
-  forum:      # Forums / cs_comments_service (was :18080)
-    address: ":18080"
   veda:       # VEDA (was :18555)
     address: ":18555"
   xqueue:     # XQueue (was :18040)

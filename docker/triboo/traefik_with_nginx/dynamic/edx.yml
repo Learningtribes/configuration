@@ -4,7 +4,6 @@
 # EntryPoints (see ../traefik.yml):
 #   web      :80     — LMS (Host apac-myacademy*|preview*) + CMS (Host studio*)
 #   programs :18381  — Course Discovery
-#   forum    :18080  — Forums
 #   veda     :18555  — VEDA
 #   xqueue   :18040  — XQueue
 #
@@ -172,11 +171,6 @@ http:
       chain:
         middlewares: [cms-xblock-resource-rewrite, s3-host]
 
-    # --- Forum --------------------------------------------------------------
-    forum-bodylimit:
-      buffering:
-        maxRequestBodyBytes: 1048576
-
     # --- Discovery / VEDA file chains ---------------------------------------
     discovery-static-chain:
       chain:
@@ -217,11 +211,6 @@ http:
         dialTimeout: "30s"
         responseHeaderTimeout: "60s"
         idleConnTimeout: "90s"
-    forum-timeout:
-      forwardingTimeouts:
-        dialTimeout: "30s"
-        responseHeaderTimeout: "60s"
-        idleConnTimeout: "5s"
 
   # =========================================================================
   # Services
@@ -248,13 +237,6 @@ http:
           - url: "http://host.docker.internal:8381"
         passHostHeader: true
         serversTransport: default-timeout
-
-    forum-backend:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:4567"
-        passHostHeader: true
-        serversTransport: forum-timeout
 
     veda-backend:
       loadBalancer:
@@ -594,16 +576,6 @@ http:
       rule: PathPrefix(`/`)
       entryPoints: [programs]
       service: programs-backend
-      priority: 1
-
-    # =========================================================================
-    # Routers — Forum (entrypoint forum :18080)
-    # =========================================================================
-    forum-app:
-      rule: PathPrefix(`/`)
-      entryPoints: [forum]
-      middlewares: [forum-bodylimit]
-      service: forum-backend
       priority: 1
 
     # =========================================================================
