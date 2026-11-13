@@ -1,7 +1,5 @@
 #
 # certificate: replace "QUEUE_URL" in certs.env.json
-#
-# discovery: replace "ELASTICSEARCH_URL" in discovery.yml
 # 
 # veda_encode_worker: replace "lms_base_url" "val_api_url" "val_token_url" "val_transcript_create_url" "val_video_images_url" "val_video_transcript_status_url" "veda_api_url" "veda_auth_url" "veda_base_url" "veda_token_url" in veda_encode_worker.yml
 #
