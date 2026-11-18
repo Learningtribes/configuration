@@ -16,7 +16,7 @@ FROM python:3.13
 
 RUN useradd -G www-data -m discovery
 RUN mkdir -p /edx/app/discovery/discovery /var/log/discovery /edx/etc /edx/var/discovery/media /edx/var/discovery/staticfiles
-COPY discovery_env /edx/app/discovery/discovery_env
+COPY discovery_env.py3 /edx/app/discovery/discovery_env
 COPY discovery_gunicorn.py /edx/app/discovery/discovery_gunicorn.py
 COPY discovery-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
