@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert --chart --out everlearn
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: discovery
+  name: discovery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: discovery
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert --chart --out everlearn
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: discovery
+    spec:
+      containers:
+        - image: localhost/local/discovery:py3
+          name: discovery
+          # command: ["/bin/sleep"]
+          # args: ["infinity"]
+          ports:
+            - containerPort: 8381
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /edx/etc/discovery.yml
+              name: discovery-cm0
+              readOnly: true
+              subPath: discovery.yml
+            - mountPath: /edx/app/discovery/discovery/discovery.auth.json
+              name: discovery-cm1
+              readOnly: true
+              subPath: discovery.auth.json
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            items:
+              - key: discovery.yml
+                path: discovery.yml
+            name: discovery-cm0
+          name: discovery-cm0
+        - configMap:
+            items:
+              - key: discovery.auth.json
+                path: discovery.auth.json
+            name: discovery-cm1
+          name: discovery-cm1

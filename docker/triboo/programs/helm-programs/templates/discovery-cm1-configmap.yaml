@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  discovery.auth.json: |
+    {
+        "DATABASES": {
+            "default": {
+              "ATOMIC_REQUESTS": true,
+              "CONN_MAX_AGE": 0,
+              "ENGINE": "django.db.backends.mysql",
+              "HOST": "mysql.everlearn.svc.cluster.local",
+              "NAME": "py3_discovery",
+              "OPTIONS": {},
+              "PASSWORD": "py3_password",
+              "PORT": "3306",
+              "USER": "py3_admin"
+            }
+        },
+        "COURSES_API": {
+            "URL": "/api/courses/v1/",
+            "OIDC_URL_ROOT": "/oauth2",
+            "OIDC_KEY": "key",
+            "OIDC_SECRET": "secret"
+        }
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: discovery
+  name: discovery-cm1
