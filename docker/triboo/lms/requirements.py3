@@ -65,13 +65,13 @@ django-oauth-toolkit==3.2.0
 django-pipeline==4.1.0
 django-push-notifications==3.3.0
 django-ratelimit==4.1.0
-#django-ratelimit-backend==2.0+hawthorn.1
-#django-require==1.0.11+hawthorn.1
+#django-ratelimit-backend==2.0+hawthorn.1 ci/py313/companions/artifacts/django_ratelimit_backend-2.0+hawthorn.1.tar.gz
+#django-require==1.0.11+hawthorn.1 ci/py313/companions/artifacts/django_require-1.0.11+hawthorn.1.tar.gz
 django-rest-swagger==2.2.0
 django-sekizai==4.1.0
 django-ses==4.7.2
 django-simple-history==3.11.0
-#django-splash==1.3.0+hawthorn.1
+#django-splash==1.3.0+hawthorn.1 ci/py313/companions/artifacts/django_splash-1.3.0+hawthorn.1.tar.gz
 django-statici18n==2.7.1
 django-storages==1.14.6
 django-tables2==3.0.1
@@ -83,7 +83,7 @@ djangorestframework==3.17.1
 djangosaml2idp==0.3.3
 dnspython==2.8.0
 docopt==0.6.2
-#dogapi==1.11.1+hawthorn.1
+#dogapi==1.11.1+hawthorn.1 ci/py313/companions/artifacts/dogapi-1.11.1+hawthorn.1.tar.gz
 #dogstats_wrapper==0.1 common/lib/dogstats
 done-xblock==3.0.0
 drf-jwt==1.19.2
@@ -94,22 +94,22 @@ edx-analytics-data-api-client==0.18.3
 edx-ccx-keys==2.0.2
 edx-celeryutils==2.0.0
 edx-codejail==4.1.0
-#edx-completion==5.0.0+hawthorn.1
+#edx-completion==5.0.0+hawthorn.1 ci/py313/companions/artifacts/edx_completion-5.0.0+hawthorn.1.tar.gz
 edx-django-release-util==1.5.0
 edx-django-sites-extensions==6.0.0
 edx-django-utils==8.0.1
-#edx-drf-extensions==10.6.0+hawthorn.1
+#edx-drf-extensions==10.6.0+hawthorn.1 ci/py313/companions/artifacts/edx_drf_extensions-10.6.0+hawthorn.1.tar.gz
 edx-i18n-tools==2.0.0
-#edx-jsme==1.0+hawthorn.1
+#edx-jsme==1.0+hawthorn.1 ci/py313/companions/artifacts/edx_jsme-1.0+hawthorn.1.tar.gz
 edx-milestones==2.0.0
 edx-opaque-keys==4.0.0
 edx-organizations==8.0.0
 edx-proctoring==5.2.0
 edx-rest-api-client==7.0.0
 edx-search==5.0.0
-#edx-sga==0.28.0+hawthorn.1
+#edx-sga==0.28.0+hawthorn.1 ci/py313/companions/artifacts/edx_sga-0.28.0+hawthorn.1.tar.gz
 edx-submissions==4.0.2
-#edx-toggles==6.0.0+hawthorn.1
+#edx-toggles==6.0.0+hawthorn.1 ci/py313/companions/artifacts/edx_toggles-6.0.0+hawthorn.1.tar.gz
 edx-user-state-client==1.3.2
 edx-when==4.0.0
 edxval==4.0.1
@@ -130,7 +130,7 @@ feedparser-sgmllib==2.1.0
 firebase-token-generator==2.0.1
 firebase_admin==7.4.0
 freezegun==1.5.5
-#fs==2.4.16+hawthorn.1
+#fs==2.4.16+hawthorn.1 ci/py313/companions/artifacts/fs-2.4.16+hawthorn.1.tar.gz
 fs-s3fs==1.1.1
 future==1.0.0
 glob2==0.7
@@ -156,7 +156,7 @@ httpx==0.28.1
 hyperframe==6.1.0
 idna==3.13
 #iframe-id-xblock==0.1
-#ilt-xblock==0.3+hawthorn.1
+#ilt-xblock==0.3+hawthorn.1 ci/py313/companions/artifacts/ilt_xblock-0.3+hawthorn.1.tar.gz
 inflection==0.5.1
 iniconfig==2.1.0
 ipython==9.17.1
@@ -177,7 +177,7 @@ lazy==1.6
 legacy-cgi==2.6.4
 Levenshtein==0.27.5
 libsass==0.23.0
-#lti-consumer-xblock==11.3.1+hawthorn.1
+#lti-consumer-xblock==11.3.1+hawthorn.1 ci/py313/companions/artifacts/lti_consumer_xblock-11.3.1+hawthorn.1.tar.gz
 lxml==5.3.2
 lxml_html_clean==0.4.4
 mailsnake==1.6.4
@@ -187,7 +187,7 @@ MarkupSafe==3.0.3
 matplotlib-inline==0.2.2
 meilisearch==0.41.0
 mock==5.2.0
-#MongoDBProxy==0.1.0+hawthorn.1
+#MongoDBProxy==0.1.0+hawthorn.1 ci/py313/companions/artifacts/MongoDBProxy-0.1.0+hawthorn.1.tar.gz
 mongoengine==0.29.3
 monotonic==1.6
 more-itertools==11.0.2
@@ -247,7 +247,7 @@ pynliner==0.8.0
 pyOpenSSL==26.1.0
 pyparsing==3.3.2
 pyquery==2.0.1
-#pysaml2==7.5.5+hawthorn.1
+#pysaml2==7.5.5+hawthorn.1 ci/py313/companions/artifacts/pysaml2-7.5.5+hawthorn.1.tar.gz
 pysrt==1.1.2
 pytest==8.4.2
 pytest-attrib==0.1.3
@@ -333,8 +333,8 @@ XBlock==6.1.0
 xblock-drag-and-drop-v2==5.1.1
 xblock-google-drive==0.8.2
 #xblock-pdf==1.0.2.post0
-#xblock-poll==1.15.1+hawthorn.1
-#xblock-review==1.1.5+hawthorn.1
+#xblock-poll==1.15.1+hawthorn.1 ci/py313/companions/artifacts/xblock_poll-1.15.1+hawthorn.1.tar.gz
+#xblock-review==1.1.5+hawthorn.1 ci/py313/companions/artifacts/xblock_review-1.1.5+hawthorn.1.tar.gz
 xblock-utils==4.0.0
 xmlschema==2.5.1
 xmlsec==1.3.17
