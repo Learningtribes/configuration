@@ -79,7 +79,7 @@ django-user-tasks==4.0.0
 django-waffle==5.0.0
 django-webpack-loader==3.2.3
 djangorestframework==3.17.1
-#djangorestframework-oauth==1.1.1
+#djangorestframework-oauth==1.1.1 git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1
 djangosaml2idp==0.3.3
 dnspython==2.8.0
 docopt==0.6.2
@@ -121,7 +121,7 @@ et_xmlfile==2.0.0
 event-tracking==4.0.0
 execnet==2.1.1
 executing==2.3.0
-#externality-xblock==0.1
+#externality-xblock==0.1 git+https://github.com/Learningtribes/external-content-xblock.git@1099275aa77a1f2839760199c7e3a3fde1be88c9
 factory_boy==3.3.3
 Faker==37.8.0
 fastavro==1.12.2
@@ -155,7 +155,7 @@ httpretty==1.1.4
 httpx==0.28.1
 hyperframe==6.1.0
 idna==3.13
-#iframe-id-xblock==0.1
+#iframe-id-xblock==0.1 git+https://github.com/Learningtribes/iframe-id-xblock.git@09ca2383db8a8ad9a4c001240002a48eec0b65de
 #ilt-xblock==0.3+hawthorn.1 ci/py313/companions/artifacts/ilt_xblock-0.3+hawthorn.1.tar.gz
 inflection==0.5.1
 iniconfig==2.1.0
@@ -173,7 +173,7 @@ jsonschema-specifications==2025.9.1
 jwcrypto==1.5.7
 kombu==5.6.2
 lazy==1.6
-#lbmdone-xblock==2.0.2
+#lbmdone-xblock==2.0.2 git+https://github.com/Learningtribes/lbmdonexblock.git@261c446533c83b962d810011a5c8cf1b538d2ec6
 legacy-cgi==2.6.4
 Levenshtein==0.27.5
 libsass==0.23.0
@@ -202,7 +202,7 @@ nodeenv==1.10.0
 nose==1.3.7
 numpy==2.5.4
 oauthlib==3.3.1
-#Open-edX==0.11
+#Open-edX==0.11 platform root folder
 openapi-codec==1.3.2
 openedx-django-pyfs==4.0.0
 openedx-django-wiki==3.1.1
@@ -269,7 +269,7 @@ pytz==2026.1.post1
 pyuca==1.2
 PyYAML==6.0.3
 RapidFuzz==3.14.6
-#rate-xblock==0.1
+#rate-xblock==0.1 git+https://github.com/edx/RateXBlock.git@367e19c0f6eac8a5f002fd0f1559555f8e74bfff
 recommender-xblock==5.0.0
 redis==7.4.0
 referencing==0.37.0
@@ -285,7 +285,7 @@ s3transfer==0.16.1
 sailthru-client==2.2.3
 #sandbox-packages==0.1.1 common/lib/sandbox-packages
 scipy==1.17.1
-#scormxblock-xblock==0.2
+#scormxblock-xblock==0.2 git+https://github.com/Learningtribes/edx_xblock_scorm.git@57de05df17593ae1b0569aa186dbced66583df0f
 semantic-version==2.10.0
 setuptools==79.0.1
 shapely==2.1.2
@@ -332,7 +332,7 @@ wrapt==2.1.2
 XBlock==6.1.0
 xblock-drag-and-drop-v2==5.1.1
 xblock-google-drive==0.8.2
-#xblock-pdf==1.0.2.post0
+#xblock-pdf==1.0.2.post0 git+https://github.com/Learningtribes/xblock-pdf.git@1d209af937a8635dc10b266100a6eb53265b1756
 #xblock-poll==1.15.1+hawthorn.1 ci/py313/companions/artifacts/xblock_poll-1.15.1+hawthorn.1.tar.gz
 #xblock-review==1.1.5+hawthorn.1 ci/py313/companions/artifacts/xblock_review-1.1.5+hawthorn.1.tar.gz
 xblock-utils==4.0.0
