@@ -22,6 +22,20 @@ spec:
       labels:
         io.kompose.service: discovery
     spec:
+      # initContainers:
+      #   - image: localhost/local/discovery:py3
+      #     name: migrate-db
+      #     command: ["/bin/bash", "-c"]
+      #     args: ["DJANGO_SETTINGS_MODULE=course_discovery.settings.production COURSE_DISCOVERY_CFG=/edx/etc/discovery.yml python manage.py migrate"]
+      #     volumeMounts:
+      #       - mountPath: /edx/etc/discovery.yml
+      #         name: discovery-cm0
+      #         readOnly: true
+      #         subPath: discovery.yml
+      #       - mountPath: /edx/app/discovery/discovery/discovery.auth.json
+      #         name: discovery-cm1
+      #         readOnly: true
+      #         subPath: discovery.auth.json
       containers:
         - image: localhost/local/discovery:py3
           name: discovery
