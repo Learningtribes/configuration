@@ -40,7 +40,7 @@ coreschema==0.0.4
 #coverage==7.10.7 #staging exists, but not in runtime-public.in file
 crowdsourcehinter-xblock==1.0.0
 cryptography==47.0.0
-#cssselect==1.4.0 #staging exists, but not in runtime-public.in file
+#cssselect==1.4.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 cssutils==2.15.0
 ddt==1.7.2
 decorator==5.3.1
@@ -122,15 +122,15 @@ event-tracking==4.0.0
 #execnet==2.1.1 #staging exists, but not in runtime-public.in file
 executing==2.3.0
 externality-xblock @ git+https://github.com/Learningtribes/external-content-xblock.git@1099275aa77a1f2839760199c7e3a3fde1be88c9
-#factory_boy==3.3.3 #staging exists, but not in runtime-public.in file
+#factory_boy==3.3.3 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 executing==2.3.0
-#Faker==37.8.0 #staging exists, but not in runtime-public.in file
+#Faker==37.8.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 fastavro==1.12.2
 feedparser==6.0.14
 feedparser-sgmllib==2.1.0
 firebase-token-generator==2.0.1
 firebase_admin==7.4.0
-#freezegun==1.5.5 #staging exists, but not in runtime-public.in file
+#freezegun==1.5.5 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 fs @ file:./ci/py313/companions/artifacts/fs-2.4.16+hawthorn.1.tar.gz
 fs-s3fs==1.1.1
 future==1.0.0
@@ -152,14 +152,14 @@ help-tokens==4.0.0
 hpack==4.1.0
 html5lib==1.1
 httpcore==1.0.9
-#httpretty==1.1.4 #staging exists, but not in runtime-public.in file
+#httpretty==1.1.4 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 httpx==0.28.1
 hyperframe==6.1.0
 idna==3.13
 iframe-id-xblock @ git+https://github.com/Learningtribes/iframe-id-xblock.git@09ca2383db8a8ad9a4c001240002a48eec0b65de
 ilt-xblock @ file:./ci/py313/companions/artifacts/ilt_xblock-0.3+hawthorn.1.tar.gz
 inflection==0.5.1
-#iniconfig==2.1.0 #staging exists, but not in runtime-public.in file
+#iniconfig==2.1.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 ipython==9.17.1
 ipython_pygments_lexers==1.1.1
 isodate==0.7.2
@@ -192,7 +192,7 @@ MongoDBProxy @ file:./ci/py313/companions/artifacts/MongoDBProxy-0.1.0+hawthorn.
 mongoengine==0.29.3
 monotonic==1.6
 more-itertools==11.0.2
-#moto==5.2.5 #staging exists, but not in runtime-public.in file
+#moto==5.2.5 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 mpmath==1.3.0
 msgpack==1.1.2
 mysqlclient==2.2.8
@@ -220,7 +220,7 @@ Paver==1.3.4
 pexpect==4.9.0
 piexif==1.1.3
 pillow==12.2.0
-#pluggy==1.6.0 #staging exists, but not in runtime-public.in file
+#pluggy==1.6.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 polib==1.2.0
 prompt_toolkit==3.0.52
 proto-plus==1.27.2
@@ -228,7 +228,7 @@ protobuf==6.33.6
 psutil==7.2.2
 ptyprocess==0.7.0
 pure_eval==0.2.4
-#py-partiql-parser==0.6.3 #staging exists, but not in runtime-public.in file
+#py-partiql-parser==0.6.3 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 pyasn1==0.6.3
 pyasn1_modules==0.4.2
 pycountry==26.2.16
@@ -247,15 +247,15 @@ PyNaCl==1.6.2
 pynliner==0.8.0
 pyOpenSSL==26.1.0
 pyparsing==3.3.2
-#pyquery==2.0.1 #staging exists, but not in runtime-public.in file
+#pyquery==2.0.1 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 pysaml2 @ file:./ci/py313/companions/artifacts/pysaml2-7.5.5+hawthorn.1.tar.gz
 pysrt==1.1.2
-#pytest==8.4.2 #staging exists, but not in runtime-public.in file
+#pytest==8.4.2 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 #pytest-attrib==0.1.3 #staging exists, but not in runtime-public.in file
 #pytest-cov==6.2.1 #staging exists, but not in runtime-public.in file
-#pytest-django==4.11.1 #staging exists, but not in runtime-public.in file
+#pytest-django==4.11.1 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 #pytest-randomly==3.16.0 #staging exists, but not in runtime-public.in file
-#pytest-timeout==2.4.0 #staging exists, but not in runtime-public.in file
+#pytest-timeout==2.4.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 #pytest-xdist==3.8.0 #staging exists, but not in runtime-public.in file
 python-dateutil==2.9.0.post0
 python-ipware==3.0.0
@@ -277,7 +277,7 @@ referencing==0.37.0
 regex==2026.4.4
 requests==2.33.1
 requests-oauthlib==2.0.0
-#responses==0.26.3 #staging exists, but not in runtime-public.in file
+#responses==0.26.3 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 rest_condition==1.0.3
 rpds-py==0.30.0
 rules==3.5
@@ -304,7 +304,7 @@ stevedore==5.7.0
 -e common/lib/symmath
 sympy==1.14.0
 tablib==3.10.0
-#testfixtures==12.4.0 #staging exists, but not in runtime-public.in file
+#testfixtures==12.4.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 text-unidecode==1.3
 tinycss2==1.4.0
 tqdm==4.67.3
@@ -327,7 +327,7 @@ wcwidth==0.6.0
 web-fragments==4.0.0
 webencodings==0.5.1
 WebOb==1.8.9
-#Werkzeug==3.1.9 #staging exists, but not in runtime-public.in file
+#Werkzeug==3.1.9 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 wheel==0.47.0
 wrapt==2.1.2
 XBlock==6.1.0
@@ -339,5 +339,5 @@ xblock-review @ file:./ci/py313/companions/artifacts/xblock_review-1.1.5+hawthor
 xblock-utils==4.0.0
 xmlschema==2.5.1
 xmlsec==1.3.17
-#xmltodict==1.0.4 #staging exists, but not in runtime-public.in file
+#xmltodict==1.0.4 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 -e common/lib/xmodule
