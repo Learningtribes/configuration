@@ -21,15 +21,15 @@ boto3==1.42.97
 botocore==1.42.97
 CacheControl==0.14.4
 cachetools==7.0.6
-#calc==0.2 common/lib/calc
+-e common/lib/calc
 camel-converter==5.1.0
-#capa==0.1 common/lib/capa
+-e common/lib/capa
 celery==5.6.3
 certifi==2026.4.22
 cffi==2.0.0
 chardet==7.4.3
 charset-normalizer==3.4.7
-#chem==0.2.0 common/lib/chem
+-e common/lib/chem
 click==8.3.3
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
@@ -37,10 +37,10 @@ click-repl==0.3.0
 code-annotations==3.0.0
 coreapi==2.3.3
 coreschema==0.0.4
-coverage==7.10.7
+#coverage==7.10.7 #staging exists, but not in runtime-public.in file
 crowdsourcehinter-xblock==1.0.0
 cryptography==47.0.0
-cssselect==1.4.0
+#cssselect==1.4.0 #staging exists, but not in runtime-public.in file
 cssutils==2.15.0
 ddt==1.7.2
 decorator==5.3.1
@@ -65,13 +65,13 @@ django-oauth-toolkit==3.2.0
 django-pipeline==4.1.0
 django-push-notifications==3.3.0
 django-ratelimit==4.1.0
-#django-ratelimit-backend==2.0+hawthorn.1 ci/py313/companions/artifacts/django_ratelimit_backend-2.0+hawthorn.1.tar.gz
-#django-require==1.0.11+hawthorn.1 ci/py313/companions/artifacts/django_require-1.0.11+hawthorn.1.tar.gz
+django-ratelimit-backend @ file:./ci/py313/companions/artifacts/django_ratelimit_backend-2.0+hawthorn.1.tar.gz
+django-require @ file:./ci/py313/companions/artifacts/django_require-1.0.11+hawthorn.1.tar.gz
 django-rest-swagger==2.2.0
 django-sekizai==4.1.0
 django-ses==4.7.2
 django-simple-history==3.11.0
-#django-splash==1.3.0+hawthorn.1 ci/py313/companions/artifacts/django_splash-1.3.0+hawthorn.1.tar.gz
+django-splash @ file:./ci/py313/companions/artifacts/django_splash-1.3.0+hawthorn.1.tar.gz
 django-statici18n==2.7.1
 django-storages==1.14.6
 django-tables2==3.0.1
@@ -79,12 +79,12 @@ django-user-tasks==4.0.0
 django-waffle==5.0.0
 django-webpack-loader==3.2.3
 djangorestframework==3.17.1
-#djangorestframework-oauth==1.1.1 git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1
-djangosaml2idp==0.3.3
+djangorestframework-oauth @ git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c
+djangosaml2idp @ git+https://github.com/Learningtribes/djangosaml2idp.git@9d53fef55612084e01d9b16f1cc024245d228148
 dnspython==2.8.0
 docopt==0.6.2
-#dogapi==1.11.1+hawthorn.1 ci/py313/companions/artifacts/dogapi-1.11.1+hawthorn.1.tar.gz
-#dogstats_wrapper==0.1 common/lib/dogstats
+dogapi @ file:./ci/py313/companions/artifacts/dogapi-1.11.1+hawthorn.1.tar.gz
+-e common/lib/dogstats
 done-xblock==3.0.0
 drf-jwt==1.19.2
 drf-nested-routers==0.95.3
@@ -94,22 +94,22 @@ edx-analytics-data-api-client==0.18.3
 edx-ccx-keys==2.0.2
 edx-celeryutils==2.0.0
 edx-codejail==4.1.0
-#edx-completion==5.0.0+hawthorn.1 ci/py313/companions/artifacts/edx_completion-5.0.0+hawthorn.1.tar.gz
+edx-completion @ file:./ci/py313/companions/artifacts/edx_completion-5.0.0+hawthorn.1.tar.gz
 edx-django-release-util==1.5.0
 edx-django-sites-extensions==6.0.0
 edx-django-utils==8.0.1
-#edx-drf-extensions==10.6.0+hawthorn.1 ci/py313/companions/artifacts/edx_drf_extensions-10.6.0+hawthorn.1.tar.gz
+edx-drf-extensions @ file:./ci/py313/companions/artifacts/edx_drf_extensions-10.6.0+hawthorn.1.tar.gz
 edx-i18n-tools==2.0.0
-#edx-jsme==1.0+hawthorn.1 ci/py313/companions/artifacts/edx_jsme-1.0+hawthorn.1.tar.gz
+edx-jsme @ file:./ci/py313/companions/artifacts/edx_jsme-1.0+hawthorn.1.tar.gz
 edx-milestones==2.0.0
 edx-opaque-keys==4.0.0
 edx-organizations==8.0.0
 edx-proctoring==5.2.0
 edx-rest-api-client==7.0.0
-edx-search==5.0.0
-#edx-sga==0.28.0+hawthorn.1 ci/py313/companions/artifacts/edx_sga-0.28.0+hawthorn.1.tar.gz
+edx-search @ git+https://github.com/Learningtribes/edx-search.git@f668feec6df14d8f8ac4e9df67d55760f463e199
+edx-sga @ file:./ci/py313/companions/artifacts/edx_sga-0.28.0+hawthorn.1.tar.gz
 edx-submissions==4.0.2
-#edx-toggles==6.0.0+hawthorn.1 ci/py313/companions/artifacts/edx_toggles-6.0.0+hawthorn.1.tar.gz
+edx-toggles @ file:./ci/py313/companions/artifacts/edx_toggles-6.0.0+hawthorn.1.tar.gz
 edx-user-state-client==1.3.2
 edx-when==4.0.0
 edxval==4.0.1
@@ -119,18 +119,19 @@ emoji==2.16.0
 encutils==1.0.0
 et_xmlfile==2.0.0
 event-tracking==4.0.0
-execnet==2.1.1
+#execnet==2.1.1 #staging exists, but not in runtime-public.in file
 executing==2.3.0
-#externality-xblock==0.1 git+https://github.com/Learningtribes/external-content-xblock.git@1099275aa77a1f2839760199c7e3a3fde1be88c9
-factory_boy==3.3.3
-Faker==37.8.0
+externality-xblock @ git+https://github.com/Learningtribes/external-content-xblock.git@1099275aa77a1f2839760199c7e3a3fde1be88c9
+#factory_boy==3.3.3 #staging exists, but not in runtime-public.in file
+executing==2.3.0
+#Faker==37.8.0 #staging exists, but not in runtime-public.in file
 fastavro==1.12.2
 feedparser==6.0.14
 feedparser-sgmllib==2.1.0
 firebase-token-generator==2.0.1
 firebase_admin==7.4.0
-freezegun==1.5.5
-#fs==2.4.16+hawthorn.1 ci/py313/companions/artifacts/fs-2.4.16+hawthorn.1.tar.gz
+#freezegun==1.5.5 #staging exists, but not in runtime-public.in file
+fs @ file:./ci/py313/companions/artifacts/fs-2.4.16+hawthorn.1.tar.gz
 fs-s3fs==1.1.1
 future==1.0.0
 glob2==0.7
@@ -151,14 +152,14 @@ help-tokens==4.0.0
 hpack==4.1.0
 html5lib==1.1
 httpcore==1.0.9
-httpretty==1.1.4
+#httpretty==1.1.4 #staging exists, but not in runtime-public.in file
 httpx==0.28.1
 hyperframe==6.1.0
 idna==3.13
-#iframe-id-xblock==0.1 git+https://github.com/Learningtribes/iframe-id-xblock.git@09ca2383db8a8ad9a4c001240002a48eec0b65de
-#ilt-xblock==0.3+hawthorn.1 ci/py313/companions/artifacts/ilt_xblock-0.3+hawthorn.1.tar.gz
+iframe-id-xblock @ git+https://github.com/Learningtribes/iframe-id-xblock.git@09ca2383db8a8ad9a4c001240002a48eec0b65de
+ilt-xblock @ file:./ci/py313/companions/artifacts/ilt_xblock-0.3+hawthorn.1.tar.gz
 inflection==0.5.1
-iniconfig==2.1.0
+#iniconfig==2.1.0 #staging exists, but not in runtime-public.in file
 ipython==9.17.1
 ipython_pygments_lexers==1.1.1
 isodate==0.7.2
@@ -173,11 +174,11 @@ jsonschema-specifications==2025.9.1
 jwcrypto==1.5.7
 kombu==5.6.2
 lazy==1.6
-#lbmdone-xblock==2.0.2 git+https://github.com/Learningtribes/lbmdonexblock.git@261c446533c83b962d810011a5c8cf1b538d2ec6
+lbmdone-xblock @ git+https://github.com/Learningtribes/lbmdonexblock.git@261c446533c83b962d810011a5c8cf1b538d2ec6
 legacy-cgi==2.6.4
 Levenshtein==0.27.5
 libsass==0.23.0
-#lti-consumer-xblock==11.3.1+hawthorn.1 ci/py313/companions/artifacts/lti_consumer_xblock-11.3.1+hawthorn.1.tar.gz
+lti-consumer-xblock @ file:./ci/py313/companions/artifacts/lti_consumer_xblock-11.3.1+hawthorn.1.tar.gz
 lxml==5.3.2
 lxml_html_clean==0.4.4
 mailsnake==1.6.4
@@ -187,11 +188,11 @@ MarkupSafe==3.0.3
 matplotlib-inline==0.2.2
 meilisearch==0.41.0
 mock==5.2.0
-#MongoDBProxy==0.1.0+hawthorn.1 ci/py313/companions/artifacts/MongoDBProxy-0.1.0+hawthorn.1.tar.gz
+MongoDBProxy @ file:./ci/py313/companions/artifacts/MongoDBProxy-0.1.0+hawthorn.1.tar.gz
 mongoengine==0.29.3
 monotonic==1.6
 more-itertools==11.0.2
-moto==5.2.5
+#moto==5.2.5 #staging exists, but not in runtime-public.in file
 mpmath==1.3.0
 msgpack==1.1.2
 mysqlclient==2.2.8
@@ -199,10 +200,10 @@ networkx==3.7
 newrelic==14.1.0
 nltk==3.9.4
 nodeenv==1.10.0
-nose==1.3.7
+#nose==1.3.7 #staging exists, but not in runtime-public.in file
 numpy==2.5.4
 oauthlib==3.3.1
-#Open-edX==0.11 platform root folder
+#Open-edX==0.11 platform root folder #staging exists, but not in runtime-public.in file
 openapi-codec==1.3.2
 openedx-django-pyfs==4.0.0
 openedx-django-wiki==3.1.1
@@ -211,7 +212,7 @@ openedx-filters==3.4.1
 openpyxl==3.1.5
 ora2==7.1.0
 packaging==26.2
-parse_rest==0.2.20141004
+parse_rest @ git+https://github.com/dgrtwo/ParsePy.git@7949b9f754d1445eff8e8f20d0e967b9a6420639
 parso==0.8.7
 path==16.11.0
 path.py==12.5.0
@@ -219,7 +220,7 @@ Paver==1.3.4
 pexpect==4.9.0
 piexif==1.1.3
 pillow==12.2.0
-pluggy==1.6.0
+#pluggy==1.6.0 #staging exists, but not in runtime-public.in file
 polib==1.2.0
 prompt_toolkit==3.0.52
 proto-plus==1.27.2
@@ -227,7 +228,7 @@ protobuf==6.33.6
 psutil==7.2.2
 ptyprocess==0.7.0
 pure_eval==0.2.4
-py-partiql-parser==0.6.3
+#py-partiql-parser==0.6.3 #staging exists, but not in runtime-public.in file
 pyasn1==0.6.3
 pyasn1_modules==0.4.2
 pycountry==26.2.16
@@ -235,7 +236,7 @@ pycparser==3.0
 pycryptodomex==3.23.0
 pydantic==2.13.3
 pydantic_core==2.46.3
-pygeoip==0.3.1
+pygeoip @ git+https://github.com/appliedsec/pygeoip.git@95e69341cebf5a6a9fbf7c4f5439d458898bdc3b
 Pygments==2.21.0
 pygraphviz==2.0.4
 pyjwkest==1.4.4
@@ -246,16 +247,16 @@ PyNaCl==1.6.2
 pynliner==0.8.0
 pyOpenSSL==26.1.0
 pyparsing==3.3.2
-pyquery==2.0.1
-#pysaml2==7.5.5+hawthorn.1 ci/py313/companions/artifacts/pysaml2-7.5.5+hawthorn.1.tar.gz
+#pyquery==2.0.1 #staging exists, but not in runtime-public.in file
+pysaml2 @ file:./ci/py313/companions/artifacts/pysaml2-7.5.5+hawthorn.1.tar.gz
 pysrt==1.1.2
-pytest==8.4.2
-pytest-attrib==0.1.3
-pytest-cov==6.2.1
-pytest-django==4.11.1
-pytest-randomly==3.16.0
-pytest-timeout==2.4.0
-pytest-xdist==3.8.0
+#pytest==8.4.2 #staging exists, but not in runtime-public.in file
+#pytest-attrib==0.1.3 #staging exists, but not in runtime-public.in file
+#pytest-cov==6.2.1 #staging exists, but not in runtime-public.in file
+#pytest-django==4.11.1 #staging exists, but not in runtime-public.in file
+#pytest-randomly==3.16.0 #staging exists, but not in runtime-public.in file
+#pytest-timeout==2.4.0 #staging exists, but not in runtime-public.in file
+#pytest-xdist==3.8.0 #staging exists, but not in runtime-public.in file
 python-dateutil==2.9.0.post0
 python-ipware==3.0.0
 python-ldap==3.4.8
@@ -269,23 +270,23 @@ pytz==2026.1.post1
 pyuca==1.2
 PyYAML==6.0.3
 RapidFuzz==3.14.6
-#rate-xblock==0.1 git+https://github.com/edx/RateXBlock.git@367e19c0f6eac8a5f002fd0f1559555f8e74bfff
+rate-xblock @ git+https://github.com/edx/RateXBlock.git@367e19c0f6eac8a5f002fd0f1559555f8e74bfff
 recommender-xblock==5.0.0
 redis==7.4.0
 referencing==0.37.0
 regex==2026.4.4
 requests==2.33.1
 requests-oauthlib==2.0.0
-responses==0.26.3
+#responses==0.26.3 #staging exists, but not in runtime-public.in file
 rest_condition==1.0.3
 rpds-py==0.30.0
 rules==3.5
 s3transfer==0.16.1
-#safe_lxml==1.0 common/lib/safe_lxml
+-e common/lib/safe_lxml
 sailthru-client==2.2.3
-#sandbox-packages==0.1.1 common/lib/sandbox-packages
+-e common/lib/sandbox-packages
 scipy==1.17.1
-#scormxblock-xblock==0.2 git+https://github.com/Learningtribes/edx_xblock_scorm.git@57de05df17593ae1b0569aa186dbced66583df0f
+scormxblock-xblock @ git+https://github.com/Learningtribes/edx_xblock_scorm.git@57de05df17593ae1b0569aa186dbced66583df0f
 semantic-version==2.10.0
 setuptools==79.0.1
 shapely==2.1.2
@@ -300,10 +301,10 @@ soupsieve==2.8.3
 sqlparse==0.5.5
 stack-data==0.6.3
 stevedore==5.7.0
-#symmath==0.2 common/lib/symmath
+-e common/lib/symmath
 sympy==1.14.0
 tablib==3.10.0
-testfixtures==12.4.0
+#testfixtures==12.4.0 #staging exists, but not in runtime-public.in file
 text-unidecode==1.3
 tinycss2==1.4.0
 tqdm==4.67.3
@@ -326,17 +327,17 @@ wcwidth==0.6.0
 web-fragments==4.0.0
 webencodings==0.5.1
 WebOb==1.8.9
-Werkzeug==3.1.9
+#Werkzeug==3.1.9 #staging exists, but not in runtime-public.in file
 wheel==0.47.0
 wrapt==2.1.2
 XBlock==6.1.0
 xblock-drag-and-drop-v2==5.1.1
 xblock-google-drive==0.8.2
-#xblock-pdf==1.0.2.post0 git+https://github.com/Learningtribes/xblock-pdf.git@1d209af937a8635dc10b266100a6eb53265b1756
-#xblock-poll==1.15.1+hawthorn.1 ci/py313/companions/artifacts/xblock_poll-1.15.1+hawthorn.1.tar.gz
-#xblock-review==1.1.5+hawthorn.1 ci/py313/companions/artifacts/xblock_review-1.1.5+hawthorn.1.tar.gz
+xblock-pdf @ git+https://github.com/Learningtribes/xblock-pdf.git@1d209af937a8635dc10b266100a6eb53265b1756
+xblock-poll @ file:./ci/py313/companions/artifacts/xblock_poll-1.15.1+hawthorn.1.tar.gz
+xblock-review @ file:./ci/py313/companions/artifacts/xblock_review-1.1.5+hawthorn.1.tar.gz
 xblock-utils==4.0.0
 xmlschema==2.5.1
 xmlsec==1.3.17
-xmltodict==1.0.4
-#XModule==0.1.1 common/lib/xmodule
+#xmltodict==1.0.4 #staging exists, but not in runtime-public.in file
+-e common/lib/xmodule
