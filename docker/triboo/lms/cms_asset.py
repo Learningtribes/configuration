@@ -59,4 +59,9 @@ USE_I18N = _json_env('USE_I18N', USE_I18N)
 for app in _json_env('ADDL_INSTALLED_APPS', []):
     INSTALLED_APPS.append(app)
 
+# add this to INSTALLED_APPS to fix issues during running `python scripts/trans.py --all --settings=asset` 
+FIX_INSTALLED_APPS = ['openedx.core.djangoapps.bookmarks.apps.BookmarksConfig', 'openedx.core.djangoapps.schedules.apps.SchedulesConfig', 'openedx.core.djangoapps.theming.apps.ThemingConfig',]
+for app in FIX_INSTALLED_APPS:
+    INSTALLED_APPS.append(app)
+
 derive_settings(__name__)

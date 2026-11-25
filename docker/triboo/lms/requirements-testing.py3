@@ -1,0 +1,17 @@
+cssselect==1.4.0
+factory_boy==3.3.3
+Faker==37.8.0
+freezegun==1.5.5
+httpretty==1.1.4
+iniconfig==2.1.0
+moto==5.2.5
+pluggy==1.6.0
+py-partiql-parser==0.6.3
+pyquery==2.0.1
+pytest==8.4.2
+pytest-django==4.11.1
+pytest-timeout==2.4.0
+responses==0.26.3
+testfixtures==12.4.0
+Werkzeug==3.1.9
+xmltodict==1.0.4

@@ -71,4 +71,14 @@ LANGUAGE_DICT = dict(LANGUAGES)
 for app in _json_env('ADDL_INSTALLED_APPS', []):
     INSTALLED_APPS.append(app)
 
+# add this to INSTALLED_APPS to fix issues during running `python scripts/trans.py --all --settings=asset` 
+FIX_INSTALLED_APPS = ['openedx.core.djangoapps.bookmarks.apps.BookmarksConfig', 'openedx.core.djangoapps.schedules.apps.SchedulesConfig', 'openedx.core.djangoapps.theming.apps.ThemingConfig',]
+for app in FIX_INSTALLED_APPS:
+    INSTALLED_APPS.append(app)
+
+# add these settings to fix issues during running `paver update_assets lms --settings=asset`
+POLICY_CHANGE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE
+RECALCULATE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE
+RECALCULATE_PROGRESS_ROUTING_KEY = LOW_PRIORITY_QUEUE
+
 derive_settings(__name__)

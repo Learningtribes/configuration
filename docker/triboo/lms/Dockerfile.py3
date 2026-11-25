@@ -5,6 +5,8 @@
 #
 # asset.py files do not merged. Temporarily add the files to resolve the compile theme issue.
 #
+# create /edx/var/log/lms/ilt_xblock.log file to resolve the scripts/trans.py warning log.
+#
 # As lms.env.json / lms.auth.json are not stored in image, please mount them into
 # container when using this image.
 #
@@ -15,7 +17,7 @@ FROM alpine/git:2.54.0 AS builder
 ARG GITHUB_TOKEN
 RUN git clone -b py3-master https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/platform.git /platform
 RUN rm -rf /platform/.git
-RUN git clone -b hawthorn https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/triboo-theme.git /theme
+RUN git clone -b py3-master https://oauth2:${GITHUB_TOKEN}@github.com/Learningtribes/triboo-theme.git /theme
 RUN rm -rf /theme/.git
 
 
@@ -24,7 +26,7 @@ RUN rm -rf /theme/.git
 FROM python:3.13
 
 RUN useradd -G www-data -m lms
-RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxmlsec1-openssl pkg-config && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /var/log/lms /edx/app/edxapp /edx/app/edxapp/themes /edx/var/edxapp/staticfiles /edx/var/edxapp/data /edx/var/log/edx/lms /edx/var/log/tracking
 COPY lms_env /edx/app/edxapp/lms_env
 COPY lms_gunicorn.py /edx/app/edxapp/lms_gunicorn.py
@@ -57,12 +59,12 @@ ENV COMPREHENSIVE_THEME_DIRS='["/edx/app/edxapp/themes"]'
 ENV DEFAULT_SITE_THEME="hawthorn"
 ENV STATIC_ROOT_BASE="/edx/var/edxapp/staticfiles"
 WORKDIR /edx/app/edxapp/edx-platform
-ENTRYPOINT ["/bin/sleep infinity"]
 RUN python /tmp/patch_logsettings.py
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 RUN npm install
-# RUN python -m compileall -q -x '.claude/.*|node_modules/.*' /edx/app/edxapp/edx-platform
-# RUN python scripts/trans.py --all --settings=asset
-# RUN paver update_assets lms --settings=asset
-# EXPOSE 8000
-# ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+RUN mkdir /edx/var/log/lms
+RUN touch /edx/var/log/lms/ilt_xblock.log
+RUN python scripts/trans.py --all --settings=asset
+RUN paver update_assets lms --settings=asset
+EXPOSE 8000
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

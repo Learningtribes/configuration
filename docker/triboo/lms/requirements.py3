@@ -1,7 +1,10 @@
 # failed to install python-ldap package, to fixed by install system package before
 # apt-get install -y libsasl2-dev libldap2-dev libssl-dev
-
-
+#
+# get error during running `python scripts/trans.py --all --settings=asset`, as lxml/xmlsec don’t both use that same library
+# apt-get install -y libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl
+# add --no-binary=lxml,xmlsec in the top of requirements.txt file
+--no-binary=lxml,xmlsec
 acid-xblock==0.4.1
 amqp==5.3.1
 analytics-python==1.4.post1
