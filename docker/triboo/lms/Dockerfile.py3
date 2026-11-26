@@ -10,7 +10,7 @@
 # As lms.env.json / lms.auth.json are not stored in image, please mount them into
 # container when using this image.
 #
-# docker run --rm -d -t --mount type=bind,src=/edx/app/edxapp/lms.env.json,dst=/edx/app/edxapp/lms.env.json,readonly --mount type=bind,src=/edx/app/edxapp/lms.auth.json,dst=/edx/app/edxapp/lms.auth.json,readonly --name lms lms:test
+# use slim docker image, but size still big. Pending to improve it after validate docker image 
 
 
 FROM alpine/git:2.54.0 AS builder
@@ -22,11 +22,12 @@ RUN rm -rf /theme/.git
 
 
 
-
-FROM python:3.13
+#FROM python:3.13
+FROM python:3.13-slim
 
 RUN useradd -G www-data -m lms
-RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl pkg-config default-libmysqlclient-dev curl build-essential && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /var/log/lms /edx/app/edxapp /edx/app/edxapp/themes /edx/var/edxapp/staticfiles /edx/var/edxapp/data /edx/var/log/edx/lms /edx/var/log/tracking
 COPY lms_env /edx/app/edxapp/lms_env
 COPY lms_gunicorn.py /edx/app/edxapp/lms_gunicorn.py

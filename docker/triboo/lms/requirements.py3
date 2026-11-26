@@ -126,7 +126,6 @@ event-tracking==4.0.0
 executing==2.3.0
 externality-xblock @ git+https://github.com/Learningtribes/external-content-xblock.git@1099275aa77a1f2839760199c7e3a3fde1be88c9
 #factory_boy==3.3.3 #staging exists, but not in runtime-public.in file; this package is for Unit tests
-executing==2.3.0
 #Faker==37.8.0 #staging exists, but not in runtime-public.in file; this package is for Unit tests
 fastavro==1.12.2
 feedparser==6.0.14
