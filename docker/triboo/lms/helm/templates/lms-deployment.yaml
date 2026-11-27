@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert --chart --out everlearn
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: lms
+  name: lms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: lms
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert --chart --out everlearn
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: lms
+    spec:
+      containers:
+        - image: localhost/local/lms:py3
+          name: lms
+          command: ["/bin/sleep"]
+          args: ["infinity"]
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /edx/app/edxapp/lms.env.json
+              name: lms-cm0
+              readOnly: true
+              subPath: lms.env.json
+            - mountPath: /edx/app/edxapp/lms.auth.json
+              name: lms-cm1
+              readOnly: true
+              subPath: lms.auth.json
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            items:
+              - key: lms.env.json
+                path: lms.env.json
+            name: lms-cm0
+          name: lms-cm0
+        - configMap:
+            items:
+              - key: lms.auth.json
+                path: lms.auth.json
+            name: lms-cm1
+          name: lms-cm1

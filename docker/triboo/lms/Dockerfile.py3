@@ -26,8 +26,8 @@ RUN rm -rf /theme/.git
 FROM python:3.13-slim
 
 RUN useradd -G www-data -m lms
-#RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y --no-install-recommends git libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl pkg-config default-libmysqlclient-dev curl build-essential && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl xmlsec1 libglib2.0-0t64 libx11-6 libxext6 libxrender1 graphviz && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git libsasl2-dev libldap2-dev libssl-dev gettext libxml2-dev libxmlsec1-dev libxslt1-dev libxmlsec1t64-openssl xmlsec1 pkg-config default-libmysqlclient-dev curl build-essential libglib2.0-0t64 libx11-6 libxext6 libxrender1 graphviz && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /var/log/lms /edx/app/edxapp /edx/app/edxapp/themes /edx/var/edxapp/staticfiles /edx/var/edxapp/data /edx/var/log/edx/lms /edx/var/log/tracking
 COPY lms_env /edx/app/edxapp/lms_env
 COPY lms_gunicorn.py /edx/app/edxapp/lms_gunicorn.py
