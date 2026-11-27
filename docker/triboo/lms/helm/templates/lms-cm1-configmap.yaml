@@ -92,7 +92,7 @@ data:
                 "USER": "py3_admin"
             }
         }, 
-        "DEFAULT_FILE_STORAGE": "storages.backends.s3boto.S3BotoStorage", 
+        "DEFAULT_FILE_STORAGE": "django.core.files.storage.FileSystemStorage", 
         "DJFS": {
             "acl": "public-read", 
             "aws_access_key_id": "", 
@@ -206,7 +206,7 @@ data:
             "class": "edx_proctoring.backends.null.NullBackendProvider", 
             "options": {}
         }, 
-        "SECRET_KEY": "", 
+        "SECRET_KEY": "SET-ME-PLEASE", 
         "SEGMENT_KEY": null, 
         "SESSION_INACTIVITY_TIMEOUT_IN_SECONDS": 3600,
         "SOCIAL_AUTH_OAUTH_SECRETS": "", 
