@@ -22,11 +22,31 @@ spec:
       labels:
         io.kompose.service: lms
     spec:
+      # initContainers:
+      #   - image: localhost/local/lms:py3
+      #     name: migrate-db
+      #     command: ["/bin/bash", "-c"]
+      #     args: 
+      #       - |
+      #         set -e
+      #         echo 'RECALCULATE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE' >> lms/envs/common.py
+      #         echo 'RECALCULATE_PROGRESS_ROUTING_KEY = LOW_PRIORITY_QUEUE' >> lms/envs/common.py
+      #         echo 'POLICY_CHANGE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE' >> lms/envs/common.py
+      #         python manage.py lms migrate --settings=aws
+      #     volumeMounts:
+      #       - mountPath: /edx/app/edxapp/lms.env.json
+      #         name: lms-cm0
+      #         readOnly: true
+      #         subPath: lms.env.json
+      #       - mountPath: /edx/app/edxapp/lms.auth.json
+      #         name: lms-cm1
+      #         readOnly: true
+      #         subPath: lms.auth.json
       containers:
         - image: localhost/local/lms:py3
           name: lms
-          command: ["/bin/sleep"]
-          args: ["infinity"]
+          # command: ["/bin/sleep"]
+          # args: ["infinity"]
           ports:
             - containerPort: 8000
               protocol: TCP

@@ -15,7 +15,11 @@ data:
         ], 
         "ACE_ROUTING_KEY": "edx.lms.core.low", 
         "ACTIVATION_EMAIL_SUPPORT_LINK": "", 
-        "ADDL_INSTALLED_APPS": [], 
+        "ADDL_INSTALLED_APPS": [
+            "openedx.core.djangoapps.bookmarks.apps.BookmarksConfig",
+            "openedx.core.djangoapps.schedules.apps.SchedulesConfig",
+            "openedx.core.djangoapps.theming.apps.ThemingConfig"
+        ], 
         "ADVANCED_SECURITY_CONFIG": {
             "MIN_DAYS_FOR_STAFF_ACCOUNTS_PASSWORD_RESETS": 1000, 
             "MIN_DAYS_FOR_STUDENT_ACCOUNTS_PASSWORD_RESETS": 1000
